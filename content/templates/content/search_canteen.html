@@ -1,0 +1,164 @@
+{% extends './base.html' %}
+
+{% block content %}
+
+<div class="select-date text-center font-weight-bold p-3 mb-4">
+  <div class=" p-2 rounded">
+    </div>
+</div>
+
+<form class=""  method="post">
+
+  {%csrf_token%}
+  <div class="form-group row">
+      <label for="products" class="col-sm-2 font-weight-bold col-form-label">اســـم المنتج</label>
+      <div class="col-sm-6">
+        <div class="input-group mb-3">
+          <select class="form-control"   name="product_id" aria-label="Amount (to the nearest dollar)" required>
+              <option value="">اختر اسم المنتج</option>
+              {%for product in products%}
+              <option value="{{product.id}}"   >{{product.name}}</option>
+              {%endfor%}
+          </select>
+        </div>
+      </div>
+      <div class=" ">
+        <button type="submit" class="btn btn-sm btn-hover font-weight-bold px-5 ">بحث</button>
+      </div>
+  </div>
+
+</form>
+{%for tpp in data%}
+
+  <div>
+    <nav aria-label="breadcrumb " >
+
+
+        {%if tpp.Point  %}
+            {%if tpp.total_product_quantity > 0 %}
+              <ol class="breadcrumb bg-info font-weight-bold text-light">
+            {%else%}
+              <ol class="breadcrumb bg-danger font-weight-bold text-light">
+            {%endif%}
+          <li class="breadcrumb-item">{{tpp.Point.name}}</li>
+          <li class="breadcrumb-item">{{tpp.product.name}}</li>
+        {%else%}
+            {%if tpp.total_quantity > 0 %}
+              <ol class="breadcrumb bg-info font-weight-bold text-light">
+            {%else%}
+              <ol class="breadcrumb bg-danger font-weight-bold text-light">
+            {%endif%}
+          <li class="breadcrumb-item">المخزن</li>
+          <li class="breadcrumb-item">{{tpp.name}}</li>
+        {%endif%}
+      </ol>
+    </nav>
+  </div>
+
+
+
+
+
+<table class="table">
+    <thead class="thead-dark">
+      <tr>
+
+        <th scope="col">الكمية بالقطعة قديم</th>
+        <th scope="col">الكمية بالقطعة جديد</th>
+        <th scope="col">الكمية الكلية</th>
+        <th scope="col">سعر  بيع القطعة</th>
+        <th scope="col">سعر شراء كلى</th>
+
+        <th scope="col">سعر بيع كلى </th>
+        <th scope="col">تفاصيل الصنف</th>
+
+
+
+
+
+      </tr>
+    </thead>
+    <tbody>
+
+      <tr>
+
+
+        {%if tpp.Point  %}
+          <td>{{tpp.old_amount}}</td>
+          <td>{{tpp.new_amount}}</td>
+          <td>{{tpp.old_amount|add:tpp.new_amount}}</td>
+          <td>{{tpp.product.unit_sell_price}}</td>
+        {%else%}
+          <td>{{tpp.amount_old}}</td>
+          <td>{{tpp.amount_new}}</td>
+          <td>{{tpp.amount_old|add:tpp.amount_new}}</td>
+          <td>{{tpp.unit_sell_price}}</td>
+        {%endif%}
+
+        <td>{{tpp.total_cost}}</td>
+        <td>{{tpp.total_cost_sell}}</td>
+
+        {%if tpp.Point  %}
+          <td> <a href="{% url 'content:point-total-product' tpp.id %}" target="_blank"> اضغط لرؤية تفاصيل الصنف  </a></td>
+        {%else%}
+            <td> <a href="{% url 'content:product_page' tpp.id %}"  target="_blank"> اضغط لرؤية تفاصيل الصنف  </a></td>
+        {%endif%}
+        </tr>
+
+
+
+
+
+
+    </tbody>
+  </table>
+{%endfor%}
+{%if all_product_sellings%}
+<!-- start seperator -->
+<div style="border-top: 7px solid #1abc9c;" class="my-2"></div>
+<!-- end seperator -->
+<hr class="my-5">
+<div class="container print ">
+    <h3 class="text-right"> مبيعات الصنف</h3>
+    <table class="table">
+      <thead class="thead-dark">
+        <tr>
+
+          <th scope="col">مسلسل</th>
+          <th scope="col">رقم الفاتورة/التفاصيل </th>
+          <th scope="col">اسم المسؤول</th>
+
+          <th scope="col">اسم العميل </th>
+
+
+          <th scope="col">التاريخ</th>
+          <th scope="col">الكمية المباعة بالوحدة</th>
+          <th scope="col">سعر البيع قبل الخصم</th>
+          <th scope="col">سعر البيع بعد الخصم</th>
+
+
+        </tr>
+      </thead>
+
+      <tbody>
+        {%for pill in all_product_sellings%}
+        <tr>
+          <th scope="row">{{forloop.counter}}</th>
+
+          <td><a href="{%url 'content:customer-bill-details' pill.bill.id%}">{{pill.bill.id}} - اضغط لرؤية التفاصيل</a></td>
+          <td><a href="{%url 'content:manager' pill.bill.manager.id%}">{{pill.bill.manager.user.first_name}}</a></td>
+          <td>{{pill.bill.customer.name}}<</td>
+
+          <td>{{pill.date|date:"l -  d / n / Y"}}</td>
+          <td>{{pill.total_quantity_sold}}</td>
+          <td>{{pill.unit_sell_price}}</td>
+          <td>{{pill.unit_sell_price_ad}}</td>
+
+
+        </tr>
+        {%endfor%}
+
+      </tbody>
+  </table>
+{%endif%}
+{% endblock %}

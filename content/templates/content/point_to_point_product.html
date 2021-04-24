@@ -1,0 +1,396 @@
+{% extends './base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="select-date text-center font-weight-bold p-3 mb-4">
+  <div class="bg-light p-2 rounded">
+    {{point.name}}
+  </div>
+</div>
+
+<div>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">النقاط</li>
+      <li class="breadcrumb-item">{{point.name}}</li>
+      <li class="breadcrumb-item">نقل بضاعة لنقطة ثانية</li>
+    </ol>
+  </nav>
+</div>
+
+
+
+      <div class="form-group row">
+          <label for="products" class="col-sm-2 font-weight-bold col-form-label">اســـم المنتج</label>
+          <div class="col-sm-10">
+            <div class="input-group mb-3">
+              <select class="form-control" id="search_list"   name="product_id" aria-label="Amount (to the nearest dollar)" >
+
+                    <option value="">اختر اسم الصنف </option>
+                    {%for product in products %}
+                          <option value="{{product.id}}">{{product.name}}</option>
+                    {%endfor%}
+
+              </select>
+            </div>
+          </div>
+      </div>
+
+{%for product in products %}
+
+    <div id="sell_product_{{product.id}}">
+      <div class="">
+
+
+          <div class="form-group row">
+              <label for="products" class="col-sm-2 font-weight-bold col-form-label">اختر الفاتورة</label>
+              <div class="col-sm-10">
+                <div class="input-group mb-3">
+                  <select class="form-control" id="search_list_bills_{{product.id}}"   aria-label="Amount (to the nearest dollar)" >
+
+                        <option value="">اختر الفاتورة</option>
+                        {%for product_in_point in products_in_point %}
+                          {%for bill in product_in_point %}
+                              {%if bill.trader_product.product.id == product.id %}
+                                  <!-- <option value="{{bill.id}}"  selected >فاتورة رقم : {{bill.id}} -- بتاريخ : {{bill.date}} -- اسم التاجر : {{bill.trader.name}} </option> -->
+
+                                  <option value="{{bill.id}}{{bill.trader_product.product.id}}"  >فاتورة رقم : {{bill.trader_product.trader_bill.id}} -- بتاريخ : {{bill.trader_product.date}}  -- اسم التاجر : {{bill.trader_product.trader.name}} </option>
+                              {%endif%}
+                            {%endfor%}
+                        {%endfor%}
+
+                  </select>
+                </div>
+              </div>
+          </div>
+
+        </div>
+
+    </div>
+    {%endfor%}
+
+
+
+  {%for product_in_point in products_in_point %}
+    {%for bill in product_in_point %}
+
+    <div id="sell_product_bills_{{bill.id}}{{bill.trader_product.product.id}}">
+
+        <form class="" method="post" >
+          {%csrf_token%}
+
+        <input type="number" name="bill_id"   value="{{bill.id}}"  style="display:None;">
+
+          <div class="form-group row">
+              <label for="products" class="col-sm-2 font-weight-bold col-form-label" >تاريخ الصلاحية</label>
+              <div class="col-sm-10">
+                <div class="input-group mb-3">
+
+                  <input type="text" class="text-primary" value="ت. انتاج" class="form-control" readonly>
+                  <input type="text" class="col-2 text-primary" value="{{bill.trader_product.production_date|date:'d-m-Y'}}" class="form-control" readonly>
+                  <input type="text" class="text-light bg-primary" value="ت انتهاء" class="form-control" readonly>
+                  <input type="text" class="col-2 text-primary" value="{{bill.trader_product.expiration_date|date:'d-m-Y'}}"  class="form-control" readonly>
+                  {% if bill.trader_product.product_image %}
+                    <label for="products" class=" px-1 col-form-label" ><a href="{{bill.trader_product.product_image.url}} " target="_blank"> صورة المنتج</a> </label>
+                  {%endif%}
+                </div>
+              </div>
+          </div>
+          <div class="form-group row">
+              <label for="products" class="col-sm-2 font-weight-bold col-form-label" >الكمية بالكرتونة </label>
+              <div class="col-sm-10">
+                <div class="input-group mb-3">
+                  <input type="number" name="quantity_packet" min ="0"  max ="{{bill.quantity_packet}}"  class="form-control" placeholder="اكتب  (0)  صفــر اذا كانت الكمية المسحوبة بعدد القطع فقط" required>
+                  <input type="text" class="text-primary" value="الموجود بالمخزن {{bill.quantity_packet}} كرتونة" class="form-control" readonly>
+                  <input type="text" class="text-light font-weight-bold bg-primary" value="عدد القطع ف الكرتونة : {{bill.quantity_per_packet}} " class="form-control" readonly>
+                  <input type="text" class=" font-weight-bold bg-default" value="سعر الكرتونة : {{bill.trader_product.packet_price}}" class="form-control" readonly>
+
+                </div>
+              </div>
+          </div>
+          <div class="form-group row ">
+              <label for="products" class="col-sm-2 font-weight-bold col-form-label" >الكمية بالواحدة / بالقطعة </label>
+              <div class="col-sm-10">
+                <div class="input-group mb-3">
+                  <input type="number" name="quantity" min ="0"   max ="{{bill.total_quantity}}"  class="form-control" placeholder="اكتب (0)  صفــر اذا كانت الكمية المسحوبة بعدد الكراتين فقط" required>
+                  <input type="text" class="text-primary" value="الموجود بالمخزن {{bill.quantity}} قطعة" class="form-control" readonly>
+                  <input type="text" class=" font-weight-bold bg-default" value="سعر القطعة : {{bill.unit_buy_price}}" class="form-control" readonly>
+                  <input type="text" class=" font-weight-bold bg-primary" value="سعر القطعة بعد الخصم : {{bill.unit_buy_price_ad}}" class="form-control" readonly>
+
+
+                </div>
+              </div>
+          </div>
+
+          <div class="form-group row">
+            <label for="products" class="col-sm-2 font-weight-bold col-form-label">سعر بيع القطعة</label>
+            <div class="col-sm-10">
+              <div class="input-group mb-3">
+                <input type="number" name="selling_price" value="{{bill.unit_sell_price}}" min =".001" step=".001"    class="form-control" placeholder="اكتب سعر بيع القطعة الواحدة بنقطة البيع " required>
+                <!-- <input type="text" class=" font-weight-bold bg-primary" value="سعر البيع الحالى : {{bill.unit_buy_price_ad}}" class="form-control" readonly> -->
+
+              </div>
+            </div>
+        </div>
+
+          <div class="form-group row">
+            <label for="products" class="col-sm-2 font-weight-bold col-form-label">اســـم النقطة</label>
+            <div class="col-sm-10">
+              <div class="input-group mb-3">
+                <select class="form-control" id="quantity" name= "point_id" aria-label="Amount (to the nearest dollar)" required>
+                  <option value=""> اختر اسم النقطة</option>
+                  {%for  point in points %}
+                    <option value="{{point.id}}">{{point.name}}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+        </div>
+
+
+
+          {%if  bill.total_quantity %}
+              <div class="d-flex justify-content-around mt-4">
+                <button type="submit" class="btn btn-primary font-weight-bold px-5 " id="btnsubmit" >تأكيد</button>
+              </div>
+            {%else%}
+              <div class="alert alert-danger text-center mt-3 mb-0" role="alert">
+                المنتج منتهى من النقطة
+              </div>
+            {%endif%}
+
+      </form>
+    </div>
+        {%endfor%}
+      {%endfor%}
+
+
+
+      {%if current_lines %}
+        <!-- start seperator -->
+        <div style="border-top: 7px solid #1abc9c;" class="my-5"></div>
+        <!-- end seperator -->
+          <h2 class="text-right"> الفاتورة الحالية المنقولة</h2>
+            <table class="table">
+                <thead class="thead-dark">
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">الصنف</th>
+                    <th scope="col">كمية كرتونة</th>
+                    <th scope="col">كمية قطعة</th>
+                    <th scope="col">الكمية الكلية بالقطعة</th>
+                    <th scope="col">سعر البيع</th>
+                    <th scope="col">اسم النقطة</th>
+
+                    <th scope="col">رقم فاتورة المشتروات </th>
+                    <th scope="col">اسم التاجر</th>
+
+
+                    <th scope="col" class="text-primary"> تعديل</th>
+                    <th scope="col" class="text-danger"> حذف</th>
+
+                  </tr>
+                </thead>
+                <tbody>
+
+                {% for line in current_lines %}
+
+                    <tr>
+                      <th scope="row">{{forloop.counter}}</th>
+
+                      <td>{{line.trader_product.product.name}}</td>
+                      <td>{{line.quantity_packet}}</td>
+                      <td>{{line.quantity}}</td>
+                      <td>{{line.total_quantity}}</td>
+                      <td>{{line.unit_sell_price}}</td>
+                      <td>{{line.to_point.name}}</td>
+
+                      <td>{{line.trader_product.trader_bill.id}}</td>
+                      <td>{{line.trader_product.trader.name}}</td>
+
+
+
+
+                      <td >
+                        <!-- Button trigger modal -->
+                          <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#exampleModal{{line.id}}">
+                            تعديل
+                          </button>
+
+                              <!-- Modal -->
+                              <div class="modal fade" id="exampleModal{{line.id}}" tabindex="{{line.id}}" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-lg" role="document">
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <h5 class="modal-title" id="exampleModalLabel"> تعديل بيانات {{line.trader_product.product.name}} </h5>
+                                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                      </button>
+                                    </div>
+                                    <div class="modal-body">
+
+                                      <form method="post" action="{%url 'content:edit_point_to_point_bill_line' line.id %}"  enctype="multipart/form-data" id="edit_form{{line.id}}" >
+                                        {% csrf_token %}
+
+
+
+
+                                        <div class="form-group row">
+
+                                                <label for="products" class="col-sm-5 font-weight-bold col-form-label">الكمية بالكرتونة</label>
+
+                                            <div class="col-sm-5">
+                                              <div class="input-group mb-3">
+                                                <input type="number" min="0"  name="quantity_packet" value="{{line.quantity_packet}}" class="form-control"  form="edit_form{{line.id}}" required>
+                                              </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+
+                                              <label for="products" class="col-sm-5 font-weight-bold col-form-label">الكمية بالقطعة</label>
+
+                                          <div class="col-sm-5">
+                                            <div class="input-group mb-3">
+                                              <input type="number" min="0" name="quantity" value="{{line.quantity}}" class="form-control" form="edit_form{{line.id}}" required>
+                                            </div>
+                                          </div>
+                                        </div>
+
+                                        <div class="form-group row">
+
+                                              <label for="products" class="col-sm-5 font-weight-bold col-form-label">سعر البيع</label>
+
+                                          <div class="col-sm-5">
+                                            <div class="input-group mb-3">
+                                              <input type="number" name="selling_price" min =".001" step=".001" value="{{line.unit_sell_price}}"   class="form-control" placeholder="اكتب سعر بيع القطعة الواحدة بنقطة البيع " required>
+                                              <!-- <input type="text" class=" font-weight-bold bg-primary" value="سعر البيع الحالى : {{bill.unit_buy_price_ad}}" class="form-control" readonly> -->
+
+                                            </div>
+                                          </div>
+                                        </div>
+
+                                        <div class="form-group row">
+
+                                              <label for="products" class="col-sm-5 font-weight-bold col-form-label">اختر النقطة</label>
+
+                                          <div class="col-sm-5">
+                                            <div class="input-group mb-3">
+                                              <select class="form-control" id="quantity" name= "point_id" aria-label="Amount (to the nearest dollar)" required>
+
+                                                {%for  point in points %}
+                                                  {%if line.to_point.id == point.id %}
+                                                    <option value="{{point.id}}" selected>{{point.name}}</option>
+                                                  {%else%}
+                                                    <option value="{{point.id}}" >{{point.name}}</option>
+                                                  {%endif%}
+                                                {% endfor %}
+                                              </select>
+                                            </div>
+                                          </div>
+                                        </div>
+
+
+
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-secondary" data-dismiss="modal">إغلاق</button>
+                                      <button type="submit" form="edit_form{{line.id}}" class="btn btn-primary">حفظ التعديلات</button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <!-- Modal end  -->
+                       </td>
+                      <td > <a class="text-danger" href="{%url 'content:delete_point_to_point_bill_line' line.id %}"> حذف</a> </td>
+
+
+                    </tr>
+
+
+
+                {%endfor%}
+                </tbody>
+
+
+            </table>
+
+            <hr class="my-5">
+            <div class="container mt-5">
+              <div class='row text-center'>
+
+              <table class="table">
+                <thead class="thead-dark">
+                  <tr>
+                    <th scope="col">تكلفة الفاتورة شراء</th>
+                    <th scope="col">تكلفة الفاتورة بيع</th>
+
+                  </tr>
+                </thead>
+
+                <tbody>
+
+                  <tr>
+                    <th scope="col">{{total_buy}}</th>
+                    <th scope="col">{{total_sell}}</th>
+
+                  </tr>
+                </tbody>
+            </table>
+              <!-- start seperator -->
+              <div style="border-top: 7px solid #1abc9c;" class="my-5"></div>
+              <!-- end seperator -->
+
+
+
+                </div>
+
+
+                <div class="d-flex justify-content-around mt-4">
+                  <button type="submit" form="bill_confirm" class="btn btn-primary font-weight-bold px-5 ">تأكيد نقل البضاعة</button>
+                </div>
+              </div>
+
+
+
+
+
+              <form class="" action="{%url 'content:confirm_point_to_point_bill' point.id  %}" method="post" enctype="multipart/form-data" id="bill_confirm" >
+
+                {%csrf_token%}
+              </form>
+
+
+        {%endif%}
+
+    <div class="row  font-weight-bold p-3 mb-4 justify-content-center">
+      <a href="{%url 'content:point_page' point.id %}">
+          <button class="btn y btn-hover font-weight-bold px-5 mx-2">رجوع</button>
+      </a>
+      </div>
+
+
+    {% if failed == 1 %}
+    <div class="alert alert-danger text-center mt-3 mb-0" role="alert">
+      خطأ لم يتم تحديث البيانات . تأكد من اسم المنتج و الكمية الصحيحة
+    </div>
+    {%elif success %}
+    <div class="alert alert-success text-center mt-3 mb-0" role="alert">
+      تم حفظ البيانات
+    </div>
+    {% endif %}
+
+
+    <script>
+      const navLinks = document.querySelectorAll(".nav-item")
+      for (link of navLinks){
+          link.classList.remove('active-link')
+      }
+      navLinks[7].classList.add('active-link');
+
+    </script>
+
+
+{%endblock%}

@@ -1,0 +1,96 @@
+{% extends './base.html' %}
+{% block content %}
+
+
+<div class="select-date text-center font-weight-bold p-3 mb-4">
+
+</div>
+<!-- Button trigger modal -->
+  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+    إضافة نقطة مبيعات
+  </button>
+
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">   إضافة نقطة مبيعات</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+
+          <form method="post"  action="{%url 'content:add_new_point' %}" enctype="multipart/form-data" id ="add_form">
+            {% csrf_token %}
+
+
+            <div class="form-group row">
+                <label for="products" class="col-sm-2 font-weight-bold col-form-label">اسم النقطة</label>
+                <div class="col-sm-10">
+                  <div class="input-group mb-3">
+                    <input type="text" form="add_form"   name="point_name" class="form-control" id="quantity" aria-label="Amount (to the nearest dollar)" required>
+
+                  </div>
+                </div>
+            </div>
+
+            </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" form="add_form" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal end  -->
+<table class="table">
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">اسم النقطة</th>
+        <!-- <th scope="col">اسم المسؤول</th> -->
+        <th scope="col">ثمن شراء البضاعة بالنقطة</th>
+        <th scope="col">ثمن بيع البضاعة بالنقطة</th>
+
+      </tr>
+    </thead>
+    <tbody>
+      {% for point in points %}
+      <tr>
+        <th scope="row">{{forloop.counter}}</th>
+        <td><a href="{%url 'content:point_page' point.id%}">{{point.name}}</a></td>
+
+
+        <td>{{point.total_money_buy}}</td>
+
+        <td>{{point.total_money_sell}}</td>
+      </tr>
+      {% endfor %}
+
+    </tbody>
+</table>
+<hr class="my-5">
+<div class="container mt-5">
+  <div class='row text-center'>
+    <div class="col-5 bg-dark text-light font-weight-bolder p-3">اجمالي </div>
+    <div class="col-4 font-weight-bolder  p-3">{{total_points_buy}}</div>
+    <div class="col-3 font-weight-bolder  p-3">{{total_points_sell}}</div>
+  </div>
+
+</div>
+
+<script>
+  const navLinks = document.querySelectorAll(".nav-item")
+  for (link of navLinks){
+      link.classList.remove('active-link')
+  }
+  navLinks[7].classList.add('active-link');
+
+</script>
+
+
+{%endblock%}

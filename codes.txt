@@ -1,0 +1,10 @@
+1. run cmd 
+
+
+2.write these codes one after another and after each one hit enter 
+
+py manage.py makemigrations
+
+py manage.py migrate
+
+py manage.py makemigrations

@@ -1,0 +1,333 @@
+{% extends './base.html' %}
+{% block content %}
+
+
+
+<div class="select-date text-center font-weight-bold p-3 mb-4">
+
+
+</div>
+
+<div>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">المخزن</li>
+      <li class="breadcrumb-item">{{p.name}}</li>
+    </ol>
+  </nav>
+</div>
+
+
+  <a href="{%url 'content:store' %}">
+      <button class="btn y btn-hover font-weight-bold px-5 mx-2">رجوع</button>
+  </a>
+
+
+
+  <table class="table">
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">الصنف</th>
+        <!-- <th scope="col">ك.ق</th> -->
+        <th scope="col">قطعة مخزن</th>
+        <!-- <th scope="col">ك.ج</th> -->
+        <th scope="col">قطعة نقطة</th>
+
+        <th scope="col">الكمية الكلية/قطعة</th>
+        <th scope="col">الاجمالي - سعر شراء</th>
+
+      </tr>
+    </thead>
+    <tbody>
+
+      <tr>
+        <th scope="row">{{forloop.counter}}</th>
+        <td><a href="{%url 'content:product_page' p.id%}">{{p.name}}</a></td>
+        <!-- <td>{{p.last_quantity_packet}}</td> -->
+        <td>{{p.total_quantity}}</td>
+        <!-- <td>{{p.quantity_packet}}</td> -->
+        <td>{{p.total_quantity_in_points}}</td>
+
+        <td>{{p.total_quantity|add:p.total_quantity_in_points}}</td>
+        <td>{{p.total_cost|add:p.total_cost_in_points_buy}}</td>
+      </tr>
+
+
+    </tbody>
+  </table>
+<div class="form-group row">
+    <label for="inputPassword"   class="col-sm-2 font-weight-bold col-form-label">الوصف</label>
+    <div class="col-sm-10">
+      <div class="input-group mb-3">
+        <textarea class="form-control text-right"  name="descreption" aria-label="With textarea" >{{p.descreption}}</textarea>
+      </div>
+    </div>
+</div>
+<hr class="my-5">
+
+<div class="container mt-5">
+    <div class='row text-center'>
+      <div class="col-4 bg-dark text-light font-weight-bolder p-3">اسماء الموردين</div>
+      <div class="col-8 font-weight-bolder  p-3">
+        {%for seller in product_sellers%}
+          <a href="{%url 'content:trader_page' seller.id %}">{{seller.name}}</a><span class="dot"></span>
+
+          {%endfor%}
+
+        <!-- Button trigger modal -->
+          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+            إضافة مورد للمنتج
+          </button>
+
+          <!-- Modal -->
+          <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">إضافة مورد أخر ل <span class="text-primary">{{p.name}}</span> </h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+
+                  <form method="post"  enctype="multipart/form-data" id ="add_form">
+                    {% csrf_token %}
+
+
+                    <div class="form-group row">
+                        <label for="products" class="col-sm-2 font-weight-bold col-form-label">اسم التاجر</label>
+                        <div class="col-sm-10">
+                          <div class="input-group mb-3">
+                            <select class="form-control" id="quantity" name= "trader_id" form="add_form" aria-label="Amount (to the nearest dollar)" required>
+                                <option value=""> اختر اسم التاجر</option>
+                              {%for trader in traders %}
+                                <option value="{{trader.id}}">{{trader.name}}</option>
+                              {% endfor %}
+                            </select>
+                          </div>
+                        </div>
+                    </div>
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  <button type="submit" form="add_form" class="btn btn-primary">Save changes</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modal end  -->
+
+        </div>
+    </div>
+
+</div>
+
+<!-- start section seperator -->
+<div>
+  <div class="select-date text-center font-weight-bold p-3 mb-4" style="position: relative;
+  top: 60px;">
+      <div class="bg-light p-2 rounded">
+          تفاصيل الموجود بالمخزن
+      </div>
+  </div>
+
+  <div style="border-top: 7px solid #1abc9c;"></div>
+</div>
+<!-- end section seperator -->
+
+<table class="table">
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">رقم فاتورة المشتروات</th>
+        <th scope="col">التاريخ</th>
+        <th scope="col">الكمية بالكرتونة</th>
+        <th scope="col">الكمية بالوحدة</th>
+
+        <th scope="col">عدد القطع ف الكرتونة</th>
+        <th scope="col">عدد القطع الكلى</th>
+
+        <th scope="col">سعر شراء الكرتونة</th>
+        <th scope="col">سعر بعد الخصم</th>
+        <th scope="col">التكلفة</th>
+        <th scope="col">اسم التاجر</th>
+        <th scope="col">تاريخ الانتاج</th>
+        <th scope="col" class="text-danger">تاريخ الانتهاء</th>
+        <th scope="col">صورة المنتج</th>
+
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in product_in_store %}
+      {%if p.quantity > 0 or p.quantity_packet > 0%}
+      <tr>
+        <th scope="row">{{forloop.counter}}</th>
+        <td><a href="{%url 'content:trader_bill_details' p.trader_bill.id%}" target="_blank">اضغط لروية الفاتورة: {{p.trader_product.trader_bill.id}}</a> </td>
+
+        <td>{{p.date|date:'d-m-Y'}}</td>
+        <td>{{p.quantity_packet}}</td>
+        <td>{{p.quantity}}</td>
+
+        <td>{{p.quantity_per_packet}}</td>
+        <td>{{p.total_quantity_in_store}}</td>
+
+        <td>{{p.packet_price}}</td>
+        <td>{{p.packet_price_ad}}</td>
+        <td>{{p.total_quantity_in_store_cost}}</td>
+
+        <td><a href="{%url 'content:trader_page' p.trader.id%}">{{p.trader.name}}</a></td>
+        <td>{{p.production_date|date:'d-m-Y'}}</td>
+        <td class="text-danger">{{p.expiration_date|date:'d-m-Y'}}</td>
+
+        {%if p.trader_bill.bill_file%}
+          <td> <a href="{{p.trader_bill.bill_file.url}}" target="_blank"> اضغط لرؤية الفاتورة</a> </td>
+        {%endif%}
+
+      </tr>
+      {%endif%}
+      {% endfor %}
+
+    </tbody>
+</table>
+<!-- start section seperator -->
+<div>
+  <div class="select-date text-center font-weight-bold p-3 mb-4" style="position: relative;
+  top: 60px;">
+      <div class="bg-light p-2 rounded">
+          تفاصيل الموجود بالنقاط
+      </div>
+  </div>
+
+  <div style="border-top: 7px solid #1abc9c;"></div>
+</div>
+<!-- end section seperator -->
+
+<table class="table">
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">اسم النقطة</th>
+        <th scope="col">رقم فاتورة المشتروات</th>
+        <th scope="col">التاريخ</th>
+        <th scope="col">الكمية بالكرتونة</th>
+        <th scope="col">الكمية بالوحدة</th>
+
+        <th scope="col">عدد القطع ف الكرتونة</th>
+        <th scope="col">عدد القطع الكلى</th>
+
+        <th scope="col">سعر شراء الكرتونة</th>
+        <th scope="col">سعر بعدالخصم</th>
+        <th scope="col">التكلفة</th>
+
+        <th scope="col">تاريخ الانتاج</th>
+        <th scope="col" class="text-danger">تاريخ الانتهاء</th>
+        <th scope="col">صورة المنتج</th>
+        <th scope="col" class="text-primary">سعر البيع بالنقطة</th>
+
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in product_in_points %}
+      {%if p.quantity > 0 or p.quantity_packet > 0%}
+      <tr>
+        <th scope="row">{{forloop.counter}}</th>
+        <td>{{p.Point.name}}</td>
+        <td><a href="{%url 'content:trader_bill_details' p.trader_product.trader_bill.id%}" target="_blank">اضغط لروية الفاتورة: {{p.trader_product.trader_bill.id}}</a> </td>
+
+        <td>{{p.date|date:'d-m-Y'}}</td>
+        <td>{{p.quantity_packet}}</td>
+        <td>{{p.quantity}}</td>
+
+        <td>{{p.trader_product.quantity_per_packet}}</td>
+        <td>{{p.total_quantity}}</td>
+
+        <td>{{p.trader_product.packet_price}}</td>
+        <td>{{p.trader_product.packet_price_ad}}</td>
+        <td>{{p.current_quantity_cost_buy}}</td>
+
+        <td>{{p.trader_product.production_date|date:'d-m-Y'}}</td>
+        <td class="text-danger">{{p.trader_product.expiration_date|date:'d-m-Y'}}</td>
+
+        {%if p.trader_product.trader_bill.bill_file%}
+          <td> <a href="{{p.trader_product.trader_bill.bill_file.url}}" target="_blank"> اضغط لرؤية الفاتورة</a> </td>
+        {%endif%}
+        <td class="text-primary">{{p.unit_sell_price}}</td>
+
+
+      </tr>
+      {%endif%}
+      {% endfor %}
+
+    </tbody>
+</table>
+
+
+<!-- start section seperator -->
+<div>
+  <div class="select-date text-center font-weight-bold p-3 mb-4" style="position: relative;
+  top: 60px;">
+      <div class="bg-light p-2 rounded">
+          تفاصيل فواتير الصنف
+      </div>
+  </div>
+
+  <div style="border-top: 7px solid #1abc9c;"></div>
+</div>
+<!-- end section seperator -->
+
+<table class="table">
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">رقم فاتورة المشتروات</th>
+        <th scope="col">التاريخ</th>
+        <th scope="col">الكمية بالكرتونة</th>
+        <th scope="col">الكمية بالوحدة</th>
+        <th scope="col" class="text-danger">المرتجع بالوحدة</th>
+        <th scope="col">سعر شراء الكرتونة</th>
+        <th scope="col">المبلغ الكلى بعد المسترجع</th>
+        <th scope="col">اسم التاجر</th>
+        <th scope="col">اسم المستلم</th>
+        <!-- <th scope="col">ملاحظات</th> -->
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in product_transactions %}
+        {%if p.total_quantity_fixed > 0 %}
+          <tr>
+            <th scope="row">{{forloop.counter}}</th>
+            <td><a href="{%url 'content:trader_bill_details' p.trader_bill.id%}" target="_blank">اضغط لروية الفاتورة: {{p.trader_bill.id}}</a> </td>
+            <td>{{p.date|date:'d-m-Y'}}</td>
+            <td>{{p.qp_original}}</td>
+            <td>{{p.qi_original}}</td>
+            <td class="text-danger">{{p.restored_quantity}}</td>
+            <td>{{p.packet_price}}</td>
+            <td>{{p.total_cost}}</td>
+            <td><a href="{%url 'content:trader_page' p.trader.id%}">{{p.trader.name}}</a></td>
+            {%if p.trader_bill.manager %}
+            <td><a href="{%url 'content:manager' p.trader_bill.manager.id%}">{{p.trader_bill.manager.user.first_name}}</a></td>
+            {%endif%}
+            <!-- <td>{{p.quantity}}</td> -->
+          </tr>
+        {%endif%}
+      {% endfor %}
+
+    </tbody>
+</table>
+
+<script>
+  const navLinks = document.querySelectorAll(".nav-item")
+  for (link of navLinks){
+      link.classList.remove('active-link')
+  }
+  navLinks[0].classList.add('active-link');
+
+</script>
+
+
+{%endblock%}

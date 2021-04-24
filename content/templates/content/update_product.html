@@ -1,0 +1,438 @@
+{% extends './base.html' %}
+{% block content %}
+
+
+
+  <div class="select-date text-center font-weight-bold p-3 mb-4">
+    <div class="bg-light p-2 rounded">
+      {{trader.name}}
+    </div>
+  </div>
+
+    <div class="form-group row">
+        <label for="products" class="col-sm-2 font-weight-bold col-form-label">اســـم المنتــــج</label>
+        <div class="col-sm-10">
+          <div class="input-group mb-3">
+            <select class="form-control" id="search_list_update_product" name= "product_id" aria-label="Amount (to the nearest dollar)" required>
+              {%for  product in products %}
+                <option value="{{product.id}}">{{product.name}}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+    </div>
+  {%for  product in products %}
+
+  <div class="" id="update_product_{{product.id}}">
+
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+        <input type="number" name="product_id" value="{{product.id}}"  style="display:None;">
+    <div class="form-group row text-danger">
+      <label for="staticEmail"    class="col-sm-2 font-weight-bold col-form-label">الكمية بالمخزن</label>
+      <div class="col-sm-10">
+        <div class="input-group mb-3">
+          <input type="text"  class="form-control text-danger"   value="  {{ product.total_quantity}}  قطعة" readonly>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group row text-danger">
+      <label for="staticEmail"    class="col-sm-2 font-weight-bold col-form-label">اخر سعر شراء للمنتج </label>
+      <div class="col-sm-10">
+        <div class="input-group mb-3">
+          <input type="text"  class="form-control text-danger"  value=" ثمن شراء الكرتونة -- {{product.all_lines.last.packet_price }} , عدد القطع فى الكرتونة  -- {{product.all_lines.last.quantity_per_packet}} -- ثمن شراء القطعة الواحدة {{product.all_lines.last.unit_buy_price}}" readonly>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- <div class="form-group row">
+      <label for="staticEmail"    class="col-sm-2 font-weight-bold col-form-label"></label>
+      <div class="col-sm-10">
+        <div class="input-group mb-3">
+            <label for="" class = "text-primary text-bold " style="font-size:1.4em;"> برجاء مراجعة صفحة المنتج و تحديث الاسعار اولا فى حالة تغير السعر عن اخر سعر للصنف </label>
+          </div>
+      </div>
+    </div> -->
+
+
+    <div class="form-group row">
+      <label for="staticEmail"    class="col-sm-3 font-weight-bold col-form-label">الكمية بالكرتونة</label>
+      <div class="col-sm-9">
+        <div class="input-group mb-3">
+          <input type="number" min="0" placeholder="عدد الكراتين الكاملة --<  اكتب صفر ان لم يوجد" name="quantity_packet" class="form-control" id="quantity" aria-label="Amount (to the nearest dollar)" required>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label for="staticEmail"    class="col-sm-3 font-weight-bold col-form-label">الكمية بالواحدة ان وجد ؟</label>
+      <div class="col-sm-9">
+        <div class="input-group mb-3">
+          <input type="number" min="0" placeholder="عدد القطع الفرط خارج الكرتونة ان وجد -- اكتب صفر ان لم يوجد" name="quantity" class="form-control" id="quantity" aria-label="Amount (to the nearest dollar)" required>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label for="staticEmail"    class="col-sm-3 font-weight-bold col-form-label">سعر شراء الكرتونة</label>
+      <div class="col-sm-9">
+        <div class="input-group mb-3">
+          <input type="number" min="0" step=".001"  placeholder="ثمن شراء الكرتونة الواحدة " name="packet_price" class="form-control" id="quantity" aria-label="Amount (to the nearest dollar)" required>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label for="staticEmail"    class="col-sm-3 font-weight-bold col-form-label">عدد القطع فى الكرتونة الواحدة</label>
+      <div class="col-sm-9">
+        <div class="input-group mb-3">
+          <input type="number" name="quantity_per_packet" min="1"    placeholder="عدد القطع فى الكرتونة الواحدة وليكن مثلا 20 قطعة لكل كرتونة"  class="form-control" id="quantity" aria-label="Amount (to the nearest dollar)" required>
+        </div>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="staticEmail"    class="col-sm-3 font-weight-bold col-form-label">الخصم للكرتونة</label>
+      <div class="col-sm-9">
+        <div class="input-group mb-3">
+          <input type="number" name="discount_per_packet" min="0"  step=".001"   placeholder="عدد القطع فى الكرتونة الواحدة وليكن مثلا 20 قطعة لكل كرتونة"  class="form-control" id="quantity" aria-label="Amount (to the nearest dollar)" required>
+        </div>
+      </div>
+    </div>
+
+    <div class="container select-date-big text-center font-weight-bold p-3 mb-4">
+      <div class="input-group ">
+        <div class="input-group-prepend">
+          <span class="input-group-text font-weight-bold rounded-0" id="inputGroup-sizing-sm">تاريخ الانتاج</span>
+        </div>
+        <input type="date" name="from_date" class="form-control rounded-0" aria-label="Sizing example input"
+          aria-describedby="inputGroup-sizing-sm" >
+
+
+        <div class="input-group-prepend mr-2">
+          <span class="input-group-text font-weight-bold rounded-0" id="inputGroup-sizing-sm">تاريخ الانتهاء</span>
+        </div>
+        <input type="date" name="to_date" class="form-control rounded-0" aria-label="Sizing example input"
+          aria-describedby="inputGroup-sizing-sm" >
+
+
+      </div>
+    </div>
+
+    <div class="form-group row border border-2 border-rounded">
+        <!-- <label for="inputPassword"   class="col-sm-2 font-weight-bold col-form-label">صورة الفاتورة</label>
+        <div class="col-sm-4">
+          <div class="input-group mb-3">
+          <input type="file" name="bill_file" value="" required>
+          </div>
+        </div> -->
+        <label for="inputPassword"   class="col-sm-2 font-weight-bold col-form-label text-primary">صورة المنتج</label>
+        <div class="col-sm-4">
+          <div class="input-group mb-3">
+          <input type="file" name="product_image" value="" >
+          </div>
+        </div>
+    </div>
+
+
+    <div class="d-flex justify-content-around mt-4">
+      <button type="submit" class="btn btn-hover font-weight-bold px-5 ">اضافة</button>
+    </div>
+  </form>
+  </div>
+{% endfor %}
+
+{%if current_bill %}
+  <!-- start seperator -->
+  <div style="border-top: 7px solid #1abc9c;" class="my-5"></div>
+  <!-- end seperator -->
+    <h2 class="text-right"> الفاتورة الحالية</h2>
+      <div class="row font-weight-bold justify-content-around mt-5">
+        <p>رقم الفاتورة : <span >{{current_bill.id}}</span></p>
+        <p>اسم المسؤول : <span class="font-weight-bold text-primary" >{{current_bill.manager.user.first_name}}</span></p>
+        <p>اسم التاجر : <span class="font-weight-bold text-primary" >{{current_bill.trader.name}}</span></p>
+        <p>تاريخ الفاتورة: <span >{{current_bill.date}}</span></p>
+        <p>مديونية التاجر الحالية : <span  class="text-danger">{{current_bill.trader.remaining_money}}</span></p>
+
+
+      </div>
+      <input type="number" name="bill_id"  form="form_sell_{{current_bill.id}}" value="{{current_bill.id}}"  style="display:None;">
+      <input type="number" name="customer_id"  form="form_sell_{{current_bill.id}}" value="{{current_bill.customer.id}}"  style="display:None;">
+      <table class="table">
+          <thead class="thead-dark">
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">الصنف</th>
+              <th scope="col">كمية كرتونة</th>
+              <th scope="col">كمية قطعة</th>
+              <th scope="col">سعر شراء الكرتونة</th>
+              <th scope="col">الخصم للكرتونة</th>
+              <th scope="col">الخصم الكلى</th>
+
+              <th scope="col">الاجمالي</th>
+              <th scope="col">المطلوب</th>
+              <th scope="col" class="text-danger"> نسبة الخصم</th>
+
+
+              <th scope="col" class="text-primary"> تعديل</th>
+              <th scope="col" class="text-danger"> حذف</th>
+
+            </tr>
+          </thead>
+          <tbody>
+
+          {% for line in current_bill.all_lines %}
+            {%if line.given_status == 0%}
+              <tr>
+                <th scope="row">{{forloop.counter}}</th>
+
+                <td>{{line.product.name}}</td>
+                <td>{{line.quantity_packet}}</td>
+                <td>{{line.quantity}}</td>
+                <td>{{line.packet_price}}</td>
+                <td>{{line.discount_per_packet}}</td>
+                <td>{{line.total_discount}}</td>
+                <td>{{line.total_cost}}</td>
+                <td>{{line.required_amount}}</td>
+
+                <th class="text-danger">{% widthratio line.total_discount  line.total_cost  100 %}%</th>
+
+                <td >
+                  <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#exampleModal{{line.id}}">
+                      تعديل
+                    </button>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="exampleModal{{line.id}}" tabindex="{{line.id}}" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                          <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel"> تعديل بيانات {{line.product.name}}</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                              </div>
+                              <div class="modal-body">
+
+                                <form method="post" action="{%url 'content:edit_trader_bill_line' line.id %}"  enctype="multipart/form-data" id="edit_form{{line.id}}" >
+                                  {% csrf_token %}
+
+
+
+
+                                  <div class="form-group row">
+
+                                          <label for="products" class="col-sm-5 font-weight-bold col-form-label">الكمية بالكرتونة</label>
+
+                                      <div class="col-sm-5">
+                                        <div class="input-group mb-3">
+                                          <input type="number" min="0"  name="quantity_packet" value="{{line.quantity_packet}}" class="form-control"  form="edit_form{{line.id}}" required>
+                                        </div>
+                                      </div>
+                                  </div>
+
+                                  <div class="form-group row">
+
+                                        <label for="products" class="col-sm-5 font-weight-bold col-form-label">الكمية بالقطعة</label>
+
+                                    <div class="col-sm-5">
+                                      <div class="input-group mb-3">
+                                        <input type="number" min="0" name="quantity" value="{{line.quantity}}" class="form-control" form="edit_form{{line.id}}" required>
+                                      </div>
+                                    </div>
+                                  </div>
+
+
+
+                                  <div class="form-group row">
+
+                                        <label for="products" class="col-sm-5 font-weight-bold col-form-label">سعر شراء الكرتونة</label>
+
+                                      <div class="col-sm-5">
+                                        <div class="input-group mb-3">
+                                            <input type="number" min="0" step=".001" name="packet_price" value="{{line.packet_price}}" class="form-control" form="edit_form{{line.id}}" required>
+                                        </div>
+                                      </div>
+                                  </div>
+
+                                  <div class="form-group row">
+
+                                        <label for="products" class="col-sm-5 font-weight-bold col-form-label">عدد قطع ف الكرتونة</label>
+
+                                      <div class="col-sm-5">
+                                        <div class="input-group mb-3">
+                                            <input type="number" min="1"  name="quantity_per_packet" value="{{line.quantity_per_packet}}" class="form-control" form="edit_form{{line.id}}" required>
+                                        </div>
+                                      </div>
+                                  </div>
+
+                                  <div class="form-group row">
+
+                                        <label for="products" class="col-sm-5 font-weight-bold col-form-label">الخصم للكرتونة</label>
+
+                                      <div class="col-sm-5">
+                                        <div class="input-group mb-3">
+                                            <input type="number" min="0"  step=".001" name="discount_per_packet" value="{{line.discount_per_packet}}" class="form-control" form="edit_form{{line.id}}" required>
+                                        </div>
+                                      </div>
+                                  </div>
+
+
+
+
+
+
+                                  <div class="form-group row">
+
+
+                                      <h2> <span>ت. انتاج {{line.production_date|date:'Y-m-d'}}</span> , <span>ت. انتهاء: {{line.expiration_date|date:'Y-m-d'}}</span> </h2>
+
+                                  </div>
+                                  <div class="container select-date-big text-center font-weight-bold p-3 mb-4">
+                                    <div class="input-group ">
+                                      <div class="input-group-prepend">
+                                        <span class="input-group-text font-weight-bold rounded-0" id="inputGroup-sizing-sm">تاريخ الانتاج</span>
+                                      </div>
+                                      <input type="date" name="from_date" class="form-control rounded-0" aria-label="Sizing example input" form="edit_form{{line.id}}"
+                                        aria-describedby="inputGroup-sizing-sm" >
+
+
+                                      <div class="input-group-prepend mr-2">
+                                        <span class="input-group-text font-weight-bold rounded-0" id="inputGroup-sizing-sm">تاريخ الانتهاء</span>
+                                      </div>
+                                      <input type="date" name="to_date" class="form-control rounded-0" aria-label="Sizing example input" form="edit_form{{line.id}}"
+                                        aria-describedby="inputGroup-sizing-sm" >
+
+
+                                    </div>
+                                  </div>
+
+                                  </form>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">إغلاق</button>
+                                <button type="submit" form="edit_form{{line.id}}" class="btn btn-primary">حفظ التعديلات</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Modal end  -->
+                 </td>
+                <td > <a class="text-danger" href="{%url 'content:delete_trader_bill_line' line.id %}"> حذف</a> </td>
+
+
+              </tr>
+            {%endif%}
+
+
+          {%endfor%}
+          </tbody>
+
+
+      </table>
+
+      <hr class="my-5">
+      <div class="container mt-5">
+        <div class='row text-center'>
+
+        <table class="table">
+          <thead class="thead-dark">
+            <tr>
+              <th scope="col">تكلفة الفاتورة</th>
+              <th scope="col">الخصم</th>
+              <th scope="col">المطلوب</th>
+              <th class="text-danger"> نسبة الخصم</th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            <tr>
+              <th scope="col">{{current_bill.total_bill_cost}}</th>
+              <th scope="col">{{current_bill.total_discount}}</th>
+              <th scope="col">{{current_bill.required_amount}}</th>
+              <th class="text-danger">{% widthratio current_bill.total_discount  current_bill.total_bill_cost_ar  100 %}%</th>
+
+            </tr>
+          </tbody>
+      </table>
+        <!-- start seperator -->
+        <div style="border-top: 7px solid #1abc9c;" class="my-5"></div>
+        <!-- end seperator -->
+              <div class="col-2 bg-dark text-light font-weight-bolder p-3">المطلوب من العميل</div>
+              <div class="col-1 font-weight-bolder  p-3">{{current_bill.required_amount}}</div>
+
+              <div class="col-2 bg-dark text-light font-weight-bolder p-3">المبلغ المدفوع</div>
+              <input type="number" name="given_money_amount" form="bill_confirm" step=".01" min ="0" max="{{bill.required_amount}}" step=".01" class="col-2 p-3 mx-2" placeholder="اكتب المبلغ المدفوع " required >
+              <div class="col-2 bg-dark text-light font-weight-bolder p-3">الخصم ؟</div>
+              <input type="number" name="discount" form="bill_confirm"   min ="0" step=".01" max="{{bill.required_amount}}" step=".01" class="col-2 p-3 mx-2" placeholder="اكتب الخصم الاضافى؟" required >
+
+
+
+
+          </div>
+          <div class="form-group row border border-2 border-rounded mt-2">
+
+              <label for="inputPassword"   class="col-sm-2 font-weight-bold col-form-label text-primary">صورة الفاتورة</label>
+              <div class="col-sm-4">
+                <div class="input-group mb-3">
+                <input type="file" name="bill_file" value="" form="bill_confirm" required >
+                </div>
+              </div>
+
+          </div>
+          <div class="form-group row">
+              <label for="inputPassword"   class="col-sm-2 font-weight-bold col-form-label">أضافة ملاحظات</label>
+              <div class="col-sm-10">
+                <div class="input-group mb-3">
+                  <textarea class="form-control"   name="notes" form="bill_confirm" aria-label="With textarea" ></textarea>
+                </div>
+              </div>
+          </div>
+
+          <div class="d-flex justify-content-around mt-4">
+            <button type="submit" form="bill_confirm" class="btn btn-hover font-weight-bold px-5 ">تأكيد إضافة الفاتورة</button>
+          </div>
+        </div>
+
+
+
+
+
+        <form class="" action="{%url 'content:confirm_add_trader_bill' current_bill.id  %}" method="post" enctype="multipart/form-data" id="bill_confirm" >
+
+          {%csrf_token%}
+        </form>
+
+
+
+
+
+
+
+
+  {%endif%}
+
+  <div class="row  font-weight-bold p-3 mb-4 justify-content-center">
+    <a href="{%url 'content:trader_page' trader.id %}">
+        <button class="btn y btn-warning font-weight-bold px-5 mx-2">رجوع</button>
+    </a>
+    </div>
+
+
+
+  {% if failed == 1 %}
+  <div class="alert alert-danger text-center mt-3 mb-0" role="alert">
+    خطأ لم يتم تحديث البيانات . تأكد من  مطابقة السعر الجديد لاخر سعر وكذلك عدد القطع فى الكرتونة الواحدة
+    ان كان هناك اختلاف  برجاء تحديث الاسعار فى صفحة المنتج نفسه من زرار التحديث
+  </div>
+  {%elif success %}
+  <div class="alert alert-success text-center mt-3 mb-0" role="alert">
+    تم حفظ البيانات
+  </div>
+  {% endif %}
+
+{% endblock %}

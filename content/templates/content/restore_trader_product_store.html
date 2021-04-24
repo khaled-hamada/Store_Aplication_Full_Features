@@ -1,0 +1,405 @@
+{% extends './base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="select-date text-center font-weight-bold p-3 mb-4">
+  <div class="bg-light p-2 rounded">
+    {{trader.name}}
+  </div>
+</div>
+<div>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">التجار</li>
+      <li class="breadcrumb-item">{{trader.name}}</li>
+      <li class="breadcrumb-item">الفواتير</li>
+      <li class="breadcrumb-item">استرجاع فاتورة</li>
+    </ol>
+  </nav>
+</div>
+
+  <div class="form-group row">
+      <label for="products" class="col-sm-2 font-weight-bold col-form-label">اختر الفاتورة</label>
+      <div class="col-sm-10">
+        <div class="input-group mb-3">
+          <select class="form-control" id="search_list"   aria-label="Amount (to the nearest dollar)" >
+
+                <option value="">اختر الفاتورة</option>
+                {%for bill in trader_bills %}
+                  {%if ctb and ctb.id == bill.id %}
+                      <option value="{{bill.id}}"  selected >فاتورة رقم : {{bill.id}} -- بتاريخ : {{bill.date}}</option>
+                    {%else%}
+                      <option value="{{bill.id}}"  >فاتورة رقم : {{bill.id}} -- بتاريخ : {{bill.date}}</option>
+                  {%endif%}
+                {%endfor%}
+
+          </select>
+        </div>
+      </div>
+  </div>
+  
+{%for bill in trader_bills %}
+
+  <div id="sell_product_{{bill.id}}">
+
+    <div class="row font-weight-bold justify-content-around mt-5 print">
+      <p>رقم الفاتورة : <span >{{bill.id}}</span></p>
+      <p>اسم المسؤول : <span class="font-weight-bold text-primary" >{{bill.manager.user.first_name}}</span></p>
+      <p>اسم التاجر : <span class="font-weight-bold text-primary" >{{bill.trader.name}}</span></p>
+      <p>تاريخ الفاتورة: <span >{{bill.date}}</span></p>
+      <p>مديونية التاجر الحالية : <span  class="text-danger">{{bill.trader.remaining_money}}</span></p>
+
+
+    </div>
+    <!-- <input type="number" name="bill_id"  form="form_sell_{{bill.id}}" value="{{bill.id}}"  style="display:None;">
+    <input type="number" name="customer_id"  form="form_sell_{{bill.id}}" value="{{bill.customer.id}}"  style="display:None;"> -->
+    <table class="table">
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">الصنف</th>
+
+            <th scope="col">الكمية بالكرتونة</th>
+            <th scope="col">الكمية بالوحدة</th>
+            <th scope="col" class="text-danger">المرتجع بالوحدة</th>
+            <th scope="col">سعر شراء الكرتونة</th>
+            <th scope="col" class="text-danger">الخصم للكرتونة</th>
+            <th scope="col">عدد القطع ف ك</th>
+            <th scope="col">سعر شراء القطعة</th>
+
+            <th scope="col">المبلغ الكلى بعد المسترجع</th>
+            <th scope="col">تاريخ الانتاج</th>
+            <th scope="col" class="text-danger">تاريخ الانتهاء</th>
+            <th scope="col" class="no-print">صورة المنتج</th>
+
+            <th scope="col">اكتب الكمية المسترجعة</th>
+
+            <th scope="col" class="text-danger"> استرجاع ؟</th>
+
+          </tr>
+        </thead>
+        <tbody>
+          {%for p in bill.all_lines%}
+            {%if p.line_type == 1  or p.restored_quantity == p.total_quantity_fixed%}
+              <tr class="text-danger  ">
+            {%else%}
+              <tr>
+            {%endif%}
+            <th scope="row">{{forloop.counter}}</th>
+            <td>{{p.product.name}}</td>
+
+            <td>{{p.qp_original}}</td>
+            <td>{{p.qi_original}}</td>
+            <td class="text-danger">{{p.restored_quantity}}</td>
+            <td> {{p.packet_price}}</td>
+            <td class="text-danger">{{p.discount_per_packet}}</td>
+              <td>{{p.quantity_per_packet}}</td>
+            <td>{{p.unit_buy_price_ad}}</td>
+
+            <!-- <td>{{p.total_quantity_in_store|add:p.moved_to_point_quantity}}</td> -->
+            <td>{{p.total_cost}}</td>
+            <td>{{p.production_date|date:'d-m-Y'}}</td>
+            <td class="text-danger">{{p.expiration_date|date:'d-m-Y'}}</td>
+
+            {%if p.trader_bill.bill_file%}
+              <td class="no-print"> <a href="{{p.trader_bill.bill_file.url}}" target="_blank"> اضغط لرؤية الفاتورة</a> </td>
+            {%endif%}
+
+              {%if p.total_quantity_in_store > 0 %}
+                <form class="" action="{%url 'content:restore_trader_bill_line' p.id %}" id="{{p.id}}" method="post">
+                  <div class="" style="display:None;">
+                        {%csrf_token%}
+                  </div>
+                  <td> <input type="number" min="1" max="{{p.total_quantity_in_store}}" name="amount" form="{{p.id}}"  placeholder=""  required class="form-group  " style="width:100px" >  </td>
+                  <td >  <button type="submit" class="btn btn-sm btn-info text-danger font-weight-bold  ">استرجاع </button> </td>
+                  </form>
+              {%endif%}
+
+
+
+            </tr>
+            {%endfor%}
+
+
+        </tbody>
+
+
+    </table>
+
+        <div class="container">
+        <div class='row text-center'>
+
+        <table class="table">
+          <thead class="thead-dark">
+            <tr>
+              <th scope="col">تكلفة الفاتورة</th>
+              <th scope="col">تكلفة المسترجع </th>
+              <th scope="col">الخصم الاساسى</th>
+              <th scope="col">الخصم الاضافى</th>
+              <th scope="col">الخصم الكلى</th>
+              <th scope="col">المطلوب</th>
+              <th scope="col">ثمن المسترجع </th>
+              <th scope="col">ما تم دفعه </th>
+              <th scope="col">المتبقى</th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            <tr>
+              <th scope="col">{{bill.total_bill_cost}}</th>
+              <th scope="col" class="text-danger">{{bill.restored_amount_cost}}</th>
+              <th scope="col">{{bill.main_discount}}</th>
+              <th scope="col">{{bill.discount}}</th>
+              <th scope="col">{{bill.total_discount}}</th>
+              <th scope="col">{{bill.required_amount}}</th>
+              <th scope="col"  class="text-danger">{{bill.restored_amount_cost_ad}}</th>
+              <th scope="col">{{bill.given_amount}}</th>
+              <th scope="col">{{bill.remaining_amount}}</th>
+            </tr>
+          </tbody>
+        </table>
+
+
+          </div>
+        </div>
+
+
+
+
+  </div>
+
+  {%endfor%}
+
+  {%if crb %}
+    <!-- start seperator -->
+    <div style="border-top: 7px solid #1abc9c;" class="my-5"></div>
+    <!-- end seperator -->
+      <h2 class="text-right"> الفاتورة الحالية</h2>
+        <div class="row font-weight-bold justify-content-around mt-5">
+          <p>رقم الفاتورة : <span >{{crb.id}}</span></p>
+          <p>اسم المسؤول : <span class="font-weight-bold text-primary" >{{crb.manager.user.first_name}}</span></p>
+          <p>اسم التاجر : <span class="font-weight-bold text-primary" >{{crb.trader.name}}</span></p>
+          <p>تاريخ الفاتورة: <span >{{crb.date}}</span></p>
+          <p>مديونية التاجر الحالية : <span  class="text-danger">{{crb.trader.remaining_money}}</span></p>
+
+          <p>نوع الفاتورة : <span  class="text-danger">مرتجع</span></p>
+
+
+        </div>
+        <input type="number" name="bill_id"  form="form_sell_{{current_bill.id}}" value="{{current_bill.id}}"  style="display:None;">
+        <input type="number" name="customer_id"  form="form_sell_{{current_bill.id}}" value="{{current_bill.customer.id}}"  style="display:None;">
+        <table class="table">
+            <thead class="thead-dark">
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">الصنف</th>
+                <th scope="col">كمية كرتونة</th>
+                <th scope="col">كمية قطعة</th>
+                <th scope="col">سعر شراء الكرتونة</th>
+                <th scope="col">الخصم للكرتونة</th>
+                <th scope="col">الخصم الكلى</th>
+
+                <th scope="col">الاجمالي</th>
+                <th scope="col">المطلوب</th>
+                <th scope="col" class="text-danger"> نسبة الخصم</th>
+
+
+                <th scope="col" class="text-primary"> تعديل</th>
+                <th scope="col" class="text-danger"> حذف</th>
+
+              </tr>
+            </thead>
+            <tbody>
+
+            {% for line in crb.all_lines %}
+              {%if line.given_status == 0%}
+                <tr>
+                  <th scope="row">{{forloop.counter}}</th>
+
+                  <td>{{line.come_from.product.name}}</td>
+                  <td>{{line.quantity_packet}}</td>
+                  <td>{{line.quantity}}</td>
+                  <td>{{line.packet_price}}</td>
+                  <td>{{line.discount_per_packet}}</td>
+                  <td>{{line.total_discount}}</td>
+                  <td>{{line.total_cost}}</td>
+                  <td>{{line.required_amount}}</td>
+
+                  <th class="text-danger">{% widthratio line.total_discount  line.total_cost  100 %}%</th>
+
+                  <td >
+                    <!-- Button trigger modal -->
+                      <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#exampleModal{{line.id}}">
+                        تعديل
+                      </button>
+
+                          <!-- Modal -->
+                          <div class="modal fade" id="exampleModal{{line.id}}" tabindex="{{line.id}}" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-lg" role="document">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h5 class="modal-title" id="exampleModalLabel"> تعديل بيانات {{line.product.name}}</h5>
+                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                  </button>
+                                </div>
+                                <div class="modal-body">
+
+                                  <form method="post" action="{%url 'content:edit_restored_trader_bill_line' line.id %}"  enctype="multipart/form-data" id="edit_form{{line.id}}" >
+                                    {% csrf_token %}
+
+
+
+
+                                    <div class="form-group row">
+
+                                            <label for="products" class="col-sm-5 font-weight-bold col-form-label">الكمية بالكرتونة</label>
+
+                                        <div class="col-sm-5">
+                                          <div class="input-group mb-3">
+                                            <input type="number" min="0"   name="quantity_packet" value="{{line.quantity_packet}}" class="form-control"  form="edit_form{{line.id}}" required>
+                                          </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+
+                                          <label for="products" class="col-sm-5 font-weight-bold col-form-label">الكمية بالقطعة</label>
+
+                                      <div class="col-sm-5">
+                                        <div class="input-group mb-3">
+                                          <input type="number" min="0"  name="quantity" value="{{line.quantity}}" class="form-control" form="edit_form{{line.id}}" required>
+                                        </div>
+                                      </div>
+                                    </div>
+
+
+
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                  <button type="button" class="btn btn-secondary" data-dismiss="modal">إغلاق</button>
+                                  <button type="submit" form="edit_form{{line.id}}" class="btn btn-primary">حفظ التعديلات</button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <!-- Modal end  -->
+                   </td>
+                  <td > <a class="text-danger" href="{%url 'content:delete_restored_trader_bill_line' line.id %}"> حذف</a> </td>
+
+
+                </tr>
+              {%endif%}
+
+
+            {%endfor%}
+            </tbody>
+
+
+        </table>
+
+        <hr class="my-5">
+        <div class="container mt-5">
+          <div class='row text-center'>
+
+          <table class="table">
+            <thead class="thead-dark">
+              <tr>
+                <th scope="col">تكلفة الفاتورة</th>
+                <th scope="col">الخصم</th>
+                <th scope="col">المطلوب</th>
+                <th class="text-danger"> نسبة الخصم</th>
+              </tr>
+            </thead>
+
+            <tbody>
+
+              <tr>
+                <th scope="col">{{crb.total_bill_cost}}</th>
+                <th scope="col">{{crb.total_discount}}</th>
+                <th scope="col">{{crb.required_amount}}</th>
+                <th class="text-danger">{% widthratio crb.total_discount  crb.total_bill_cost_ar  100 %}%</th>
+
+              </tr>
+            </tbody>
+        </table>
+          <!-- start seperator -->
+          <div style="border-top: 7px solid #1abc9c;" class="my-5"></div>
+          <!-- end seperator -->
+                <div class="col-2 bg-dark text-light font-weight-bolder p-3">المطلوب من التاجر</div>
+                <div class="col-1 font-weight-bolder  p-3">{{crb.required_amount}}</div>
+
+                <div class="col-2 bg-dark text-light font-weight-bolder p-3">المبلغ المسترجع</div>
+                <input type="number" name="given_money_amount" form="bill_confirm" step=".01" min ="0" max="{{bill.required_amount}}" step=".01" class="col-2 p-3 mx-2" placeholder="اكتب المبلغ المدفوع " required >
+                <div class="col-2 bg-dark text-light font-weight-bolder p-3">الخصم ؟</div>
+                <input type="number" name="discount" form="bill_confirm"   min ="0" step=".01" max="{{bill.required_amount}}" step=".01" class="col-2 p-3 mx-2" placeholder="اكتب الخصم الاضافى؟" required >
+
+
+
+
+            </div>
+            <div class="form-group row border border-2 border-rounded mt-2">
+
+                <label for="inputPassword"   class="col-sm-2 font-weight-bold col-form-label text-primary">صورة الفاتورة</label>
+                <div class="col-sm-4">
+                  <div class="input-group mb-3">
+                  <input type="file" name="bill_file" value="" form="bill_confirm"  >
+                  </div>
+                </div>
+
+            </div>
+            <div class="form-group row">
+                <label for="inputPassword"   class="col-sm-2 font-weight-bold col-form-label">أضافة ملاحظات</label>
+                <div class="col-sm-10">
+                  <div class="input-group mb-3">
+                    <textarea class="form-control"   name="notes" form="bill_confirm" aria-label="With textarea" ></textarea>
+                  </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-around mt-4">
+              <button type="submit" form="bill_confirm" class="btn btn-danger font-weight-bold px-5 ">تأكيد إسترجاع الفاتورة</button>
+            </div>
+          </div>
+
+
+
+
+
+          <form class="" action="{%url 'content:confirm_restore_trader_bill' crb.id  %}" method="post" enctype="multipart/form-data" id="bill_confirm" >
+
+            {%csrf_token%}
+          </form>
+
+
+
+
+
+
+
+
+    {%endif%}
+
+
+      <div class="row  font-weight-bold p-3 mb-4 justify-content-center">
+      <a href="{%url 'content:trader_page' trader.id %}">
+          <button class="btn y btn-hover font-weight-bold px-5 mx-2">رجوع</button>
+      </a>
+      </div>
+
+
+    {% if failed == 1 %}
+    <div class="alert alert-danger text-center mt-3 mb-0" role="alert">
+      خطأ لم يتم تحديث البيانات . تأكد من اسم المنتج و الكمية الصحيحة
+    </div>
+    {%elif success %}
+    <div class="alert alert-success text-center mt-3 mb-0" role="alert">
+      تم حفظ البيانات
+    </div>
+    {% endif %}
+
+
+{%endblock%}

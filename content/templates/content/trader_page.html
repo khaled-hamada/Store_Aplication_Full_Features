@@ -1,0 +1,315 @@
+{% extends './base.html' %}
+
+{% block content %}
+
+<div>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">التجار</li>
+      <li class="breadcrumb-item">المورد</li>
+    </ol>
+  </nav>
+</div>
+
+<h2 style="padding-top: 10px;" class="text-right">بيانـات التاجــر</h2>
+
+<div class="trade-info text-right" >
+    <div class="info">
+        - <span>اســم التاجــر: </span> <span>{{trader_pdata.name}}</span>
+    </div>
+    <div class="info">
+        - <span> العنوان:</span> <span>{{trader_pdata.address}}</span>
+    </div>
+    <div class="info">
+       - <span> رقم الهاتف:</span> <span>{{trader_pdata.phone_number}}</span>
+    </div>
+    <div class="info">
+       - <span> تاريخ بداية التعامل مع المنطقــة:</span> <span>{{trader_pdata.date.date}}</span>
+    </div>
+    <div class="info font-weight-bold text-danger">
+       - <span> مديونية التاجــر : </span> <span>{{trader_pdata.remaining_money}}</span>
+    </div>
+
+    <div class="info">
+      -  <span> أسماء البضائع الموردة:</span>
+       <span>
+         {%for tp in trader_products%}
+          <a href="{%url 'content:product_page' tp.id%}">{{tp.name}}-</a>
+         {%endfor%}
+       </span>
+    </div>
+</div>
+  {%if user.groups.first.name == "managers"%}
+<div class="row  font-weight-bold p-3 mb-4 justify-content-center">
+  <div class="mx-2 ">
+      <a href="{%url 'content:give_payment' trader_pdata.id%}">
+          <button class="btn btn-hover font-weight-bold px-5">دفــع فاتـــورة</button>
+      </a>
+      </div>
+
+        <div class="mx-2 ">
+            <a class="btn btn-hover font-weight-bold px-5" href="{%url 'content:update_product' trader_pdata.id%}">اضافة فاتورة</a>
+        </div>
+
+        <div class="">
+          <a href="{%url 'content:restore_trader_product_store' trader_pdata.id  %}">
+              <button class="btn y btn-danger font-weight-bold px-5 mx-2">استرجاع فاتورة</button>
+          </a>
+          </div>
+
+
+
+            <div class="">
+              <a href="{%url 'content:add_money_dept' trader_pdata.id  %}">
+                  <button class="btn y btn-warning font-weight-bold px-5 mx-2">اضافة سلفــة نقديـــة</button>
+              </a>
+            </div>
+            <!-- Button trigger modal -->
+              <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+                تعديل بيانات التاجر
+              </button>
+
+
+        <div class="">
+          <a href="{%url 'content:Debts'  %}">
+              <button class="btn y btn-hover font-weight-bold px-5 mx-2">رجوع</button>
+          </a>
+          </div>
+
+  </div>
+  {%endif%}
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel"> تعديل البيانات </h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+
+            <form method="post"  enctype="multipart/form-data" id ="add_form">
+              {% csrf_token %}
+
+
+              <div class="form-group row">
+
+                      <label for="products" class="col-sm-2 font-weight-bold col-form-label">الاسم</label>
+
+                  <div class="col-sm-10">
+                    <div class="input-group mb-3">
+                      <input type="text" name="name" value="{{trader_pdata.name}}" class="form-control" required>
+                    </div>
+                  </div>
+              </div>
+
+              <div class="form-group row">
+
+                    <label for="products" class="col-sm-2 font-weight-bold col-form-label">العنوان</label>
+
+                <div class="col-sm-10">
+                  <div class="input-group mb-3">
+                    <input type="text"  name="address" value="{{trader_pdata.address}}" class="form-control" required>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group row">
+
+                    <label for="products" class="col-sm-2 font-weight-bold col-form-label">ارقام التليفونات</label>
+
+                  <div class="col-sm-10">
+                    <div class="input-group mb-3">
+                        <input type="text" name = "phone_number" value="{{trader_pdata.phone_number}}" class="form-control" required>
+                    </div>
+                  </div>
+              </div>
+
+              </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">إغلاق</button>
+            <button type="submit" form="add_form" class="btn btn-primary">حفظ التعديلات</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal end  -->
+{% endblock %}
+{% block content_2 %}
+<div class=" container bg-light mt-5 shadow-lg rounded px-5 pb-5 mb-5">
+
+
+<h2 style="padding-top: 10px;" class="text-right">فواتيــر التاجــر -- المدفوعة</h2>
+
+<table class="table">
+    <thead >
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">التاريخ</th>
+        <th scope="col">اسم المسلم</th>
+        <th scope="col">المبلغ السابق</th>
+        <th scope="col">المبلغ المدفوع</th>
+        <th scope="col">الخصم</th>
+        <th scope="col">المبل الحالى </th>
+
+        <th scope="col">ملاحظات</th>
+      </tr>
+    </thead>
+    <tbody>
+      {%if trader_pills %}
+        {%for pill in trader_pills%}
+        {%if pill.sender %}
+        <tr>
+          <th scope="row">{{forloop.counter}}</th>
+          <td>{{pill.date}}</td>
+
+          <td><a href="{%url 'content:manager' pill.sender.id%}">{{pill.sender.user.first_name}}</a></td>
+          <td>{{pill.previos_amount|floatformat}}</td>
+          <td>{{pill.amount}}</td>
+          <td>{{pill.discount}}</td>
+          <td>{{pill.current_amount}}</td>
+          <td>{{pill.notes}}</td>
+
+        </tr>
+        {%endif%}
+        {%endfor%}
+    {%endif%}
+    </tbody>
+  </table>
+
+
+  </div>
+{% endblock %}
+{% block content_3 %}
+<div class=" container bg-light mt-5 shadow-lg rounded px-5 pb-5 mb-5">
+<h2 style="padding-top: 10px;" class="text-right">معامــلات التاجــر - بضائع واردة للمخزن</h2>
+
+<table class="table">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+
+        <th scope="col">رقم فاتورة المشتروات</th>
+        <th scope="col">التاريخ</th>
+        <th scope="col">التكلفة الكلية</th>
+        <th scope="col">الخصم الكلى</th>
+        <th scope="col">المبلغ المدفوع</th>
+        <th scope="col">المبلغ المتبقى</th>
+
+        <th scope="col">النسبة المئوية</th>
+
+        <th scope="col"> اسم المسؤول</th>
+        <th scope="col">الحالة</th>
+        <th scope="col">صورة الفانورة</th>
+      </tr>
+    </thead>
+    <tbody>
+      {%if trader_transactions %}
+        {%for transaction in trader_transactions%}
+        {%if transaction.manager %}
+        <tr>
+          <th scope="row">{{forloop.counter}}</th>
+          <td><a href="{%url 'content:trader_bill_details' transaction.id%}" target="_blank">اضغط لروية الفاتورة: {{transaction.id}}</a> </td>
+          <td>{{transaction.date|date:'d-m-Y'}}</td>
+
+          <td>{{transaction.total_bill_cost}}</td>
+          <td>{{transaction.total_discount}}</td>
+          <td>{{transaction.given_amount}}</td>
+          <td>{{transaction.remaining_amount}}</td>
+          <th class="text-danger">{% widthratio transaction.total_discount  transaction.total_bill_cost  100 %}%</th>
+          <!-- <td>{{transaction.manager.user.first_name}}</td> -->
+          <td><a href="{%url 'content:manager' transaction.manager.id%}">{{transaction.manager.user.first_name}}</a></td>
+          {%if transaction.paid_status == 1%}
+              <td class="text-primary">تم الدفــع</td>
+          {%else%}
+              <td class="text-danger">لم يتم الدفع</td>
+          {%endif%}
+          {%if transaction.bill_file %}
+          <td><a target="_blank" href="{{ transaction.bill_file.url }}" class="text-danger"> معاينة الفاتورة
+          </a></td>
+          {%endif%}
+        </tr>
+        {%endif%}
+        {%endfor%}
+      {%endif%}
+    </tbody>
+  </table>
+
+    </div>
+{% endblock %}
+
+
+{% block content_4 %}
+<div class=" container bg-light mt-5 shadow-lg rounded px-5 pb-5 mb-5">
+<h2 style="padding-top: 10px;" class="text-right">فواتير التاجر المسترجعة</h2>
+
+
+<table class="table">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+
+        <th scope="col">رقم فاتورة </th>
+        <th scope="col">التاريخ</th>
+        <th scope="col">التكلفة الكلية</th>
+        <th scope="col">الخصم الكلى</th>
+        <th scope="col">المبلغ المدفوع</th>
+        <th scope="col">المبلغ المتبقى</th>
+
+        <th scope="col">النسبة المئوية</th>
+
+        <th scope="col"> اسم المسؤول</th>
+        <th scope="col">الحالة  </th>
+        <th scope="col">صورة الفانورة</th>
+      </tr>
+    </thead>
+    <tbody>
+      {%if trader_restores %}
+        {%for transaction in trader_restores%}
+        {%if transaction.manager %}
+        <tr>
+          <th scope="row">{{forloop.counter}}</th>
+          <td><a href="{%url 'content:trader_bill_details' transaction.id%}" target="_blank">اضغط لروية الفاتورة: {{transaction.id}}</a> </td>
+          <td>{{transaction.date|date:'d-m-Y'}}</td>
+
+          <td>{{transaction.total_bill_cost}}</td>
+          <td>{{transaction.total_discount}}</td>
+          <td>{{transaction.given_amount}}</td>
+          <td>{{transaction.remaining_amount}}</td>
+          <th class="text-danger">{% widthratio transaction.total_discount  transaction.total_bill_cost  100 %}%</th>
+          <!-- <td>{{transaction.manager.user.first_name}}</td> -->
+          <td><a href="{%url 'content:manager' transaction.manager.id%}">{{transaction.manager.user.first_name}}</a></td>
+          {%if transaction.paid_status == 1%}
+              <td class="text-primary">تم الدفــع</td>
+          {%else%}
+              <td class="text-danger">لم يتم الدفع</td>
+          {%endif%}
+          {%if transaction.bill_file %}
+          <td><a target="_blank" href="{{ transaction.bill_file.url }}" class="text-danger"> معاينة الفاتورة
+          </a></td>
+          {%endif%}
+        </tr>
+        {%endif%}
+        {%endfor%}
+      {%endif%}
+    </tbody>
+  </table>
+
+
+    </div>
+
+    <script>
+      const navLinks = document.querySelectorAll(".nav-item")
+      for (link of navLinks){
+          link.classList.remove('active-link')
+      }
+      navLinks[6].classList.add('active-link');
+
+    </script>
+{% endblock %}

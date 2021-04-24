@@ -1,0 +1,135 @@
+{% extends './base.html' %}
+{% block content %}
+
+
+
+
+  <div>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb no-print">
+        <li class="breadcrumb-item">التجار</li>
+        <li class="breadcrumb-item">{{current_bill.trader.name}}</li>
+        <li class="breadcrumb-item">تفاصيل الفاتورة رقم : {{current_bill.id}}</li>
+      </ol>
+    </nav>
+  </div>
+{%if current_bill %}
+
+
+      <div class="row font-weight-bold justify-content-around mt-5 print">
+        <p>رقم الفاتورة : <span >{{current_bill.id}}</span></p>
+        <p>اسم المسؤول : <span class="font-weight-bold text-primary" >{{current_bill.manager.user.first_name}}</span></p>
+        <p>اسم التاجر : <span class="font-weight-bold text-primary" >{{current_bill.trader.name}}</span></p>
+        <p>تاريخ الفاتورة: <span >{{current_bill.date}}</span></p>
+        <p>مديونية التاجر الحالية : <span  class="text-danger">{{current_bill.trader.remaining_money}}</span></p>
+
+
+      </div>
+      <input type="number" name="bill_id"  form="form_sell_{{current_bill.id}}" value="{{current_bill.id}}"  style="display:None;">
+      <input type="number" name="customer_id"  form="form_sell_{{current_bill.id}}" value="{{current_bill.customer.id}}"  style="display:None;">
+      <table class="table print">
+          <thead class="thead-dark">
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">الصنف</th>
+              <th scope="col">التاريخ</th>
+              <th scope="col">الكمية بالكرتونة</th>
+              <th scope="col">الكمية بالوحدة</th>
+              <th scope="col" class="text-danger">المرتجع بالوحدة</th>
+              <th scope="col">سعر شراء الكرتونة</th>
+              <th scope="col">سعر شراء القطعة</th>
+              <th scope="col">عدد القطع الكلى</th>
+              <th scope="col">المبلغ الكلى بعد المسترجع</th>
+              <th scope="col">تاريخ الانتاج</th>
+              <th scope="col" class="text-danger">تاريخ الانتهاء</th>
+              <th scope="col" class="no-print">صورة المنتج</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in current_bill.all_lines %}
+            {%if p.total_quantity_fixed > 0 %}
+              {%if p.total_quantity_fixed == p.restored_quantity %}
+                <tr class="text-danger">
+              {%else%}
+                <tr>
+              {%endif%}
+              <th scope="row">{{forloop.counter}}</th>
+              <td>{{p.product.name}}</td>
+              <td>{{p.date|date:'d-m-Y'}}</td>
+              <td>{{p.qp_original}}</td>
+              <td>{{p.qi_original}}</td>
+              <td class="text-danger">{{p.restored_quantity}}</td>
+              <td>{{p.packet_price}}</td>
+              <td>{{p.unit_buy_price}}</td>
+              <td>{{p.total_quantity_in_store|add:p.moved_to_point_quantity}}</td>
+              <td>{{p.total_cost}}</td>
+              <td>{{p.production_date|date:'d-m-Y'}}</td>
+              <td class="text-danger">{{p.expiration_date|date:'d-m-Y'}}</td>
+
+              {%if p.trader_bill.bill_file%}
+                <td class="no-print"> <a href="{{p.trader_bill.bill_file.url}}" target="_blank"> اضغط لرؤية الفاتورة</a> </td>
+              {%endif%}
+            </tr>
+            {%endif%}
+            {% endfor %}
+
+          </tbody>
+      </table>
+
+      <hr class="my-5">
+      <div class="container mt-5 print">
+        <div class='row text-center'>
+
+        <table class="table">
+          <thead class="thead-dark">
+            <tr>
+              <th scope="col">تكلفة الفاتورة</th>
+              <th scope="col">الخصم الاساسى</th>
+              <th scope="col">الخصم الاضافى</th>
+              <th scope="col">الخصم الكلى</th>
+              <th scope="col">المطلوب</th>
+              <th class="text-danger"> نسبة الخصم</th>
+              <th class=""> ما تم دفعه</th>
+              <th class="text-danger"> المتبقى</th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            <tr>
+              <th scope="col">{{current_bill.total_bill_cost}}</th>
+              <th scope="col">{{current_bill.main_discount}}</th>
+              <th scope="col">{{current_bill.discount}}</th>
+              <th scope="col">{{current_bill.total_discount}}</th>
+              <th scope="col">{{current_bill.required_amount}}</th>
+              <th class="text-danger">{% widthratio current_bill.total_discount  current_bill.total_bill_cost_ar  100 %}%</th>
+              <th scope="col">{{current_bill.given_amount}}</th>
+              <th scope="col">{{current_bill.remaining_amount}}</th>
+            </tr>
+          </tbody>
+      </table>
+
+
+
+
+
+
+      <div class="row  font-weight-bold p-3 mb-4 justify-content-center no-print">
+
+
+                <button onclick="window.print();" class="btn col-6  btn-primary font-weight-bold px-5 mx-5">طباعــة</button>
+
+        </div>
+
+
+
+
+
+  {%endif%}
+
+
+
+
+
+
+{% endblock %}
