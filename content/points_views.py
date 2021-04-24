@@ -49,17 +49,19 @@ def point_page(request, point_id):
     point = Point.objects.get(id = point_id)
     today_date = timezone.now().date()
 
-    bills = Point_Product_Sellings.objects.filter(Point = point,taken_status = 1 , date__date = today_date , line_type = 0)
+    bills = Customer_Bill.objects.filter(point_product_sellings__Point = point,given_status = 1 , date__date = today_date , bill_type = 0)
     total_bills = 0.0
     if bills != None:
-        total_bills =  round( sum((bill.required_amount)  for bill in bills) , 1)
+        total_bills_cost =  round( sum((bill.required_amount)  for bill in bills) , 1)
+        total_bills_given =  round( sum((bill.given_amount)  for bill in bills) , 1)
+        total_bills_remaining =  round( sum((bill.remaining_amount)  for bill in bills) , 1)
 
 
-    restored_bills = Point_Product_Sellings.objects.filter(Point = point,taken_status = 1 , date__date = today_date , line_type = 1)
-    restored_total_bills = 0.0
-    if restored_bills != None:
-        restored_total_bills_sell =  round( sum((bill.restored_amount_cost_ad)  for bill in bills) , 1)
-        restored_total_bills_buy =  round( sum((bill.restored_amount_cost_buy)  for bill in bills) , 1)
+    # restored_bills = Point_Product_Sellings.objects.filter(Point = point,taken_status = 1 , date__date = today_date , line_type = 1)
+    # restored_total_bills = 0.0
+    # if restored_bills != None:
+    #     restored_total_bills_sell =  round( sum((bill.restored_amount_cost_ad)  for bill in bills) , 1)
+    #     restored_total_bills_buy =  round( sum((bill.restored_amount_cost_buy)  for bill in bills) , 1)
 
     ## withdrawing goods on this day
     today_point_products = Store_To_Point_Product.objects.filter(date__date__gte = from_date,date__date__lte = to_date, point = point, line_type = 0).order_by('-date')
@@ -84,11 +86,13 @@ def point_page(request, point_id):
     context = {
 
         'bills':bills,
-        'restored_bills':restored_bills,
+        # 'restored_bills':restored_bills,
 
-        'total_sellings':total_bills,
-        'restored_total_bills_sell':restored_total_bills_sell,
-        'restored_total_bills_buy':restored_total_bills_buy,
+        'total_bills_selling_cost':total_bills_cost,
+        'total_bills_selling_given':total_bills_given,
+        'total_bills_selling_remain':total_bills_remaining,
+        # 'restored_total_bills_sell':restored_total_bills_sell,
+        # 'restored_total_bills_buy':restored_total_bills_buy,
 
         'point':point,
         'today_point_products':today_point_products,

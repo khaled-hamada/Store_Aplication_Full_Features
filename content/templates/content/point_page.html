@@ -34,55 +34,49 @@
   <p>مبيعات النقطة عن يوم : <span class="today-date"></span></p>
     {%if user.groups.first.name == "managers"%}
   <a href="{%url 'content:add_new_point_sellings' point.id%}">
-    <button class="btn btn-hover font-weight-bold px-2">تسجيل  مبيعات النقطة</button>
+    <button class="btn  btn-sm btn-hover font-weight-bold px-2">تسجيل  مبيعات النقطة</button>
   </a>
 
-    <a href="{%url 'content:add_new_point_payments' point.id%}">
+    <!-- <a href="{%url 'content:add_new_point_payments' point.id%}">
           <button class="btn btn-hover font-weight-bold px-2">تسجيل مدفوعات نقطة</button>
+    </a> -->
+    <a href="{%url 'content:restore_point_product_store' point.id%}">
+      <button class="btn btn-sm btn-danger font-weight-bold px-5">استرجاع بضاعة للمخزن</button>
+    </a>
+    <a href="{%url 'content:point_to_point_product' point.id%}">
+      <button class="btn btn-sm btn-warning font-weight-bold px-5">نقل بضاعة من نقطة لاخرى</button>
     </a>
 
     <div class="">
       <a href="{%url 'content:points'  %}">
-          <button class="btn y btn-hover font-weight-bold px-5 mx-2">رجوع</button>
+          <button class="btn btn-sm btn-hover font-weight-bold px-5 mx-2">رجوع</button>
       </a>
       </div>
 
     {%endif%}
 </div>
-<div class="mt-5">
+<!-- <div class="mt-5"> -->
   {%if user.groups.first.name == "managers"%}
-    <a href="{%url 'content:restore_point_product_store' point.id%}">
-      <button class="btn btn-danger font-weight-bold px-5">استرجاع بضاعة للمخزن</button>
-    </a>
-    <a href="{%url 'content:point_to_point_product' point.id%}">
-      <button class="btn btn-warning font-weight-bold px-5">نقل بضاعة من نقطة لاخرى</button>
-    </a>
+
 
   {%endif%}
-</div>
+<!-- </div> -->
 <table class="table">
     <thead class="thead-dark">
       <tr>
         <th scope="col">#</th>
-        <th scope="col">الصنف</th>
-
-        <th scope="col">ع. كرتونة</th>
-        <th scope="col">ع.قطعة</th>
-        <th scope="col">ع.كلى قطعة</th>
-
-        <th scope="col">سعر البيع</th>
-        <th scope="col">الخصم للقطعة</th>
-        <th scope="col">سعر البيع بعد الخصم</th>
-
-
-        <th scope="col">الاجمالي</th>
-        <th scope="col">الخصم الكلى</th>
+        <th scope="col">رقم الفاتورة / التفاصيل</th>
+        <th>المسؤول</th>
+        <th> العميل</th>
+        <th scope="col">تكلفة الفاتورة</th>
+        <th scope="col">الخصم</th>
+        <th class="text-danger"> نسبة الخصم</th>
         <th scope="col">المطلوب</th>
-        <th scope="col" class="text-danger"> نسبة الخصم</th>
+        <th scope="col">المدفوع</th>
+        <th scope="col">المتبقى</th>
 
-        <th scope="col" class="text-danger">الكمية المسترجعة</th>
-        <th scope="col" class="text-danger">الكمية المباعة</th>
-        <th scope="col">تاريخ الفاتورة</th>
+        <th> التاريخ</th>
+
 
       </tr>
     </thead>
@@ -91,23 +85,20 @@
       <tr>
         <th scope="row">{{forloop.counter}}</th>
 
-        <td>{{bill.product.name}}</td>
-        <td>{{bill.quantity_packet_old}}</td>
-        <td>{{bill.quantity_old}}</td>
-        <td>{{bill.quantity_packet_new}}</td>
-        <td>{{bill.quantity_new}}</td>
-        <td>{{bill.product.unit_sell_price}}</td>
-        <td>{{bill.discount_per_unit}}</td>
+        <td><a href="{%url 'content:customer-bill-details' bill.id%}" target="_blank">{{bill.id}} - اضغط لرؤية التفاصيل</a></td>
+        <td><a href="{%url 'content:manager' bill.manager.id%}" target="_blank">{{bill.manager.user.first_name}}</a></td>
+        <td><a href="{%url 'content:customer-page' bill.customer.id%}" target="_blank" >{{bill.customer.name}}</a></td>
+
+        <td>{{bill.total_bill_cost}}</td>
         <td>{{bill.total_discount}}</td>
-        <td>{{bill.money_quantity_sell}}</td>
-        <td>{{bill.required_amount}}</td>
-        <th class="text-danger">{% widthratio bill.total_discount  bill.money_quantity_sell  100 %}%</th>
+        <th class="text-danger">{% widthratio bill.total_discount  bill.total_bill_cost  100 %}%</th>
+
+        <th scope="col">{{bill.required_amount}}</th>
+        <td>{{bill.given_amount}}</td>
+        <td>{{bill.remaining_amount}}</td>
+        <td>{{bill.date|date:"d-m-Y"}}</td>
 
 
-        <td>{{bill.restored_amount}}</td>
-        <td>{{bill.total_quantity_sold}}</td>
-
-        <td>{{bill.date}}</td>
 
       </tr>
       {% endfor %}
@@ -117,8 +108,16 @@
 <hr class="my-5">
 <div class="container mt-5">
   <div class='row text-center'>
-    <div class="col-4 bg-dark text-light font-weight-bolder p-3">الاجمالي</div>
-    <div class="col-8 font-weight-bolder  p-3">{{total_sellings}}</div>
+    <div class="no-print col-2 bg-dark text-light font-weight-bolder p-3">الاجمالى</div>
+    <div class="no-print col-1 font-weight-bolder  p-3">{{total_bills_selling_cost}}</div>
+
+    <div class="no-print col-2 bg-dark text-light font-weight-bolder p-3">ما تم تحصيله</div>
+    <div class="no-print col-1 font-weight-bolder  p-3">{{total_bills_selling_given}}</div>
+    <div class="no-print col-2 bg-dark text-light font-weight-bolder p-3">المتبقى</div>
+    <div class="no-print col-1 font-weight-bolder  p-3">{{total_bills_selling_remain}}</div>
+
+
+
   </div>
 
 </div>

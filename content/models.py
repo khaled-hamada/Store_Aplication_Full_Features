@@ -675,7 +675,7 @@ class Trader_Bill(models.Model):
 
     @property
     def remaining_amount(self):
-        return round( self.total_cost - self.given_amount - self.discount )
+        return round( self.total_bill_cost - self.given_amount - self.discount )
 
 
 
