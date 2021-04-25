@@ -201,10 +201,14 @@ def restore_customer_bill(request, customer_id):
             customer_bill = Customer_Bill.objects.get(id = int(request.POST['bill_id']) , customer =customer )
         except :
             customer_bill = None
+    ## get current restore bill
+    cust_cur_res_bill = Customer_Bill.objects.filter(given_status = 0, customer = customer,bill_type = 1 ).last()
+
     context = {
 
         'customer':customer ,
         'bill':customer_bill ,
+        'cust_cur_res_bill':cust_cur_res_bill ,
 
     }
 
@@ -218,12 +222,11 @@ def restore_customer_bill_line(request, line_id):
     customer = customer_bill.customer
     success = failed = 0
 
-
     if request.method == "POST":
         amount = int(request.POST['amount'])
-        if amount <= (bill_line.total_quantity - bill_line.restored_amount)  :
+        if amount <= bill_line.total_quantity_sold  :
             restored_bill = create_new_restore_customer_bill(request, customer)
-            restore_line   = create_new_restore_line(amount, bill_line, customer_bill , customer, restored_bill)
+            restore_line   = create_new_restore_line(amount, bill_line, restored_bill)
             success = 1
 
 
@@ -233,13 +236,15 @@ def restore_customer_bill_line(request, line_id):
 
 
 
-
+    ## get current restore bill
+    cust_cur_res_bill = Customer_Bill.objects.filter(given_status = 0, customer = customer,bill_type = 1 ).last()
     context = {
 
         'customer':customer_bill.customer ,
         'bill':customer_bill ,
         'success':success ,
         'failed':failed ,
+        'cust_cur_res_bill':cust_cur_res_bill ,
 
     }
 
@@ -260,76 +265,16 @@ def create_new_restore_customer_bill(request, customer):
 
 
 
-def create_new_restore_line(amount, bill_line, customer_bill, customer, restored_bill):
-    bill_total_money_sell = round(bill_line.unit_sell_price * amount , 1)
-    new_restore = old_restore = 0
-    ### if bill has both old and new product items
-
-    if bill_line.total_quantity_new > 0 and bill_line.total_quantity_old > 0 :
-        ## check to restore old only
-        #########NOtE => Big Note Here !!
-        ## bugs will occur here if i have both new and old product in the same line
-        ### Notes
-        temp_diff = bill_line.total_quantity_old - bill_line.restored_amount
-
-        if  bill_line.total_quantity_old > 0  and temp_diff > 0  :
-            if temp_diff >= amount :
-                old_restore =  amount
-                amount =  0
-
-            elif temp_diff < amount :
-                old_restore =  temp_diff
-                amount -= temp_diff
+def create_new_restore_line(amount, bill_line,  restored_bill):
+    ## 1. subtract amount from bill line
+    bill_line.subtract_from_product(amount , 0)
+    ## 2. create new restored line and map it to the restored bill
+    quo, rem = divmod(amount , bill_line.quantity_per_packet )
+    Point_Product_Sellings.objects.create( date = timezone.now(), quantity = rem , quantity_packet = quo ,
+                                            line_type = 1, come_from = bill_line , bill =restored_bill , Point = bill_line.Point,
+                                            point_product = bill_line.point_product )
 
 
-
-        ### if amount > total_old then amount > 0
-        if amount > 0 :
-            if amount ==  bill_line.total_quantity_new :
-                new_restore =  bill_line.total_quantity_new
-                amount =  0
-
-            elif amount < bill_line.total_quantity_new:
-                new_restore =  amount
-                amount = 0
-
-
-
-    elif bill_line.total_quantity_new > 0 :
-        new_restore = amount
-        amount = 0
-
-
-    elif bill_line.total_quantity_old > 0 :
-        old_restore = amount
-
-
-
-
-
-    bill_total_money_buy = round((old_restore * bill_line.unit_buy_price_old ) + (new_restore * bill_line.unit_buy_price_new ) , 1)
-    res_am = (old_restore + new_restore)
-    bill_line.restored_amount += res_am
-    bill_line.restored_amount_cost += bill_total_money_sell
-    bill_line.restored_amount_cost_ad +=  ( bill_total_money_sell -  (res_am * bill_line.discount_per_unit) )
-    bill_line.restored_amount_cost_buy +=  bill_total_money_buy
-
-    bill_line.save()
-    # create new restore bill line with both new and old bills
-    # Point_Product_Sellings.objects.create(money_quantity_sell = bill_total_money_sell ,date = timezone.now(),quantity_new = new_restore, quantity_old = old_restore ,
-    #                                         product = bill_line.product, Point = bill_line.Point, money_quantity_buy = bill_total_money_buy, total_quantity_new = new_restore , total_quantity_old = old_restore,
-    #                                         unit_sell_price = bill_line.unit_sell_price ,unit_buy_price_new = bill_line.unit_buy_price_new ,unit_buy_price_old =bill_line.unit_buy_price_old ,
-    #                                         discount_per_unit = bill_line.discount_per_unit , bill = customer_bill , line_type = 1)
-
-
-    ## create new restore bill line with both new and old bills
-    Point_Product_Sellings.objects.create(money_quantity_sell = bill_total_money_sell ,date = timezone.now(),quantity_new = new_restore, quantity_old = old_restore ,
-                                            product = bill_line.product, Point = bill_line.Point, money_quantity_buy = bill_total_money_buy, total_quantity_new = new_restore , total_quantity_old = old_restore,
-                                            unit_sell_price = bill_line.unit_sell_price ,unit_buy_price_new = bill_line.unit_buy_price_new ,unit_buy_price_old =bill_line.unit_buy_price_old ,
-                                            discount_per_unit = bill_line.discount_per_unit , bill = restored_bill , line_type = 1, come_from_line_id = bill_line.id)
-
-
-    return 1
 
 
 

@@ -42,6 +42,7 @@
   <p>رقم الفاتورة : <span >{{bill.id}}</span></p>
   <p>اسم العميل : <span class="font-weight-bold text-primary" >{{bill.customer.name}}</span></p>
   <p>تاريخ الفاتورة: <span >{{bill.date|date:"d-m-Y , A h:i "}}</span></p>
+  <p>مديونية العميل : <span class="text-primary"> {{customer.remaining_money}} </span> </p>
 
 
 </div>
@@ -99,20 +100,35 @@
 
           <td>{{pps.Point.name}}</td>
 
-          <td class="text-danger  font-weight-bold">{{pps.restored_amount}}</td>
-          {%if pps.line_type == 0 and  pps.total_quantity > pps.restored_amount %}
+
+          {%if pps.line_type == 0 and  pps.total_quantity_sold > 0 %}
             <form class="" action="{%url 'content:restore-customer-bill-line' pps.id %}" id="{{pps.id}}" method="post">
               <div class="" style="display:None;">
                     {%csrf_token%}
               </div>
-              <td> <input type="number" min="1" max="{{pps.remaining_quantity}}" name="amount" form="{{pps.id}}"  placeholder=""  required class="form-group  " style="width:100px" >  </td>
+              <td> <input type="number" min="1" max="{{pps.total_quantity_sold}}" name="amount" form="{{pps.id}}"  placeholder=""  required class="form-group  " style="width:100px" >  </td>
               <td >  <button type="submit" class="btn btn-sm btn-info text-danger font-weight-bold  ">استرجاع </button> </td>
               </form>
           {%endif%}
 
+          <table class="table mt-0 pt-0 border border-primary">
+            <tr scope="row">
+              <div class="row text-center no-print">
+              <td scope="col-3" >رقم فاتورة المشتروات </td>
+              <td scope="col-3" >  <a href="{% url 'content:trader_bill_details' pps.point_product.trader_product.trader_bill.id %}" target="_blank" >{{pps.point_product.trader_product.trader_bill.id}} :تفاصيل الفاتورة</a></td>
+              <td scope="col-3"> اسم التاجر </td>
+              <td scope="col-3">{{pps.point_product.trader_product.trader.name}}</td>
 
+              </div>
+
+            </tr>
+          </table>
 
         </tr>
+
+
+
+
         {%endfor%}
 
 
@@ -131,7 +147,7 @@
           <th scope="col">تكلفة المسترجع </th>
           <th scope="col">الخصم</th>
           <th scope="col">المطلوب</th>
-          <th scope="col">ثمن المسترجع </th>
+          <!-- <th scope="col">ثمن المسترجع </th> -->
           <th scope="col">ما تم دفعه </th>
           <th scope="col">المتبقى</th>
         </tr>
@@ -140,11 +156,11 @@
       <tbody>
 
         <tr>
-          <th scope="col">{{bill.total_bill_cost}}</th>
-          <th scope="col" class="text-danger">{{bill.restored_amount_cost}}</th>
+          <th scope="col">{{bill.total_bill_cost|add:bill.restored_amount_cost_withoutd}}</th>
+          <th scope="col" class="text-danger">{{bill.restored_amount_cost_withoutd}}</th>
           <th scope="col">{{bill.total_discount}}</th>
           <th scope="col">{{bill.required_amount}}</th>
-          <th scope="col"  class="text-danger">{{bill.restored_amount_cost_ad}}</th>
+          <!-- <th scope="col"  class="text-danger">{{bill.restored_amount_cost_ad}}</th> -->
           <th scope="col">{{bill.given_amount}}</th>
           <th scope="col">{{bill.remaining_amount}}</th>
         </tr>
@@ -156,6 +172,219 @@
     </div>
 
 {%endif%}
+
+{%if cust_cur_res_bill %}
+  <!-- start seperator -->
+  <div style="border-top: 7px solid #1abc9c;" class="my-5"></div>
+  <!-- end seperator -->
+    <h2 class="text-right"> الفاتورة الحالية</h2>
+      <table class="table">
+          <thead class="thead-dark">
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">الصنف</th>
+              <th scope="col">كمية كرتونة</th>
+              <th scope="col">كمية قطعة</th>
+              <th scope="col">الكمية الكلية بالقطعة</th>
+              <th scope="col">سعر بيع القطعة</th>
+
+              <th scope="col">اسم النقطة</th>
+              <th scope="col">رقم فاتورة المشتروات </th>
+              <th scope="col">اسم التاجر</th>
+
+
+              <th scope="col" class="text-primary"> تعديل</th>
+              <th scope="col" class="text-danger"> حذف</th>
+
+            </tr>
+          </thead>
+          <tbody>
+
+          {% for line in cust_cur_res_bill.all_lines %}
+
+              <tr>
+                <th scope="row">{{forloop.counter}}</th>
+
+                <td>{{line.trader_product.product.name}}</td>
+                <td>{{line.quantity_packet}}</td>
+                <td>{{line.quantity}}</td>
+                <td>{{line.total_quantity}}</td>
+                <td>{{line.unit_sell_price}}</td>
+                <td>{{line.point.name}}</td>
+                <td>{{line.trader_product.trader_bill.id}}</td>
+                <td>{{line.trader_product.trader.name}}</td>
+
+
+
+
+                <td >
+                  <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#exampleModal{{line.id}}">
+                      تعديل
+                    </button>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="exampleModal{{line.id}}" tabindex="{{line.id}}" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                          <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel"> تعديل بيانات {{line.trader_product.product.name}} </h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                              </div>
+                              <div class="modal-body">
+
+                                <form method="post" action="{%url 'content:edit_point_bill_line' line.id %}"  enctype="multipart/form-data" id="edit_form{{line.id}}" >
+                                  {% csrf_token %}
+
+
+
+
+                                  <div class="form-group row">
+
+                                          <label for="products" class="col-sm-5 font-weight-bold col-form-label">الكمية بالكرتونة</label>
+
+                                      <div class="col-sm-5">
+                                        <div class="input-group mb-3">
+                                          <input type="number" min="0"  name="quantity_packet" value="{{line.quantity_packet}}" class="form-control"  form="edit_form{{line.id}}" required>
+                                        </div>
+                                      </div>
+                                  </div>
+
+                                  <div class="form-group row">
+
+                                        <label for="products" class="col-sm-5 font-weight-bold col-form-label">الكمية بالقطعة</label>
+
+                                    <div class="col-sm-5">
+                                      <div class="input-group mb-3">
+                                        <input type="number" min="0" name="quantity" value="{{line.quantity}}" class="form-control" form="edit_form{{line.id}}" required>
+                                      </div>
+                                    </div>
+                                  </div>
+
+
+
+                                  <div class="form-group row">
+
+                                        <label for="products" class="col-sm-5 font-weight-bold col-form-label">سعر بيع القطعة</label>
+
+                                      <div class="col-sm-5">
+                                        <div class="input-group mb-3">
+                                            <input type="number" min="0" step=".001" name="unit_sell_price" value="{{line.unit_sell_price}}" class="form-control" form="edit_form{{line.id}}" required>
+                                        </div>
+                                      </div>
+                                  </div>
+
+                                  <div class="form-group row">
+
+                                        <label for="products" class="col-sm-5 font-weight-bold col-form-label">اسم النقطة</label>
+
+                                      <div class="col-sm-5">
+                                        <div class="input-group mb-3">
+                                          <select class="form-control" id="quantity" name= "point_id" aria-label="Amount (to the nearest dollar)" required>
+
+                                            {%for  point in points %}
+                                              {%if point == line.point %}
+                                                <option value="{{point.id}}" selected>{{point.name}}</option>
+                                              {%else%}
+                                                <option value="{{point.id}}">{{point.name}}</option>
+                                              {%endif%}
+                                            {% endfor %}
+                                          </select>
+                                        </div>
+                                      </div>
+                                  </div>
+
+
+
+
+
+
+
+
+
+
+                                  </form>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">إغلاق</button>
+                                <button type="submit" form="edit_form{{line.id}}" class="btn btn-primary">حفظ التعديلات</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Modal end  -->
+                 </td>
+                <td > <a class="text-danger" href="{%url 'content:delete_point_bill_line' line.id %}"> حذف</a> </td>
+
+
+              </tr>
+
+
+
+          {%endfor%}
+          </tbody>
+
+
+      </table>
+
+      <hr class="my-5">
+      <div class="container mt-5">
+        <div class='row text-center'>
+
+        <table class="table">
+          <thead class="thead-dark">
+            <tr>
+              <th scope="col">تكلفة الفاتورة شراء</th>
+              <th scope="col">تكلفة الفاتورة بيع</th>
+
+            </tr>
+          </thead>
+
+          <tbody>
+
+            <tr>
+              <th scope="col">{{total_buy}}</th>
+              <th scope="col">{{total_sell}}</th>
+
+            </tr>
+          </tbody>
+      </table>
+        <!-- start seperator -->
+        <div style="border-top: 7px solid #1abc9c;" class="my-5"></div>
+        <!-- end seperator -->
+
+
+
+          </div>
+
+
+          <div class="d-flex justify-content-around mt-4">
+            <button type="submit" form="bill_confirm" class="btn btn-hover font-weight-bold px-5 ">تأكيد الفاتورة</button>
+          </div>
+        </div>
+
+
+
+
+        <!-- no need for the id its a dummy number  -->
+        <form class="" action="{%url 'content:confirm_add_point_bill' 1000  %}" method="post" enctype="multipart/form-data" id="bill_confirm" >
+
+          {%csrf_token%}
+        </form>
+
+
+
+
+
+
+
+
+  {%endif%}
+
+
 
 
 

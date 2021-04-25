@@ -206,7 +206,8 @@ class Point_Product_Sellings(models.Model):
 
     quantity = models.IntegerField(default = 0)
     quantity_packet = models.IntegerField(default = 0)
-    unit_sell_price = models.IntegerField(default = 0)
+
+    unit_sell_price = models.FloatField(default = 0)
     discount_per_unit = models.FloatField(default = 0)
     date = models.DateTimeField(default=now)
 
@@ -228,7 +229,7 @@ class Point_Product_Sellings(models.Model):
         # ttp = Total_Point_Product.objects.get(Point = self.Point , product = self.product)
         return self.point_product.trader_product.product.name +  "  --  trader name :-> " + self.Point.name
 
-
+    ## same for both sold and restored
     @property
     def total_quantity_sold(self):
         return   int( self.quantity  + (self.point_product.quantity_per_packet * self.quantity_packet ))
@@ -239,16 +240,23 @@ class Point_Product_Sellings(models.Model):
 
     @property
     def line_discount(self):
-        return round(self.total_quantity_sold * self.discount_per_unit , 1)
+        if self.line_type == 0:
+            return round(self.total_quantity_sold * self.discount_per_unit , 1)
+        else :
+            return round(self.total_quantity_sold * self.come_from.discount_per_unit , 1)
+
 
     @property
     def line_cost_buy(self):
         return round(self.unit_buy_price * self.total_quantity_sold, 1)
 
+
     @property
     def line_cost_sell(self):
-        return round(self.unit_sell_price * self.total_quantity_sold, 1)
-
+        if self.line_type == 0:
+            return round(self.unit_sell_price * self.total_quantity_sold, 1)
+        else :
+            return round(self.come_from.unit_sell_price * self.total_quantity_sold, 1)
 
     @property
     def line_cost_sell_ad(self):
@@ -259,6 +267,7 @@ class Point_Product_Sellings(models.Model):
 
     ### in case of restored product amount
     ## need that in many conditions
+    ## need in accumulation for restored bills
     @property
     def restored_quantity(self):
             bills = Point_Product_Sellings.objects.filter(come_from =self.id, line_type = 1 )
@@ -266,14 +275,59 @@ class Point_Product_Sellings(models.Model):
 
     @property
     def restored_quantity_cost(self):
-
             return round(self.restored_quantity * (self.unit_sell_price_ad) , 1)
+
+    @property
+    def restored_quantity_cost_withoutd(self):
+
+            return round(self.restored_quantity * (self.unit_sell_price) , 1)
 
 
 
     @property
     def unit_sell_price_ad(self):
         return self.unit_sell_price - self.discount_per_unit
+
+
+    @property
+    def quantity_per_packet(self):
+        return self.point_product.quantity_per_packet
+
+
+    def normailze_product(self):
+        ## normalize product
+        if self.quantity_per_packet :
+            quo , rem = divmod(self.quantity , self.quantity_per_packet)
+            self.quantity = rem
+            self.quantity_packet += quo
+        self.save()
+
+
+    def subtract_from_product(self, nq, nqp):
+
+        quo, rem = divmod(nq, self.quantity_per_packet)
+        nq = rem
+        nqp += quo
+
+        if nq > self.quantity:
+            self.quantity += self.quantity_per_packet
+            self.quantity_packet -= 1
+
+        ##subtract from product
+        self.quantity -= nq
+        self.quantity_packet -= nqp
+        self.save()
+        self.normailze_product()
+
+    def add_to_product(self, nq, nqp):
+
+
+        self.quantity += nq
+        self.quantity_packet += nqp
+
+        self.save()
+        self.normailze_product()
+
 
 
 
@@ -751,13 +805,18 @@ class Customer(models.Model):
 
     @property
     def remaining_money(self):
-        return  round(sum(b.remaining_amount for b in self.customer_unpaid_bill), 2)
+        bought_bills =  round(sum(b.remaining_amount for b in self.customer_unpaid_bill), 2)
+        restored_bills =  round(sum(b.remaining_amount for b in self.customer_unpaid_bill_restored), 2)
+        return  round(bought_bills - restored_bills , 2)
 
 
 
     @property
     def customer_unpaid_bill(self):
-        return Customer_Bill.objects.filter(customer = self.id , paid_status = 0, given_status = 1)
+        return Customer_Bill.objects.filter(customer = self.id , paid_status = 0, given_status = 1, bill_type = 0)
+    @property
+    def customer_unpaid_bill_restored(self):
+        return Customer_Bill.objects.filter(customer = self.id , paid_status = 0,bill_type = 1 )
 
 
 
@@ -822,8 +881,14 @@ class Customer_Bill(models.Model):
         total = round( sum(b.restored_quantity_cost for b in bill_lines ), 2)
         return  total
 
+    @property
+    def restored_amount_cost_withoutd(self):
+        bill_lines = self.all_lines
+        total = round( sum(b.restored_quantity_cost_withoutd for b in bill_lines ), 2)
+        return  total
 
-    
+
+
 
 
     @property
