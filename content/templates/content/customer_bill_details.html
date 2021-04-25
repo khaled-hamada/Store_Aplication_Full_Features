@@ -43,21 +43,18 @@
             <th scope="col">ك كرتونة</th>
             <th scope="col">ك قطعة</th>
             <th scope="col">عدد الكلى بالقطع</th>
-
+            <th scope="col">الكمية المسترجعة</th>
+            <th scope="col" class="text-danger">الكمية المباعة</th>
 
             <th scope="col">سعر البيع</th>
 
-            <th scope="col" class="text-danger">الكمية المباعة</th>
-            <th scope="col">الخصم للقطعة</th>
-            <th scope="col">الخصم الكلى</th>
-
-
 
             <th scope="col">الاجمالي</th>
+            <th scope="col">الخصم الكلى</th>
             <th scope="col">المطلوب</th>
-              <th scope="col" class="text-danger"> نسبة الخصم</th>
+            <th scope="col" class="text-danger"> نسبة الخصم</th>
             <th scope="col">اسم النقطة</th>
-            <th scope="col">الكمية المسترجعة</th>
+
 
           </tr>
         </thead>
@@ -66,32 +63,23 @@
             <tr>
               <th scope="row">{{forloop.counter}}</th>
 
-              <td>{{pps.product.name}}</td>
+              <td>{{pps.point_product.trader_product.product.name}}</td>
+              <td>{{pps.quantity_packet}}</td>
+              <td>{{pps.quantity}}</td>
+              <td>{{pps.total_quantity_sold|add:pps.restored_quantity}}</td>
+              <td>{{pps.restored_quantity}}</td>
+              <td>{{pps.total_quantity_sold}}</td>
 
-              <td>{{pps.quantity_packet_old|add:pps.quantity_packet_new}}</td>
-              <td>{{pps.quantity_old|add:pps.quantity_new}}</td>
-              <td>{{pps.total_quantity}}</td>
-
-              <td>{{pps.product.unit_sell_price}}</td>
-              {%if bill.bill_type == 0%}
-                <td class="text-danger">{{pps.total_quantity_sold}}</td>
-              {%elif  bill.bill_type == 1 %}
-                  <td class="text-danger">0</td>
-              {% endif %}
-              <td>{{pps.discount_per_unit}}</td>
-              <td>{{pps.total_discount_after_restore}}</td>
+              <td>{{pps.unit_sell_price}}</td>
+              <td>{{pps.line_cost_sell}}</td>
+              <td>{{pps.line_discount}}</td>
+              <td>{{pps.line_cost_sell_ad}}</td>
 
 
-              <td>{{pps.line_net_cost}}</td>
-              <td>{{pps.required_amount}}</td>
-              <th class="text-danger">{% widthratio pps.total_discount  pps.money_quantity_sell  100 %}%</th>
+              <th class="text-danger">{% widthratio pps.line_discount  pps.line_cost_sell  100 %}%</th>
 
               <td>{{pps.Point.name}}</td>
-              {%if bill.bill_type == 0%}
-                  <td class="text-danger  font-weight-bold">{{pps.restored_amount}}</td>
-              {%elif  bill.bill_type == 1 %}
-                  <td class="text-danger  font-weight-bold">{{pps.total_quantity_sold}}</td>
-              {% endif %}
+
             </tr>
             {%endfor%}
 
@@ -138,14 +126,14 @@
 
 
             {%if bill.bill_type == 0%}
-                <th scope="col" class="text-danger">{{bill.restored_amount_cost}}</th>
+                <th scope="col" class="text-danger">{{bill.restored_amount_cost_ad}}</th>
             {%elif  bill.bill_type == 1 %}
                   <th scope="col" >{{bill.total_bill_cost}}</th>
             {% endif %}
 
 
             {%if bill.bill_type == 0%}
-                <th scope="col" class="text-primary">{{bill.total_bill_cost_ar}}</th>
+                <th scope="col" class="text-primary">{{bill.total_bill_cost}}</th>
             {%elif  bill.bill_type == 1 %}
                   <th scope="col" >0</th>
             {% endif %}

@@ -18,7 +18,7 @@
   </nav>
 </div>
 
-<form class=""  method="post" action="{%url 'content:restore-customer-bill' customer.id %}"">
+<form class=""  method="post" action="{%url 'content:restore-customer-bill' customer.id %}">
 
   {%csrf_token%}
   <div class="form-group row">
@@ -41,7 +41,7 @@
 <div class="row font-weight-bold justify-content-around mt-5">
   <p>رقم الفاتورة : <span >{{bill.id}}</span></p>
   <p>اسم العميل : <span class="font-weight-bold text-primary" >{{bill.customer.name}}</span></p>
-  <p>تاريخ الفاتورة: <span >{{bill.date}}</span></p>
+  <p>تاريخ الفاتورة: <span >{{bill.date|date:"d-m-Y , A h:i "}}</span></p>
 
 
 </div>
@@ -52,18 +52,20 @@
       <tr>
         <th scope="col">#</th>
         <th scope="col">الصنف</th>
-        <th scope="col">ك.ق</th>
-        <th scope="col">ق.ق</th>
-        <th scope="col">ك.ج</th>
-        <th scope="col">ق.ج</th>
+        <th scope="col">ك كرتونة</th>
+        <th scope="col">ك قطعة</th>
+        <th scope="col">عدد الكلى بالقطع</th>
+        <th scope="col">الكمية المسترجعة</th>
+        <th scope="col" class="text-danger">الكمية المباعة</th>
+
         <th scope="col">سعر البيع</th>
-        <th scope="col">الخصم للقطعة</th>
-        <th scope="col">الخصم الكلى</th>
+
 
         <th scope="col">الاجمالي</th>
+        <th scope="col">الخصم الكلى</th>
         <th scope="col">المطلوب</th>
+        <th scope="col" class="text-danger"> نسبة الخصم</th>
         <th scope="col">اسم النقطة</th>
-        <th scope="col">الكمية المسترجعة</th>
 
         <th scope="col">اكتب الكمية المسترجعة</th>
 

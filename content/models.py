@@ -226,7 +226,7 @@ class Point_Product_Sellings(models.Model):
 
     def __str__(self):
         # ttp = Total_Point_Product.objects.get(Point = self.Point , product = self.product)
-        return self.product.name +  "  --  trader name :-> " + self.Point.name
+        return self.point_product.trader_product.product.name +  "  --  trader name :-> " + self.Point.name
 
 
     @property
@@ -757,7 +757,7 @@ class Customer(models.Model):
 
     @property
     def customer_unpaid_bill(self):
-        return Customer_Bill.objects.filter(customer = self.id , paid_status = 0, bill_type = 0)
+        return Customer_Bill.objects.filter(customer = self.id , paid_status = 0, given_status = 1)
 
 
 
@@ -797,7 +797,7 @@ class Customer_Bill(models.Model):
 
     @property
     def remaining_amount(self):
-        return self.required_amount -  self.given_amount - self.discount
+        return self.required_amount -  self.given_amount
 
     @property
     def total_discount(self):
@@ -813,7 +813,7 @@ class Customer_Bill(models.Model):
     ## bill cost without with all discounts
     @property
     def required_amount(self):
-        return self.total_bill_cost_ar
+        return self.total_bill_cost_ar - self.discount
 
 
     @property
@@ -823,11 +823,7 @@ class Customer_Bill(models.Model):
         return  total
 
 
-    # @property
-    # def restored_amount_cost(self):
-    #     bill_lines = self.all_lines
-    #     total = round( sum(b.restored_amount_cost for b in bill_lines ), 2)
-    #     return  total
+    
 
 
     @property

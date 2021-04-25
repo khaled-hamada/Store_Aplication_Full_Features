@@ -59,42 +59,18 @@
   </table>
 
     <hr class="my-5">
-    <!-- <div class="form-group row">
-        <label for="inputPassword"   class="col-sm-2 font-weight-bold col-form-label">صورة الفاتورة</label>
-        <div class="col-sm-10">
-          <div class="input-group mb-3">
-          <input type="file" name="bill_file" value="" form="form_sell" required>
-          </div>
-        </div>
-    </div>
-    <div class="form-group row text-info">
-        <label for="inputPassword"   class="col-sm-2 font-weight-bold col-form-label">اضافة ملاحظات</label>
-        <div class="col-sm-10">
-          <div class="input-group mb-3">
-            <textarea class="form-control text-right" form="form_sell" name="notes" aria-label="With textarea" ></textarea>
-          </div>
-        </div>
-    </div> -->
-    <div class="container mt-5">
+
       <div class='row text-center'>
-        <div class="col-3 bg-dark text-light font-weight-bolder p-3">الاجمالي</div>
-        <div class="col-3 font-weight-bolder  p-3">{{customer.remaining_money}}</div>
+      <div class="no-print col-2 bg-dark text-light font-weight-bolder p-3">المطلوب من العميل</div>
+      <div class="no-print col-1 font-weight-bolder  p-3">{{customer.remaining_money}}</div>
 
-          <div class="col-3 bg-dark text-light font-weight-bolder p-3">المبلغ المدفوع</div>
-          <div class="col-3 font-weight-bolder  p-3">
-            <input type="number" name="total_money" form="form_sell" min ="0" max="{{customer.remaining_money}}" step=".01" class="form-control " placeholder="اكتب المبلغ مرة اخرى للتاكيد" required >
-          </div>
+      <div class="no-print col-2 bg-dark text-light font-weight-bolder p-3">المبلغ المدفوع</div>
+      <input type="number" name="total_money" form="form_sell" step=".01" min ="0" max="{{bill.required_amount}}" step=".01" class=" no-print col-2 p-3 mx-2" placeholder="اكتب المبلغ المدفوع " required >
+      <div class="no-print col-2 bg-dark text-light font-weight-bolder p-3">الخصم الاضافى ؟!</div>
+      <input type="number" name="discount" form="form_sell"   min ="0" step=".01" max="{{bill.required_amount}}" step=".01" class="no-print col-2 p-3 mx-2" placeholder="اكتب الخصم الاضافى؟" required >
+    
+    </div>
 
-        </div>
-
-
-      <div class='row text-center mt-5'>
-          <div class="col-3 bg-dark text-light font-weight-bolder p-3">الخصم ؟</div>
-          <div class="col-3 font-weight-bolder  p-3">
-            <input type="number" name="discount" form="form_sell" min ="0"  max="{{customer.remaining_money}}"  step=".01" class="form-control " placeholder="اكتب قيمة الخصم ان وجد" required >
-          </div>
-      </div>
-      </div>
 
 
 

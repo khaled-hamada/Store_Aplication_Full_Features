@@ -93,30 +93,26 @@ def customer_all_unpaid_bills(request,customer_id):
 @user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
 def customer_payment(request,customer_id):
     customer = Customer.objects.get(id = customer_id)
-    un_paid_bills = Customer_Bill.objects.filter(customer = customer ,paid_status = 0 , given_status = 1)
+    un_paid_bills = customer.customer_unpaid_bill
     failed = success = 0
     if request.method == "POST":
         amount = float(request.POST['total_money'])
         discount = float(request.POST['discount'])
         # customer = Customer.objects.get(id = int(request.POST['customer_id']))
         amount_loop = amount
-
-        if amount <= customer.remaining_money and  discount <= customer.remaining_money and amount >= 0 \
-                        and (amount + discount ) <= customer.remaining_money and len(un_paid_bills) > 0 :
+        manager = Current_manager.objects.get(user = request.user)
+        if (amount + discount) <= customer.remaining_money :
             if discount > 0  :
                 remove_discount_from_bills(un_paid_bills,discount )
 
             ## update bills with the given amount
-            un_paid_bills = Customer_Bill.objects.filter(customer = customer ,paid_status = 0 , given_status = 1)
+            un_paid_bills = customer.customer_unpaid_bill
             if amount > 0  :
                 add_amount_to_bills(un_paid_bills, amount )
                 ## create new customer  payment
-                manager = Current_manager.objects.get(user = request.user)
-                Customer_Payment.objects.create(g_user = customer, t_user=manager, date= timezone.now(), amount = amount
-                                ,discount = discount, previos_amount =customer.remaining_money , current_amount = customer.remaining_money  - ( discount + amount)   )
 
                 ## 2. safe_date
-                notes = " فاتورة نقدية محصلة من " + customer.name
+                notes = " فاتورة نقدية محصلة من العميل :  " + customer.name
                 Safe_data.objects.create(day =  timezone.now(), money_amount = amount, given_person =manager, notes=notes , safe_line_status = 6 )
 
                 m_safe = Safe_Month.objects.last()
@@ -124,16 +120,16 @@ def customer_payment(request,customer_id):
                 m_safe.money +=amount
                 m_safe.save()
 
-            ## update customer given - remaining_money
-            customer.given_money += amount
-            customer.total_money -= discount
-            customer.normalize()
 
+
+            Customer_Payment.objects.create(g_user = customer, t_user=manager, date= timezone.now(), amount = amount
+                            ,discount = discount, previos_amount =customer.remaining_money + discount + amount, current_amount = customer.remaining_money )
 
             success = 1
 
         else :
             failed =1
+    un_paid_bills = customer.customer_unpaid_bill
     context = {
         'customer':customer,
         'un_paid_bills':un_paid_bills,
@@ -175,7 +171,7 @@ def add_amount_to_bills(un_paid_bills, amount ):
             bill.save()
 
             amount = 0
-        if bill.remaining_amount <= .01:
+        if bill.remaining_amount <= .1:
             bill.paid_status = 1
             bill.save()
 
