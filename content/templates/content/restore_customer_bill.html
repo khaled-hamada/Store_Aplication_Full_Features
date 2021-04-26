@@ -48,7 +48,7 @@
 </div>
 <!-- <input type="number" name="bill_id"  form="form_sell_{{bill.id}}" value="{{bill.id}}"  style="display:None;">
 <input type="number" name="customer_id"  form="form_sell_{{bill.id}}" value="{{bill.customer.id}}"  style="display:None;"> -->
-<table class="table">
+<table class="table p-0 m-0">
     <thead class="thead-dark">
       <tr>
         <th scope="col">#</th>
@@ -111,20 +111,22 @@
               </form>
           {%endif%}
 
-          <table class="table mt-0 pt-0 border border-primary">
-            <tr scope="row">
-              <div class="row text-center no-print">
-              <td scope="col-3" >رقم فاتورة المشتروات </td>
-              <td scope="col-3" >  <a href="{% url 'content:trader_bill_details' pps.point_product.trader_product.trader_bill.id %}" target="_blank" >{{pps.point_product.trader_product.trader_bill.id}} :تفاصيل الفاتورة</a></td>
-              <td scope="col-3"> اسم التاجر </td>
-              <td scope="col-3">{{pps.point_product.trader_product.trader.name}}</td>
 
-              </div>
-
-            </tr>
-          </table>
 
         </tr>
+        <!-- <table class="table mt-0 pt-0 border border-primary"> -->
+        <tr scope="row" class=" no-print bill-border  mt-0 pt-0 ">
+            <div class="row text-center no-print">
+            <td scope="col-3" >رقم فاتورة المشتروات </td>
+            <td scope="col-3" >  <a href="{% url 'content:trader_bill_details' pps.point_product.trader_product.trader_bill.id %}" target="_blank" >{{pps.point_product.trader_product.trader_bill.id}} :تفاصيل الفاتورة</a></td>
+            <td scope="col-3"> اسم التاجر </td>
+            <td scope="col-3">{{pps.point_product.trader_product.trader.name}}</td>
+
+            </div>
+
+        </tr>
+        <!-- </table> -->
+
 
 
 
@@ -186,11 +188,10 @@
               <th scope="col">كمية كرتونة</th>
               <th scope="col">كمية قطعة</th>
               <th scope="col">الكمية الكلية بالقطعة</th>
-              <th scope="col">سعر بيع القطعة</th>
+              <th scope="col">سعر القطعة</th>
+              <th scope="col">الاجمالى</th>
 
-              <th scope="col">اسم النقطة</th>
-              <th scope="col">رقم فاتورة المشتروات </th>
-              <th scope="col">اسم التاجر</th>
+
 
 
               <th scope="col" class="text-primary"> تعديل</th>
@@ -205,14 +206,13 @@
               <tr>
                 <th scope="row">{{forloop.counter}}</th>
 
-                <td>{{line.trader_product.product.name}}</td>
+                <td>{{line.point_product.trader_product.product.name}}</td>
                 <td>{{line.quantity_packet}}</td>
                 <td>{{line.quantity}}</td>
-                <td>{{line.total_quantity}}</td>
-                <td>{{line.unit_sell_price}}</td>
-                <td>{{line.point.name}}</td>
-                <td>{{line.trader_product.trader_bill.id}}</td>
-                <td>{{line.trader_product.trader.name}}</td>
+                <td>{{line.total_quantity_sold}}</td>
+                <td>{{line.come_from.unit_sell_price_ad}}</td>
+
+                <td>{{line.line_cost_sell_ad}}</td>
 
 
 
@@ -346,7 +346,7 @@
           <tbody>
 
             <tr>
-              <th scope="col">{{total_buy}}</th>
+              <th scope="col">{{cust_cur_res_bill}}</th>
               <th scope="col">{{total_sell}}</th>
 
             </tr>

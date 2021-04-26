@@ -221,7 +221,7 @@ class Point_Product_Sellings(models.Model):
 
     point_product = models.ForeignKey('Point_Product', on_delete = models.SET_NULL, null = True)
     Point = models.ForeignKey('Point', on_delete = models.SET_NULL, null = True)
-    bill = models.ForeignKey('Customer_Bill', on_delete = models.SET_NULL, null = True)
+    bill = models.ForeignKey('Customer_Bill', on_delete = models.CASCADE, null = True)
     come_from = models.ForeignKey('Point_Product_Sellings', on_delete = models.SET_NULL, null = True, blank = True)
 
 
@@ -813,7 +813,15 @@ class Customer(models.Model):
 
     @property
     def customer_unpaid_bill(self):
-        return Customer_Bill.objects.filter(customer = self.id , paid_status = 0,  bill_type = 0)
+        return Customer_Bill.objects.filter(customer = self.id , paid_status = 0,  bill_type = 0).order_by("-id")
+
+
+    @property
+    def customer_unpaid_bills_ids(self):
+        ids  = []
+        for bill in self.customer_unpaid_bill() :
+            ids.append(bill.id)
+        return ids
 
     @property
     def customer_unpaid_bill_restored(self):

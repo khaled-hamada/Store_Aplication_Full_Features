@@ -396,9 +396,9 @@
               <div class="no-print col-1 font-weight-bolder  p-3">{{current_bill.required_amount}}</div>
 
               <div class="no-print col-2 bg-dark text-light font-weight-bolder p-3">المبلغ المدفوع</div>
-              <input type="number" name="given_money_amount" form="bill_confirm" step=".01" min ="0" max="{{bill.required_amount}}" step=".01" class=" no-print col-2 p-3 mx-2" placeholder="اكتب المبلغ المدفوع " required >
+              <input type="number" name="given_money_amount" form="bill_confirm" step=".01" min ="0" max="{{current_bill.required_amount}}" step=".01" class=" no-print col-2 p-3 mx-2" placeholder="اكتب المبلغ المدفوع " required >
               <div class="no-print col-2 bg-dark text-light font-weight-bolder p-3">الخصم الاضافى ؟!</div>
-              <input type="number" name="discount" form="bill_confirm"   min ="0" step=".01" max="{{bill.required_amount}}" step=".01" class="no-print col-2 p-3 mx-2" placeholder="اكتب الخصم الاضافى؟" required >
+              <input type="number" name="discount" form="bill_confirm"   min ="0" step=".01" max="{{current_bill.required_amount}}" step=".01" class="no-print col-2 p-3 mx-2" placeholder="اكتب الخصم الاضافى؟" required >
               <input type="number" name="customer_id"  form="bill_confirm" value="{{current_bill.customer.id}}"  style="display:None;">
 
 
@@ -414,7 +414,7 @@
           </div>
 
           <!--  1000 here is a dummy variable  -->
-          <form class="" action="{%url 'content:confirm_customer_point_bill'   %}" method="post" enctype="multipart/form-data" id="bill_confirm" >
+          <form class="" action="{%url 'content:confirm_customer_point_bill' current_bill.id  %}" method="post" enctype="multipart/form-data" id="bill_confirm" >
 
             {%csrf_token%}
           </form>

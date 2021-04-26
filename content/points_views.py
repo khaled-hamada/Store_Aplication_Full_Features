@@ -49,7 +49,7 @@ def point_page(request, point_id):
     point = Point.objects.get(id = point_id)
     today_date = timezone.now().date()
 
-    bills = Customer_Bill.objects.filter(point_product_sellings__Point = point,given_status = 1 , date__date = today_date , bill_type = 0)
+    bills = Customer_Bill.objects.filter(point_product_sellings__Point = point,given_status = 1 , date__date = today_date , bill_type = 0).distinct()
     total_bills = 0.0
     if bills != None:
         total_bills_cost =  round( sum((bill.required_amount)  for bill in bills) , 1)
@@ -396,25 +396,30 @@ def edit_customer_point_bill_line(request, line_id):
 
 @login_required
 @user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
-def confirm_customer_point_bill(request):
+def confirm_customer_point_bill(request, bill_id):
     ## 1. if discount > 0 remove it from bills
     print(request.POST)
 
     discount = float(request.POST['discount'])
     given_money_amount = float(request.POST['given_money_amount'])
     customer = Customer.objects.get(id = int(request.POST['customer_id']))
-    current_bill = Customer_Bill.objects.filter(customer =customer , given_status = 0 , bill_type = 0).last()
+    current_bill = Customer_Bill.objects.get(id = bill_id)
     point = current_bill.point
 
 
-    if ( discount +  given_money_amount ) <= customer.remaining_money :
+    if ( discount +  given_money_amount ) <= current_bill.remaining_amount :
         if discount > 0:
-            remove_discount_from_bills_from_point(discount, customer.customer_unpaid_bill)
-
+            # bills =  customer.customer_unpaid_bill
+            # remove_discount_from_bills_from_point(discount, bills)
+            current_bill.discount += discount
         if given_money_amount > 0:
-            print("before going to add amount to bills cust debt =  %f" %(customer.remaining_money))
-            add_amount_to_bills_from_point( given_money_amount, customer.customer_unpaid_bill)
-            print("after going to add amount to bills cust debt =  %f" %(customer.remaining_money))
+            # print("before going to add amount to bills cust debt =  %f" %(customer.remaining_money))
+            # bills =  customer.customer_unpaid_bill
+            # add_amount_to_bills_from_point( given_money_amount, bills )
+            # print("after going to add amount to bills cust debt =  %f" %(customer.remaining_money))
+            current_bill.given_amount += given_money_amount
+
+        current_bill.save()
 
         ## create new customer payment and map it to safe
         add_payment(request, customer,given_money_amount , discount , point)
@@ -427,56 +432,65 @@ def confirm_customer_point_bill(request):
     return redirect('content:add_new_point_sellings',point.id)
 
 
+## both not used , cannot fix the bug within it
 def remove_discount_from_bills_from_point(discount,customer_unpaid_bill):
     print("# of unpaid bills is %d" %(len(customer_unpaid_bill)))
+    processed_bill = None
     for bill in customer_unpaid_bill :
-        print("find bills for discount")
-        if discount >= bill.remaining_amount:
-            discount -=  bill.remaining_amount
-            temp = bill.remaining_amount
+        processed_bill = bill
+        #print("find bills for discount")
+        if discount >= processed_bill.remaining_amount:
+            discount -=  processed_bill.remaining_amount
+            temp = processed_bill.remaining_amount
             # bill.discount += bill.remaining_amount
-            bill.discount = F('discount') +  temp
-            bill.paid_status = 1
-            bill.save(force_update = True)
+            processed_bill.discount = F('discount') +  temp
+            processed_bill.paid_status = 1
+            processed_bill.save(force_update = True)
         ## amount < bill.cost or amount = 0
         ## create new bill with the remaing money and make old given =1
         elif discount > 0:
             ## create new one
             # bill.discount += discount
-            bill.discount = F('discount') +  discount
-            bill.save(force_update = True)
+            processed_bill.discount = F('discount') +  discount
+            processed_bill.save(force_update = True)
+            processed_bill.save(update_fields=['discount'])
             # bill.save(['discount'])
-            discount = 0
+            # discount = 0
             break
 
-    # customer_unpaid_bill.update()
+    processed_bill.save(force_update = True)
 
 
-def add_amount_to_bills_from_point( amount, customer_unpaid_bill):
-    print("# of unpaid bills is %d" %(len(customer_unpaid_bill)))
-    for bill in customer_unpaid_bill :
-        print("find bills for amount")
-        if amount >= bill.remaining_amount:
-            temp =  bill.remaining_amount
-            bill.given_amount = F('given_amount') +  temp
-            bill.paid_status = 1
-            bill.save(force_update = True)
+def add_amount_to_bills_from_point( amount, bills):
+    # print("# of unpaid bills is %d" %(len(customer_unpaid_bill)))
+    processed_bill = None
+    for processed_bill in bills :
+        # processed_bill = Customer_Bill.objects.get(id = id)
+        # print("find bills for amount id= %d" %(id))
+        if amount >= processed_bill.remaining_amount:
+            temp =  processed_bill.remaining_amount
+            processed_bill.given_amount = F('given_amount') +  temp
+            processed_bill.paid_status = 1
+            processed_bill.save(update_fields=['given_amount'])
+            processed_bill.save(force_update = True)
             amount  -= temp
         ## amount < bill.cost or amount = 0
         ## create new bill with the remaing money and make old given =1
         elif amount > 0:
             ## create new one
             # Trader_Product.objects.create(product = bill.product ,manager =bill.manager ,trader = trader, total_cost = amount_loop, total_cost_old = amount_loop, date=date,given_status =1)
-            bill.given_amount = F('given_amount') +  amount
+            processed_bill.given_amount = F('given_amount') +  amount
             # bill.paid_status = 0
-            bill.save(force_update = True)
+            processed_bill.save(update_fields=['given_amount'])
+            processed_bill.save(force_update = True)
+            processed_bill.save(update_fields=['given_amount'])
             # bill.save(['given_amount'])
             # print(bill)
             # print("bill remaining money is %f, given=  %f ,amount = %f"%(bill.remaining_amount , bill.given_amount , amount))
             amount = 0
             break
 
-    # customer_unpaid_bill.update()
+    processed_bill.save(force_update = True)
 
 
 
