@@ -6,7 +6,7 @@ from .models import Point, Point_User, Point_Product, Point_User_Payment, Safe_M
 from .models import Customer, Customer_Bill, Customer_Payment, Store_To_Point_Product
 
 from django.utils import timezone
-from django.db.models import Sum,Q
+from django.db.models import Sum,Q, F
 
 
 @login_required
@@ -433,21 +433,23 @@ def remove_discount_from_bills_from_point(discount,customer_unpaid_bill):
         print("find bills for discount")
         if discount >= bill.remaining_amount:
             discount -=  bill.remaining_amount
-            bill.discount += bill.remaining_amount
+            temp = bill.remaining_amount
+            # bill.discount += bill.remaining_amount
+            bill.discount = F('discount') +  temp
             bill.paid_status = 1
-            bill.save()
+            bill.save(force_update = True)
         ## amount < bill.cost or amount = 0
         ## create new bill with the remaing money and make old given =1
         elif discount > 0:
             ## create new one
-            # Trader_Product.objects.create(product = bill.product ,manager =bill.manager ,trader = trader, total_cost = amount_loop, total_cost_old = amount_loop, date=date,given_status =1)
-            bill.discount += discount
-            bill.save()
+            # bill.discount += discount
+            bill.discount = F('discount') +  discount
+            bill.save(force_update = True)
             # bill.save(['discount'])
             discount = 0
             break
 
-    customer_unpaid_bill.update()
+    # customer_unpaid_bill.update()
 
 
 def add_amount_to_bills_from_point( amount, customer_unpaid_bill):
@@ -456,25 +458,25 @@ def add_amount_to_bills_from_point( amount, customer_unpaid_bill):
         print("find bills for amount")
         if amount >= bill.remaining_amount:
             temp =  bill.remaining_amount
-            bill.given_amount += bill.remaining_amount
+            bill.given_amount = F('given_amount') +  temp
             bill.paid_status = 1
-            bill.save()
+            bill.save(force_update = True)
             amount  -= temp
         ## amount < bill.cost or amount = 0
         ## create new bill with the remaing money and make old given =1
         elif amount > 0:
             ## create new one
             # Trader_Product.objects.create(product = bill.product ,manager =bill.manager ,trader = trader, total_cost = amount_loop, total_cost_old = amount_loop, date=date,given_status =1)
-            bill.given_amount = bill.given_amount +  amount
+            bill.given_amount = F('given_amount') +  amount
             # bill.paid_status = 0
-            bill.save()
+            bill.save(force_update = True)
             # bill.save(['given_amount'])
             # print(bill)
-            print("bill remaining money is %f, given=  %f ,amount = %f"%(bill.remaining_amount , bill.given_amount , amount))
+            # print("bill remaining money is %f, given=  %f ,amount = %f"%(bill.remaining_amount , bill.given_amount , amount))
             amount = 0
             break
 
-    customer_unpaid_bill.update()
+    # customer_unpaid_bill.update()
 
 
 
