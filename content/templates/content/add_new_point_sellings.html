@@ -232,7 +232,7 @@
 
             {% for line in current_bill.all_lines %}
               {%if line.taken_status == 0%}
-                <tr>
+                <tr class="pb-0 mb-0">
                   <th scope="row">{{forloop.counter}}</th>
 
                   <td>{{line.point_product.trader_product.product.name}}</td>
@@ -338,6 +338,18 @@
                    </td>
                   <td class="no-print" > <a class="text-danger" href="{%url 'content:delete_customer_point_bill_line' line.id %}"> حذف</a> </td>
 
+                  <!-- <table class="table mt-0 pt-0 bill-border no-print"> -->
+                    <tr scope="row" class=" no-print bill-border  mt-0 pt-0 ">
+                      <div class="row text-center no-print">
+                      <td scope="col-3" >رقم فاتورة المشتروات </td>
+                      <td scope="col-3" >  <a href="{% url 'content:trader_bill_details' line.point_product.trader_product.trader_bill.id %}" target="_blank" >{{line.point_product.trader_product.trader_bill.id}} :تفاصيل الفاتورة</a></td>
+                      <td scope="col-3"> اسم التاجر </td>
+                      <td scope="col-3">{{line.point_product.trader_product.trader.name}}</td>
+
+                      </div>
+
+                    </tr>
+                  <!-- </table> -->
 
                 </tr>
               {%endif%}
@@ -401,8 +413,8 @@
 
           </div>
 
-
-          <form class="" action="{%url 'content:confirm_customer_point_bill' current_bill.id  %}" method="post" enctype="multipart/form-data" id="bill_confirm" >
+          <!--  1000 here is a dummy variable  -->
+          <form class="" action="{%url 'content:confirm_customer_point_bill'   %}" method="post" enctype="multipart/form-data" id="bill_confirm" >
 
             {%csrf_token%}
           </form>

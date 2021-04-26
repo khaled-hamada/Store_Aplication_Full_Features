@@ -155,10 +155,10 @@ def give_payment(request,trader_id):
 
         if trader.remaining_money >= (amount + discount) and m_safe.money >= amount  and (amount + discount) > 0 :
             if discount > 0:
-                remove_discount_from_bills(trader_bills, discount)
+                remove_discount_from_bills_from_trader(trader_bills, discount)
             if amount > 0:
                 trader_bills = Trader_Bill.objects.filter(trader = trader,paid_status = 0, bill_type = 0).order_by('-id')
-                add_amount_to_bills(trader_bills, amount)
+                add_amount_to_bills_from_trader(trader_bills, amount)
 
             ## update trader , safe _ total safe
             trader.total_money -= discount
@@ -219,7 +219,7 @@ def give_payment(request,trader_id):
     }
     return render(request, 'content/give_payment.html',context)
 
-def remove_discount_from_bills(bills,  discount):
+def remove_discount_from_bills_from_trader(bills,  discount):
     for bill in bills :
         if discount >= bill.remaining_amount:
             discount -=  bill.remaining_amount
@@ -228,7 +228,7 @@ def remove_discount_from_bills(bills,  discount):
             bill.save()
         ## amount < bill.cost or amount = 0
         ## create new bill with the remaing money and make old given =1
-        elif discount != 0:
+        elif discount > 0:
             ## create new one
             # Trader_Product.objects.create(product = bill.product ,manager =bill.manager ,trader = trader, total_cost = amount_loop, total_cost_old = amount_loop, date=date,given_status =1)
             bill.discount += discount
@@ -236,7 +236,7 @@ def remove_discount_from_bills(bills,  discount):
             discount = 0
             break
 
-def add_amount_to_bills(bills,  amount):
+def add_amount_to_bills_from_trader(bills,  amount):
     for bill in bills :
         if amount >= bill.remaining_amount:
             amount -=  bill.remaining_amount
@@ -245,7 +245,7 @@ def add_amount_to_bills(bills,  amount):
             bill.save()
         ## amount < bill.cost or amount = 0
         ## create new bill with the remaing money and make old given =1
-        elif amount != 0:
+        elif amount > 0:
             ## create new one
             # Trader_Product.objects.create(product = bill.product ,manager =bill.manager ,trader = trader, total_cost = amount_loop, total_cost_old = amount_loop, date=date,given_status =1)
             bill.given_amount += amount

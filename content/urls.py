@@ -101,7 +101,7 @@ urlpatterns = [
     path('edit_point_to_point_bill_line/<int:line_id>', points_views.edit_point_to_point_bill_line, name='edit_point_to_point_bill_line'),
     path('delete_point_to_point_bill_line/<int:line_id>', points_views.delete_point_to_point_bill_line, name='delete_point_to_point_bill_line'),
     ## coming from customer to point
-    path('confirm_customer_point_bill/<int:bill_id>', points_views.confirm_customer_point_bill, name='confirm_customer_point_bill'),
+    path('confirm_customer_point_bill/', points_views.confirm_customer_point_bill, name='confirm_customer_point_bill'),
     path('edit_customer_point_bill_line/<int:line_id>', points_views.edit_customer_point_bill_line, name='edit_customer_point_bill_line'),
     path('delete_customer_point_bill_line/<int:line_id>', points_views.delete_customer_point_bill_line, name='delete_customer_point_bill_line'),
 

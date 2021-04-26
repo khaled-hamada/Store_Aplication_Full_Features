@@ -103,12 +103,12 @@ def customer_payment(request,customer_id):
         manager = Current_manager.objects.get(user = request.user)
         if (amount + discount) <= customer.remaining_money :
             if discount > 0  :
-                remove_discount_from_bills(un_paid_bills,discount )
+                remove_discount_from_bills_from_customer(un_paid_bills,discount )
 
             ## update bills with the given amount
             un_paid_bills = customer.customer_unpaid_bill
             if amount > 0  :
-                add_amount_to_bills(un_paid_bills, amount )
+                add_amount_to_bills_from_customer(un_paid_bills, amount )
                 ## create new customer  payment
 
                 ## 2. safe_date
@@ -140,7 +140,7 @@ def customer_payment(request,customer_id):
     return render(request, 'content/customer_payment.html', context)
 
 
-def remove_discount_from_bills(un_paid_bills, discount ):
+def remove_discount_from_bills_from_customer(un_paid_bills, discount ):
     for bill in un_paid_bills:
         ## case 1
         if discount >= bill.remaining_amount:
@@ -156,7 +156,7 @@ def remove_discount_from_bills(un_paid_bills, discount ):
 
             discount = 0
 
-def add_amount_to_bills(un_paid_bills, amount ):
+def add_amount_to_bills_from_customer(un_paid_bills, amount ):
     for bill in un_paid_bills:
         ## case 1
         if amount >= bill.remaining_amount:

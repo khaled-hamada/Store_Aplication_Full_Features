@@ -813,10 +813,11 @@ class Customer(models.Model):
 
     @property
     def customer_unpaid_bill(self):
-        return Customer_Bill.objects.filter(customer = self.id , paid_status = 0, given_status = 1, bill_type = 0)
+        return Customer_Bill.objects.filter(customer = self.id , paid_status = 0,  bill_type = 0)
+
     @property
     def customer_unpaid_bill_restored(self):
-        return Customer_Bill.objects.filter(customer = self.id , paid_status = 0,bill_type = 1 )
+        return Customer_Bill.objects.filter(customer = self.id , paid_status = 0, bill_type = 1 )
 
 
 
@@ -886,8 +887,6 @@ class Customer_Bill(models.Model):
         bill_lines = self.all_lines
         total = round( sum(b.restored_quantity_cost_withoutd for b in bill_lines ), 2)
         return  total
-
-
 
 
 
