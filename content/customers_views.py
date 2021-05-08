@@ -198,14 +198,19 @@ def restore_customer_bill(request, customer_id):
     customer_bill = None
     if request.method == "POST":
         try :
-            customer_bill = Customer_Bill.objects.get(id = int(request.POST['bill_id']) , customer =customer )
+             customer_bill = Customer_Bill.objects.get(id = int(request.POST['bill_id']) , customer =customer )
         except :
             customer_bill = None
     ## get current restore bill
     cust_cur_res_bill = Customer_Bill.objects.filter(given_status = 0, customer = customer,bill_type = 1 ).last()
 
-    context = {
+    ## get current customer sellings bill
+    if cust_cur_res_bill != None and customer_bill == None :
+        last_line = cust_cur_res_bill.all_lines.last()
+        if last_line != None :
+            customer_bill = last_line.come_from.bill
 
+    context = {
         'customer':customer ,
         'bill':customer_bill ,
         'cust_cur_res_bill':cust_cur_res_bill ,
@@ -280,7 +285,66 @@ def create_new_restore_line(amount, bill_line,  restored_bill):
 
 @login_required
 @user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
-def confirm_restore_customer_bill(request, customer_id):
+def edit_restored_customer_bill_line(request, line_id):
+    ## restored bill line
+    bill_line = Point_Product_Sellings.objects.get(id = line_id)
+    customer_bill = Customer_Bill.objects.get(id = bill_line.bill.id)
+    customer = customer_bill.customer
+
+    come_from_bill_line = bill_line.come_from
+
+    new_quantity =  int(request.POST['quantity'])
+    new_quantity_packet = int(request.POST['quantity_packet'])
+
+    total_new_q = new_quantity + (new_quantity_packet * come_from_bill_line.quantity_per_packet)
+    l_quantity_old = bill_line.total_quantity_sold
+    temp_diff = total_new_q - l_quantity_old
+
+    if temp_diff <= come_from_bill_line.total_quantity_sold :
+        quo, rem = divmod(total_new_q , come_from_bill_line.quantity_per_packet )
+        print("quo %d, rem %d "%(quo, rem))
+        bill_line.quantity = rem
+        bill_line.quantity_packet = quo
+        bill_line.save()
+
+        ## edit origanl come from line
+        if temp_diff < 0 :
+            come_from_bill_line.add_to_product(abs(temp_diff), 0)
+
+        elif temp_diff > 0 :
+            come_from_bill_line.subtract_from_product((temp_diff), 0)
+
+
+    return redirect('content:restore-customer-bill', customer.id)
+
+
+
+
+@login_required
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+def delete_restored_customer_bill_line(request, line_id):
+    ## restored bill line
+    bill_line = Point_Product_Sellings.objects.get(id = line_id)
+    customer_bill = Customer_Bill.objects.get(id = bill_line.bill.id)
+    customer = customer_bill.customer
+    success = failed = 0
+
+
+    ###  sold bill line created in the sold bill,  delete it
+    come_from_bill_line = bill_line.come_from
+    come_from_bill_line.add_to_product(bill_line.total_quantity_sold , 0)
+
+    bill_line.delete()
+
+
+
+    return redirect('content:restore-customer-bill', customer.id)
+
+
+
+@login_required
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+def confirm_restored_customer_bill(request, bill_id):
     customer = Customer.objects.get(id = customer_id)
     customer_bill = None
     try :
@@ -323,35 +387,6 @@ def restore_product_to_points(customer_bill):
 
 
 
-
-@login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
-def delete_restored_customer_bill_line(request, line_id):
-    ## restored bill line
-    bill_line = Point_Product_Sellings.objects.get(id = line_id)
-    customer_bill = Customer_Bill.objects.get(id = bill_line.bill.id)
-    customer = customer_bill.customer
-    success = failed = 0
-
-
-    ###  sold bill line created in the sold bill,  delete it
-    come_from_bill_line = Point_Product_Sellings.objects.get(id = bill_line.come_from_line_id)
-    come_from_bill_line.restored_amount -= (bill_line.quantity_new + bill_line.quantity_old)
-
-    res_amount = (bill_line.quantity_new + bill_line.quantity_old)
-
-    come_from_bill_line.restored_amount_cost -= bill_line.money_quantity_sell
-    come_from_bill_line.restored_amount_cost_ad -=  ( bill_line.money_quantity_sell -  (res_amount * come_from_bill_line.discount_per_unit) )
-    come_from_bill_line.restored_amount_cost_buy -=  bill_line.money_quantity_buy
-
-
-    come_from_bill_line.save()
-
-    bill_line.delete()
-
-
-
-    return redirect('content:confirm-restore-customer-bill', customer.id)
 
 @login_required
 @user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
@@ -461,15 +496,18 @@ def remove_given_amount_from_restored_bills(un_paid_bills, amount ):
 @login_required
 def customer_bill_details_page(request):
     bill = None
+
     if request.method == "POST":
         try:
             bill = Customer_Bill.objects.get(id = int(request.POST['bill_id']) )
         except :
             bill = None
 
+
     context = {
         'bill' : bill,
     }
+
     return render(request,"content/customer_bill_details_page.html", context = context)
 
 

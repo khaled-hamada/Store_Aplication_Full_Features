@@ -66,11 +66,19 @@ urlpatterns = [
     path('customer-bill-details/<int:bill_id>', customers_views.customer_bill_details, name='customer-bill-details'),
     path('customers-bill-details-page/', customers_views.customer_bill_details_page, name='customers-bill-details-page'),
     path('restore-customer-bill/<int:customer_id>', customers_views.restore_customer_bill, name='restore-customer-bill'),
-    path('confirm-restore-customer-bill/<int:customer_id>', customers_views.confirm_restore_customer_bill, name='confirm-restore-customer-bill'),
+
+    # path('confirm-restore-customer-bill/<int:customer_id>', customers_views.confirm_restore_customer_bill, name='confirm-restore-customer-bill'),
+
     path('restore-customer-bill-line/<int:line_id>', customers_views.restore_customer_bill_line, name='restore-customer-bill-line'),
-    path('delete-restored-customer-bill-line/<int:line_id>', customers_views.delete_restored_customer_bill_line, name='delete-restored-customer-bill-line'),
-    path('customer_give_payment/<int:customer_id>', customers_views.customer_give_payment, name='customer_give_payment'),
+    
+    # path('customer_give_payment/<int:customer_id>', customers_views.customer_give_payment, name='customer_give_payment'),
+
     path('customer_all_unpaid_bills/<int:customer_id>', customers_views.customer_all_unpaid_bills, name='customer_all_unpaid_bills'),
+
+    ## coming from customer to point => restord
+    path('confirm_restored_customer_bill/<int:bill_id>', customers_views.confirm_restored_customer_bill, name='confirm_restored_customer_bill'),
+    path('edit_restored_customer_bill_line/<int:line_id>', customers_views.edit_restored_customer_bill_line, name='edit_restored_customer_bill_line'),
+    path('delete_restored_customer_bill_line/<int:line_id>', customers_views.delete_restored_customer_bill_line, name='delete_restored_customer_bill_line'),
 
 
 
@@ -92,15 +100,18 @@ urlpatterns = [
     path('confirm_add_point_bill/<int:bill_id>', points_views.confirm_add_point_bill, name='confirm_add_point_bill'),
     path('edit_point_bill_line/<int:line_id>', points_views.edit_point_bill_line, name='edit_point_bill_line'),
     path('delete_point_bill_line/<int:line_id>', points_views.delete_point_bill_line, name='delete_point_bill_line'),
+
     ## from point to store
     path('confirm_restored_point_bill/<int:point_id>', points_views.confirm_restored_point_bill, name='confirm_restored_point_bill'),
     path('edit_restored_point_bill_line/<int:line_id>', points_views.edit_restored_point_bill_line, name='edit_restored_point_bill_line'),
     path('delete_restored_point_bill_line/<int:line_id>', points_views.delete_restored_point_bill_line, name='delete_restored_point_bill_line'),
+
     ## from point to point
     path('confirm_point_to_point_bill/<int:point_id>', points_views.confirm_point_to_point_bill, name='confirm_point_to_point_bill'),
     path('edit_point_to_point_bill_line/<int:line_id>', points_views.edit_point_to_point_bill_line, name='edit_point_to_point_bill_line'),
     path('delete_point_to_point_bill_line/<int:line_id>', points_views.delete_point_to_point_bill_line, name='delete_point_to_point_bill_line'),
-    ## coming from customer to point
+
+    ## coming from  point to customer => sellings
     path('confirm_customer_point_bill/<int:bill_id>', points_views.confirm_customer_point_bill, name='confirm_customer_point_bill'),
     path('edit_customer_point_bill_line/<int:line_id>', points_views.edit_customer_point_bill_line, name='edit_customer_point_bill_line'),
     path('delete_customer_point_bill_line/<int:line_id>', points_views.delete_customer_point_bill_line, name='delete_customer_point_bill_line'),

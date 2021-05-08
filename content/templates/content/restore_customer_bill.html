@@ -49,7 +49,7 @@
 <!-- <input type="number" name="bill_id"  form="form_sell_{{bill.id}}" value="{{bill.id}}"  style="display:None;">
 <input type="number" name="customer_id"  form="form_sell_{{bill.id}}" value="{{bill.customer.id}}"  style="display:None;"> -->
 <table class="table p-0 m-0">
-    <thead class="thead-dark">
+    <thead class="thead-dark p-0 m-0">
       <tr>
         <th scope="col">#</th>
         <th scope="col">الصنف</th>
@@ -74,7 +74,7 @@
 
       </tr>
     </thead>
-    <tbody>
+    <tbody style="padding:0px; margin:0px;">
       {%for pps in bill.all_lines%}
         {%if pps.line_type == 1  or total_quantity_sold == 0 %}
           <tr class="text-danger  ">
@@ -175,11 +175,11 @@
 
 {%endif%}
 
-{%if cust_cur_res_bill %}
+{%if cust_cur_res_bill and cust_cur_res_bill.all_lines.count > 0  %}
   <!-- start seperator -->
   <div style="border-top: 7px solid #1abc9c;" class="my-5"></div>
   <!-- end seperator -->
-    <h2 class="text-right"> الفاتورة الحالية</h2>
+    <h2 class="text-right"> الفاتورة المرتجع الحالية</h2>
       <table class="table">
           <thead class="thead-dark">
             <tr>
@@ -235,7 +235,7 @@
                               </div>
                               <div class="modal-body">
 
-                                <form method="post" action="{%url 'content:edit_point_bill_line' line.id %}"  enctype="multipart/form-data" id="edit_form{{line.id}}" >
+                                <form method="post" action="{%url 'content:edit_restored_customer_bill_line' line.id %}"  enctype="multipart/form-data" id="edit_form{{line.id}}" >
                                   {% csrf_token %}
 
 
@@ -263,49 +263,7 @@
                                     </div>
                                   </div>
 
-
-
-                                  <div class="form-group row">
-
-                                        <label for="products" class="col-sm-5 font-weight-bold col-form-label">سعر بيع القطعة</label>
-
-                                      <div class="col-sm-5">
-                                        <div class="input-group mb-3">
-                                            <input type="number" min="0" step=".001" name="unit_sell_price" value="{{line.unit_sell_price}}" class="form-control" form="edit_form{{line.id}}" required>
-                                        </div>
-                                      </div>
-                                  </div>
-
-                                  <div class="form-group row">
-
-                                        <label for="products" class="col-sm-5 font-weight-bold col-form-label">اسم النقطة</label>
-
-                                      <div class="col-sm-5">
-                                        <div class="input-group mb-3">
-                                          <select class="form-control" id="quantity" name= "point_id" aria-label="Amount (to the nearest dollar)" required>
-
-                                            {%for  point in points %}
-                                              {%if point == line.point %}
-                                                <option value="{{point.id}}" selected>{{point.name}}</option>
-                                              {%else%}
-                                                <option value="{{point.id}}">{{point.name}}</option>
-                                              {%endif%}
-                                            {% endfor %}
-                                          </select>
-                                        </div>
-                                      </div>
-                                  </div>
-
-
-
-
-
-
-
-
-
-
-                                  </form>
+                            </form>
                               </div>
                               <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">إغلاق</button>
@@ -317,7 +275,7 @@
 
                         <!-- Modal end  -->
                  </td>
-                <td > <a class="text-danger" href="{%url 'content:delete_point_bill_line' line.id %}"> حذف</a> </td>
+                <td > <a class="text-danger" href="{%url 'content:delete_restored_customer_bill_line' line.id %}"> حذف</a> </td>
 
 
               </tr>
@@ -370,7 +328,7 @@
 
 
         <!-- no need for the id its a dummy number  -->
-        <form class="" action="{%url 'content:confirm_add_point_bill' 1000  %}" method="post" enctype="multipart/form-data" id="bill_confirm" >
+        <form class="" action="{%url 'content:confirm_restored_customer_bill' 1000  %}" method="post" enctype="multipart/form-data" id="bill_confirm" >
 
           {%csrf_token%}
         </form>

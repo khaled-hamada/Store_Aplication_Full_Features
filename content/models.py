@@ -807,7 +807,8 @@ class Customer(models.Model):
     def remaining_money(self):
         bought_bills =  round(sum(b.remaining_amount for b in self.customer_unpaid_bill), 2)
         restored_bills =  round(sum(b.remaining_amount for b in self.customer_unpaid_bill_restored), 2)
-        return  round(bought_bills - restored_bills , 2)
+        return  round(bought_bills , 2)
+        # return  round(bought_bills - restored_bills , 2)
 
 
 
