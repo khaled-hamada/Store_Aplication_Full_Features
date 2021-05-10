@@ -120,6 +120,9 @@ def customer_payment(request,customer_id):
                 m_safe.money +=amount
                 m_safe.save()
 
+            if customer.remaining_money == 0 :
+                 customer.customer_unpaid_bill.update(paid_status = 1)
+
 
 
             Customer_Payment.objects.create(g_user = customer, t_user=manager, date= timezone.now(), amount = amount
@@ -164,7 +167,8 @@ def add_customer_dept(request,customer_id):
                             , previos_amount =customer.remaining_money  + amount, current_amount = customer.remaining_money )
 
 
-
+            if customer.remaining_money == 0:
+                customer.customer_unpaid_bill.update(paid_status = 1)
     # print("get to add customer dept")
     return redirect('content:customer-page', customer_id)
 
