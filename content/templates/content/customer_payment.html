@@ -65,10 +65,10 @@
       <div class="no-print col-1 font-weight-bolder  p-3">{{customer.remaining_money}}</div>
 
       <div class="no-print col-2 bg-dark text-light font-weight-bolder p-3">المبلغ المدفوع</div>
-      <input type="number" name="total_money" form="form_sell" step=".01" min ="0" max="{{bill.required_amount}}" step=".01" class=" no-print col-2 p-3 mx-2" placeholder="اكتب المبلغ المدفوع " required >
+      <input type="number" name="total_money" form="form_sell" step=".01" min ="0" max="{{customer.remaining_money}}" step=".01" class=" no-print col-2 p-3 mx-2" placeholder="اكتب المبلغ المدفوع " required >
       <div class="no-print col-2 bg-dark text-light font-weight-bolder p-3">الخصم الاضافى ؟!</div>
-      <input type="number" name="discount" form="form_sell"   min ="0" step=".01" max="{{bill.required_amount}}" step=".01" class="no-print col-2 p-3 mx-2" placeholder="اكتب الخصم الاضافى؟" required >
-    
+      <input type="number" name="discount" form="form_sell"   min ="0" step=".01" max="{{customer.remaining_money}}" step=".01" class="no-print col-2 p-3 mx-2" placeholder="اكتب الخصم الاضافى؟" required >
+
     </div>
 
 

@@ -345,27 +345,19 @@ def delete_restored_customer_bill_line(request, line_id):
 @login_required
 @user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
 def confirm_restored_customer_bill(request, bill_id):
-    customer = Customer.objects.get(id = customer_id)
-    customer_bill = None
-    try :
-        customer_bill =  Customer_Bill.objects.filter(given_status = 0, customer = customer,bill_type = 1 ).last()
-    except :
-        customer_bill = None
-    if request.method == "POST":
-        restore_product_to_points(customer_bill)
-        customer_bill.given_status = 1
-        customer_bill.all_lines.update(taken_status = 1)
-        customer_bill.paid_status = 1
-        customer_bill.save()
-        customer_bill =  Customer_Bill.objects.filter(given_status = 0, customer = customer,bill_type = 1 ).last()
-    context = {
 
-        'customer':customer ,
-        'bill':customer_bill ,
+    customer_bill = Customer_Bill.objects.get(id = bill_id)
+    customer_bill.given_status = 1
+    customer_bill.paid_status = 1
+    customer_bill.save()
 
-    }
+    ## update point with the restored amount
+    for line in customer_bill.all_lines :
+        line.point_product.add_to_product(line.quantity , line.quantity_packet)
 
-    return render(request, 'content/confirm_restore_customer_bill.html', context)
+    customer = customer_bill.customer
+
+    return redirect('content:restore-customer-bill', customer.id)
 
 def restore_product_to_points(customer_bill):
     bill_lines = customer_bill.all_lines
