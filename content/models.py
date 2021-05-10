@@ -803,11 +803,14 @@ class Customer(models.Model):
     phone_number = models.CharField(max_length = 264, default = "")
     date = models.DateTimeField(default=now)
 
+    ## in case of customer pay any amount under calculations
+    pre_amount = models.FloatField(default = 0.0)
+
     @property
     def remaining_money(self):
         bought_bills =  round(sum(b.remaining_amount for b in self.customer_unpaid_bill), 2)
         restored_bills =  round(sum(b.remaining_amount for b in self.customer_unpaid_bill_restored), 2)
-        return  round(bought_bills , 2)
+        return  round(bought_bills - self.pre_amount , 2)
         # return  round(bought_bills - restored_bills , 2)
 
 

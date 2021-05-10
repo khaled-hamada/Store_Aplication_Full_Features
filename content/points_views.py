@@ -419,10 +419,27 @@ def confirm_customer_point_bill(request, bill_id):
             # print("after going to add amount to bills cust debt =  %f" %(customer.remaining_money))
             current_bill.given_amount += given_money_amount
 
+        ## check if current bill remaining_money > 0 and customer_pre_paid > 0
+        paid_from_pre_amount = 0
+        if current_bill.remaining_amount > 0 and customer.pre_amount > 0:
+            if   customer.pre_amount > current_bill.remaining_amount :
+                temp = current_bill.remaining_amount
+                current_bill.given_amount +=temp
+                current_bill.paid_status = 1
+                customer.pre_amount -= temp
+                paid_from_pre_amount = temp
+            else:
+                current_bill.given_amount += customer.pre_amount
+                paid_from_pre_amount =  customer.pre_amount
+                customer.pre_amount = 0
+
+            customer.save()
+
+
         current_bill.save()
 
         ## create new customer payment and map it to safe
-        add_payment(request, customer,given_money_amount , discount , point)
+        add_payment(request, customer,given_money_amount , discount , point, paid_from_pre_amount)
 
         current_bill.given_status = 1
         current_bill.save()
@@ -495,13 +512,13 @@ def add_amount_to_bills_from_point( amount, bills):
 
 
 
-def add_payment(request, customer, amount , discount, point):
+def add_payment(request, customer, amount , discount, point, paid_from_pre_amount):
     ## update customer given - remaining_money
     ## create customer payment
     print("creating new payment bills ")
     manager = Current_manager.objects.get(user = request.user)
-    Customer_Payment.objects.create(g_user = customer, t_user=manager, date= timezone.now(), amount = amount
-                    ,discount = discount, previos_amount = customer.remaining_money + discount + amount , current_amount = customer.remaining_money   , payment_type = 0)
+    Customer_Payment.objects.create(g_user = customer, t_user=manager, date= timezone.now(), amount = amount + paid_from_pre_amount
+                    ,discount = discount, previos_amount = customer.remaining_money + discount + amount + paid_from_pre_amount , current_amount = customer.remaining_money   , payment_type = 0)
 
 
 

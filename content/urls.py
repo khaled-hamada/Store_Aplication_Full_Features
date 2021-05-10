@@ -62,6 +62,7 @@ urlpatterns = [
 
     path('customers-page/', customers_views.customers_page, name='customers-page'),
     path('customer-payment/<int:customer_id>', customers_views.customer_payment, name='customer-payment'),
+    path('add_customer_dept/<int:customer_id>', customers_views.add_customer_dept, name='add_customer_dept'),
     path('customer-page/<int:customer_id>', customers_views.customer_page, name='customer-page'),
     path('customer-bill-details/<int:bill_id>', customers_views.customer_bill_details, name='customer-bill-details'),
     path('customers-bill-details-page/', customers_views.customer_bill_details_page, name='customers-bill-details-page'),
@@ -70,7 +71,7 @@ urlpatterns = [
     # path('confirm-restore-customer-bill/<int:customer_id>', customers_views.confirm_restore_customer_bill, name='confirm-restore-customer-bill'),
 
     path('restore-customer-bill-line/<int:line_id>', customers_views.restore_customer_bill_line, name='restore-customer-bill-line'),
-    
+
     # path('customer_give_payment/<int:customer_id>', customers_views.customer_give_payment, name='customer_give_payment'),
 
     path('customer_all_unpaid_bills/<int:customer_id>', customers_views.customer_all_unpaid_bills, name='customer_all_unpaid_bills'),

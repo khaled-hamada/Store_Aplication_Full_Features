@@ -140,6 +140,35 @@ def customer_payment(request,customer_id):
     return render(request, 'content/customer_payment.html', context)
 
 
+
+@login_required
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+def add_customer_dept(request,customer_id):
+    customer = Customer.objects.get(id = customer_id)
+    manager = Current_manager.objects.get(user = request.user)
+    if request.method == "POST":
+            # print("inside  add customer dept")
+            amount = float(request.POST['amount'])
+            customer.pre_amount += amount
+            customer.save()
+            ## 2. safe_date
+            notes = request.POST['notes'] +   " \n ملبغ نقدى مدفوع مقدما من العميل " +"\n" + customer.name
+            Safe_data.objects.create(day =  timezone.now(), money_amount = amount, given_person =manager, notes=notes , safe_line_status = 6 )
+
+            m_safe = Safe_Month.objects.last()
+            ## m_safe
+            m_safe.money +=amount
+            m_safe.save()
+
+            Customer_Payment.objects.create(g_user = customer, t_user=manager, date= timezone.now(), amount = amount
+                            , previos_amount =customer.remaining_money  + amount, current_amount = customer.remaining_money )
+
+
+
+    # print("get to add customer dept")
+    return redirect('content:customer-page', customer_id)
+
+
 def remove_discount_from_bills_from_customer(un_paid_bills, discount ):
     for bill in un_paid_bills:
         ## case 1
@@ -356,6 +385,12 @@ def confirm_restored_customer_bill(request, bill_id):
         line.point_product.add_to_product(line.quantity , line.quantity_packet)
 
     customer = customer_bill.customer
+
+    ## check if the main  bill is already paid or not
+    customer_main_bill =  customer_bill.all_lines.last().come_from.bill
+    if customer_main_bill.paid_status == 1:
+        customer.pre_amount += customer_bill.required_amount
+        customer.save()
 
     return redirect('content:restore-customer-bill', customer.id)
 

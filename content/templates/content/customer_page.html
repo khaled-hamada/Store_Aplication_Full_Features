@@ -49,7 +49,7 @@
 
 
 
-    
+
 
 
 
@@ -62,6 +62,12 @@
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
               تعديل بيانات العميل
             </button>
+
+          <!-- Button trigger modal -->
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add_customer_money">
+              اضافة مبلغ نقدى
+            </button>
+
 
         <div class="">
           <a href="{%url 'content:customers-page'  %}">
@@ -126,6 +132,54 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">إغلاق</button>
           <button type="submit" form="add_form" class="btn btn-primary">حفظ التعديلات</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal end  -->
+  <!-- Modal -->
+  <div class="modal fade" id="add_customer_money" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="add_customer_money"> اضافة مبلغ نقدى تحت الحساب</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+
+          <form method="post" action="{%url 'content:add_customer_dept' customer.id %}" id="add_customer_dept" >
+            {% csrf_token %}
+
+
+                <div class="form-group row">
+                    <label for="products" class="col-sm-2 font-weight-bold col-form-label">المبلـــغ </label>
+                    <div class="col-sm-10">
+                      <div class="input-group mb-3">
+                        <input type="number" form="add_customer_dept"  step=".01" name="amount" class="form-control" required>
+                      </div>
+                    </div>
+                </div>
+
+
+
+                <div class="form-group row">
+                  <label for="products" class="col-sm-2 font-weight-bold col-form-label">ملاحظات</label>
+                  <div class="col-sm-10">
+                    <div class="input-group mb-3">
+                        <!-- <input type="text" value="" class="form-control" name="notes" required> -->
+                        <textarea name="notes" form="add_customer_dept" class="form-control"  required></textarea>
+                    </div>
+                  </div>
+              </div>
+
+            </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">إغلاق</button>
+          <button type="submit" form="add_customer_dept" class="btn btn-primary">حفظ</button>
         </div>
       </div>
     </div>
