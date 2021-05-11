@@ -187,6 +187,7 @@
                     <th scope="col">كمية كرتونة</th>
                     <th scope="col">كمية قطعة</th>
                     <th scope="col">الكمية الكلية بالقطعة</th>
+                    <th scope="col">سعر شراء قطعة بعد خصم</th>
                     <th scope="col">سعر بيع القطعة</th>
 
                     <th scope="col">اسم النقطة</th>
@@ -210,6 +211,7 @@
                       <td>{{line.quantity_packet}}</td>
                       <td>{{line.quantity}}</td>
                       <td>{{line.total_quantity}}</td>
+                      <td>{{line.trader_product.unit_buy_price_ad}}</td>
                       <td>{{line.unit_sell_price}}</td>
                       <td>{{line.point.name}}</td>
                       <td>{{line.trader_product.trader_bill.id}}</td>

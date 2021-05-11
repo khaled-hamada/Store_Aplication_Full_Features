@@ -61,24 +61,24 @@ def customer_all_unpaid_bills(request,customer_id):
     un_paid_bills = Customer_Bill.objects.filter(customer = customer ,paid_status = 0 , given_status = 1 , bill_type = 0).order_by('date')
 
     total_bills_cost = round( sum( t.total_bill_cost for t in un_paid_bills), 1 ) ### 0
-    bills_restored_amount_cost = round( sum( t.restored_amount_cost for t in un_paid_bills), 1 )  ### 1
-
-    bills_main_discount = round( sum( t.main_discount for t in un_paid_bills), 1 )  ### 2
-    bills_add_discount = round( sum( t.discount for t in un_paid_bills), 1 )     ### 3
+    # bills_restored_amount_cost = round( sum( t.restored_amount_cost for t in un_paid_bills), 1 )  ### 1
+    #
+    # bills_main_discount = round( sum( t.main_discount for t in un_paid_bills), 1 )  ### 2
+    # bills_add_discount = round( sum( t.discount for t in un_paid_bills), 1 )     ### 3
     bills_total_discount = round( sum( t.total_discount for t in un_paid_bills), 1 )     ### 4
-
-
+    #
+    #
     bills_required_amount = round( sum( t.required_amount for t in un_paid_bills), 1 )  ### 5
-    bills_restored_amount_cost_ad = round( sum( t.restored_amount_cost_ad for t in un_paid_bills), 1 )  ### 6
-
+    # bills_restored_amount_cost_ad = round( sum( t.restored_amount_cost_ad for t in un_paid_bills), 1 )  ### 6
+    #
     bills_given_amount = round( sum( t.given_amount for t in un_paid_bills), 1 )     ### 7
     bills_remaining_amount = round( sum( t.remaining_amount for t in un_paid_bills), 1 )     ### 8
-
-    totals = [total_bills_cost, bills_restored_amount_cost, bills_main_discount,  bills_add_discount, bills_total_discount, bills_required_amount, ]
-
-    totals.append(bills_restored_amount_cost_ad)
-    totals.append(bills_given_amount)
-    totals.append(bills_remaining_amount)
+    #
+    totals = [total_bills_cost, bills_total_discount, bills_required_amount,bills_given_amount,bills_remaining_amount   ]
+    #
+    # totals.append(bills_restored_amount_cost_ad)
+    # totals.append(bills_given_amount)
+    # totals.append(bills_remaining_amount)
 
     context = {
         'customer':customer,
@@ -395,6 +395,15 @@ def confirm_restored_customer_bill(request, bill_id):
     if customer_main_bill.paid_status == 1:
         customer.pre_amount += customer_bill.required_amount
         customer.save()
+
+    ## if it not a paid bill but the remaining amount is less than or equal 0 <= 0
+    else :
+        if customer_main_bill.remaining_amount <= 0 :
+            customer.pre_amount += abs(customer_main_bill.remaining_amount)
+            customer_main_bill.paid_status = 1
+            customer_main_bill.save()
+            customer.save()
+
 
     return redirect('content:restore-customer-bill', customer.id)
 

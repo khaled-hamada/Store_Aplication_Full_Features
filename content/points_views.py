@@ -338,8 +338,11 @@ def create_new_customer_point_bill(request):
         quantity = r
         quantity_packet += q
         unit_sell_price = float(request.POST['selling_price'])
-        discount_per_unit = float(request.POST['discount_per_unit'])
-
+        try :
+            discount_per_unit = float(request.POST['discount_per_unit'])
+        except :
+            discount_per_unit = 0
+        
         Point_Product_Sellings.objects.create(point_product = point_product , Point= point,bill = current_bill,
                                                 quantity = quantity , quantity_packet = quantity_packet, unit_sell_price = unit_sell_price ,
                                                 discount_per_unit = discount_per_unit)
