@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from .models import  Customer, Customer_Bill,Current_manager,Customer_Payment, Safe_data, Safe_Month,  Point_Product_Sellings
-from .models import  Point
+from .models import  Point, Trader_Bill, Trader_Product , Point_Product
 from django.utils import timezone
 
 @login_required
@@ -536,16 +536,49 @@ def remove_given_amount_from_restored_bills(un_paid_bills, amount ):
 @login_required
 def customer_bill_details_page(request):
     bill = None
+    bill_type = -1
+    ## in case of trader bill
+    data = []
 
     if request.method == "POST":
+        bill_type = int(request.POST['bill_type'])
+
         try:
-            bill = Customer_Bill.objects.get(id = int(request.POST['bill_id']) )
+            if bill_type == 0 : # customer bill
+                bill = Customer_Bill.objects.get(id = int(request.POST['bill_id']) )
+            elif bill_type == 1: #trader bill
+                print("find items")
+                bill = Trader_Bill.objects.get(id = int(request.POST['bill_id']) )
+
+                ## get all bill lines first and for each line =>
+
+                for line in  bill.all_lines :
+                    single_item = []
+                    ## we need four sections for this type of bills
+                    ##1. product in store
+                    single_item.append(line)
+                    ## 2. point product
+
+                    single_item.append(Point_Product.objects.filter(trader_product = line))
+                    ## 3. customer payments
+                    single_item.append(Point_Product_Sellings.objects.filter(point_product__trader_product = line, line_type = 0))
+                    print("number of sold lines %d" %len(single_item[2]))
+                    ##4. restored to trader
+                    single_item.append(Trader_Product.objects.filter(come_from = line, line_type = 1))
+                    data.append(single_item)
+                    single_item = []
+                    print("find items")
+
+
+
         except :
             bill = None
 
 
     context = {
         'bill' : bill,
+        'bill_type' : bill_type,
+        'data' : data,
     }
 
     return render(request,"content/customer_bill_details_page.html", context = context)

@@ -10,7 +10,7 @@
 <div class="no-print">
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-      <li class="breadcrumb-item">العملاء</li>
+      <!-- <li class="breadcrumb-item">العملاء</li> -->
 
       <li class="breadcrumb-item">الفواتير</li>
       <li class="breadcrumb-item">الاستعلام عن فاتورة</li>
@@ -21,7 +21,22 @@
 <form class=""  method="post" action="{%url 'content:customers-bill-details-page'  %}">
 
   {%csrf_token%}
-  <div class="form-group row">
+    <div class="form-group row no-print">
+        <label for="products" class="col-sm-2 font-weight-bold col-form-label">اختر نوع الفاتورة</label>
+        <div class="col-sm-6">
+          <div class="input-group mb-3">
+            <select class="form-control" name="bill_type"   aria-label="Amount (to the nearest dollar)" required >
+
+                  <option value="">اختر الفاتورة</option>
+                  <option value="0">فاتورة مبيعات  - فاتورة عميل </option>
+                  <option value="1">فاتورة مشتروات - فاتورة تاجر </option>
+
+            </select>
+          </div>
+        </div>
+    </div>
+
+  <div class="form-group row no-print">
       <label for="products" class="col-sm-2 font-weight-bold col-form-label">رقم الفاتورة</label>
       <div class="col-sm-6">
         <div class="input-group mb-3">
@@ -30,192 +45,414 @@
 
         </div>
       </div>
-      <div class=" ">
+      <div class="no-print ">
         <button type="submit" class="btn btn-sm btn-hover font-weight-bold px-5 ">بحث</button>
       </div>
   </div>
 
 </form>
-{% if bill %}
-      <div class="row font-weight-bold justify-content-around mt-5">
-        <p>رقم الفاتورة : <span >{{bill.id}}</span></p>
-        <p>اسم العميل : <span class="font-weight-bold text-primary" >{{bill.customer.name}}</span></p>
-        <p>تاريخ الفاتورة: <span >{{bill.date}}</span></p>
-        <p class="font-weight-bold text-primary" > نوع الفاتورة :
-          {%if bill.bill_type == 0%}
-            <span >فاتـــورة مبيعات</span>
-         {%elif bill.bill_type == 1%}
-            <span class="font-weight-bold text-danger">فاتورة مسترجعة</span>
-         {%endif%}
-         </p>
+{% if bill and bill_type == 0 %}
+<div class="row font-weight-bold justify-content-around mt-5">
+  <p>رقم الفاتورة : <span >{{bill.id}}</span></p>
+  <p>اسم العميل : <span class="font-weight-bold text-primary" >{{bill.customer.name}}</span></p>
+  <p>تاريخ الفاتورة: <span >{{bill.date}}</span></p>
+  <p class="font-weight-bold text-primary" > نوع الفاتورة :
+    {%if bill.bill_type == 0%}
+      <span >فاتـــورة مبيعات</span>
+   {%elif bill.bill_type == 1%}
+      <span class="font-weight-bold text-danger">فاتورة مسترجعة</span>
+   {%endif%}
+   </p>
 
 
-      </div>
-      <input type="number" name="bill_id"  form="form_sell_{{bill.id}}" value="{{bill.id}}"  style="display:None;">
-      <input type="number" name="customer_id"  form="form_sell_{{bill.id}}" value="{{bill.customer.id}}"  style="display:None;">
-      <table class="table">
-          <thead class="thead-dark">
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">الصنف</th>
-              
-              <th scope="col">ك كرتونة</th>
-              <th scope="col">ك قطعة</th>
-              <th scope="col">عدد الكلى بالقطع</th>
+</div>
+<input type="number" name="bill_id"  form="form_sell_{{bill.id}}" value="{{bill.id}}"  style="display:None;">
+<input type="number" name="customer_id"  form="form_sell_{{bill.id}}" value="{{bill.customer.id}}"  style="display:None;">
+<table class="table">
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">الصنف</th>
+        <th scope="col">ك كرتونة</th>
+        <th scope="col">ك قطعة</th>
+        <th scope="col">عدد الكلى بالقطع</th>
+        <th scope="col">الكمية المسترجعة</th>
+        <th scope="col" class="text-danger">الكمية المباعة</th>
 
-              <th scope="col">سعر البيع</th>
-
-              <th scope="col" class="text-danger">الكمية المباعة</th>
-              <th scope="col">الخصم للقطعة</th>
-              <th scope="col">الخصم الكلى</th>
+        <th scope="col">سعر البيع</th>
 
 
-
-              <th scope="col">الاجمالي</th>
-              <th scope="col">المطلوب</th>
-                <th scope="col" class="text-danger"> نسبة الخصم</th>
-              <th scope="col">اسم النقطة</th>
-              <th scope="col">الكمية المسترجعة</th>
-
-            </tr>
-          </thead>
-          <tbody>
-            {%for pps in bill.all_lines%}
-              <tr>
-                <th scope="row">{{forloop.counter}}</th>
-
-                <td>{{pps.product.name}}</td>
-
-                <td>{{pps.quantity_packet_old|add:pps.quantity_packet_new}}</td>
-                <td>{{pps.quantity_old|add:pps.quantity_new}}</td>
-                <td>{{pps.total_quantity}}</td>
+        <th scope="col">الاجمالي</th>
+        <th scope="col">الخصم الكلى</th>
+        <th scope="col">المطلوب</th>
+        <th scope="col" class="text-danger"> نسبة الخصم</th>
+        <th scope="col">اسم النقطة</th>
 
 
-                <td>{{pps.product.unit_sell_price}}</td>
-                {%if bill.bill_type == 0%}
-                  <td class="text-danger">{{pps.total_quantity_sold}}</td>
-                {%elif  bill.bill_type == 1 %}
-                    <td class="text-danger">0</td>
-                {% endif %}
-                <td>{{pps.discount_per_unit}}</td>
-                <td>{{pps.total_discount_after_restore}}</td>
+      </tr>
+    </thead>
+    <tbody>
+      {%for pps in bill.all_lines%}
+        <tr>
+          <th scope="row">{{forloop.counter}}</th>
+
+          <td>{{pps.point_product.trader_product.product.name}}</td>
+          <td>{{pps.quantity_packet}}</td>
+          <td>{{pps.quantity}}</td>
+          <td>{{pps.total_quantity_sold|add:pps.restored_quantity}}</td>
+          <td>{{pps.restored_quantity}}</td>
+          <td>{{pps.total_quantity_sold}}</td>
+
+          <td>{{pps.unit_sell_price}}</td>
+          <td>{{pps.line_cost_sell}}</td>
+          <td>{{pps.line_discount}}</td>
+          <td>{{pps.line_cost_sell_ad}}</td>
 
 
-                <td>{{pps.line_net_cost}}</td>
-                <td>{{pps.required_amount}}</td>
-                <th class="text-danger">{% widthratio pps.total_discount  pps.money_quantity_sell  100 %}%</th>
+          <th class="text-danger">{% widthratio pps.line_discount  pps.line_cost_sell  100 %}%</th>
 
-                <td>{{pps.Point.name}}</td>
-                {%if bill.bill_type == 0%}
-                    <td class="text-danger  font-weight-bold">{{pps.restored_amount}}</td>
-                {%elif  bill.bill_type == 1 %}
-                    <td class="text-danger  font-weight-bold">{{pps.total_quantity_sold}}</td>
-                {% endif %}
+          <td>{{pps.Point.name}}</td>
+
+        </tr>
+        {%endfor%}
+
+
+    </tbody>
+
+
+</table>
+
+<hr class="">
+<div class="container mt-1">
+  <div class='row text-center'>
+
+  <table class="table">
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col">تكلفة الفاتورة</th>
+        <th scope="col">تكلفة المسترجع </th>
+        <th scope="col">تكلفة المباع</th>
+
+
+        <th scope="col">الخصم</th>
+        <th scope="col">الخصم الاضافى</th>
+        <th scope="col">الخصم الكلى</th>
+
+        <th scope="col">المطلوب</th>
+        <th class="text-danger"> نسبة الخصم</th>
+
+        <th scope="col">ثمن المسترجع </th>
+        <th scope="col">ما تم دفعه </th>
+        <th scope="col">المتبقى</th>
+      </tr>
+    </thead>
+
+    <tbody>
+
+      <tr>
+
+        {%if bill.bill_type == 0%}
+            <th scope="col">{{bill.total_bill_cost}}</th>
+        {%elif  bill.bill_type == 1 %}
+            <th scope="col">0</th>
+        {% endif %}
+
+
+        {%if bill.bill_type == 0%}
+            <th scope="col" class="text-danger">{{bill.restored_amount_cost_ad}}</th>
+        {%elif  bill.bill_type == 1 %}
+              <th scope="col" >{{bill.total_bill_cost}}</th>
+        {% endif %}
+
+
+        {%if bill.bill_type == 0%}
+            <th scope="col" class="text-primary">{{bill.total_bill_cost_ar}}</th>
+        {%elif  bill.bill_type == 1 %}
+              <th scope="col" >0</th>
+        {% endif %}
+
+
+
+        <th scope="col">{{bill.main_discount}}</th>
+        <th scope="col">{{bill.discount}}</th>
+        <th scope="col">{{bill.total_discount}}</th>
+
+        {%if bill.bill_type == 0%}
+            <th scope="col">{{bill.required_amount}}</th>
+        {%elif  bill.bill_type == 1 %}
+            <th scope="col">0</th>
+        {% endif %}
+          <th class="text-danger">{% widthratio bill.total_discount  bill.total_bill_cost_ar  100 %}%</th>
+
+
+        {%if bill.bill_type == 0%}
+          <th scope="col"  class="text-danger">{{bill.restored_amount_cost_ad}}</th>
+        {%elif  bill.bill_type == 1 %}
+          <th scope="col" class="text-danger">{{bill.required_amount}}</th>
+        {% endif %}
+
+
+        {%if bill.bill_type == 0%}
+            <th scope="col">{{bill.given_amount}}</th>
+        {%elif  bill.bill_type == 1 %}
+            <th scope="col">0</th>
+        {% endif %}
+
+
+        {%if bill.bill_type == 0%}
+          <th scope="col">{{bill.remaining_amount}}</th>
+        {%elif  bill.bill_type == 1 %}
+          <th scope="col">0</th>
+        {% endif %}
+
+
               </tr>
-              {%endfor%}
+            </tbody>
+        </table>
+    </div>
+    </div>
 
-
-          </tbody>
-
-
-      </table>
-
-      <hr class="my-5">
-      <div class="container mt-5">
-        <div class='row text-center'>
-
-        <table class="table">
-          <thead class="thead-dark">
-            <tr>
-              <th scope="col">تكلفة الفاتورة</th>
-              <th scope="col">تكلفة المسترجع </th>
-              <th scope="col">تكلفة المباع</th>
-
-
-              <th scope="col">الخصم</th>
-              <th scope="col">الخصم الاضافى</th>
-              <th scope="col">الخصم الكلى</th>
-
-              <th scope="col">المطلوب</th>
-              <th class="text-danger"> نسبة الخصم</th>
-
-              <th scope="col">ثمن المسترجع </th>
-              <th scope="col">ما تم دفعه </th>
-              <th scope="col">المتبقى</th>
-            </tr>
-          </thead>
-
-          <tbody>
-
-            <tr>
-
-              {%if bill.bill_type == 0%}
-                  <th scope="col">{{bill.total_bill_cost}}</th>
-              {%elif  bill.bill_type == 1 %}
-                  <th scope="col">0</th>
-              {% endif %}
-
-
-              {%if bill.bill_type == 0%}
-                  <th scope="col" class="text-danger">{{bill.restored_amount_cost}}</th>
-              {%elif  bill.bill_type == 1 %}
-                    <th scope="col" >{{bill.total_bill_cost}}</th>
-              {% endif %}
-
-
-              {%if bill.bill_type == 0%}
-                  <th scope="col" class="text-primary">{{bill.total_bill_cost_ar}}</th>
-              {%elif  bill.bill_type == 1 %}
-                    <th scope="col" >0</th>
-              {% endif %}
-
-
-
-              <th scope="col">{{bill.main_discount}}</th>
-              <th scope="col">{{bill.discount}}</th>
-              <th scope="col">{{bill.total_discount}}</th>
-
-              {%if bill.bill_type == 0%}
-                  <th scope="col">{{bill.required_amount}}</th>
-              {%elif  bill.bill_type == 1 %}
-                  <th scope="col">0</th>
-              {% endif %}
-                <th class="text-danger">{% widthratio bill.total_discount  bill.total_bill_cost_ar  100 %}%</th>
-
-
-              {%if bill.bill_type == 0%}
-                <th scope="col"  class="text-danger">{{bill.restored_amount_cost_ad}}</th>
-              {%elif  bill.bill_type == 1 %}
-                <th scope="col" class="text-danger">{{bill.required_amount}}</th>
-              {% endif %}
-
-
-              {%if bill.bill_type == 0%}
-                  <th scope="col">{{bill.given_amount}}</th>
-              {%elif  bill.bill_type == 1 %}
-                  <th scope="col">0</th>
-              {% endif %}
-
-
-              {%if bill.bill_type == 0%}
-                <th scope="col">{{bill.remaining_amount}}</th>
-              {%elif  bill.bill_type == 1 %}
-                <th scope="col">0</th>
-              {% endif %}
-
-
-            </tr>
-          </tbody>
-      </table>
-
-
-          </div>
-
-                  <button onclick="window.print();" class="btn col-6  btn-primary font-weight-bold px-5 mx-5 no-print">طباعــة</button>
+            <button onclick="window.print();" class="btn col-6  btn-primary font-weight-bold px-5 mx-5 no-print">طباعــة</button>
 
         </div>
 
 {%endif%}
+
+    {%if bill and bill_type == 1%}
+        {%for item in data %}
+            <div>
+              <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                  <li class="breadcrumb-item">اسم المنتج</li>
+                  <li class="breadcrumb-item">{{item.0.product.name}}</li>
+                </ol>
+              </nav>
+            </div>
+
+
+            {%if item.0.total_quantity_in_store > 0 %}
+            <!-- start section seperator -->
+            <div>
+              <div class="select-date text-center font-weight-bold p-1 mb-1" style="position: relative;
+              top: 60px;">
+                  <div class="bg-light p-2 rounded">
+                      تفاصيل الموجود بالمخزن
+                  </div>
+              </div>
+
+              <div style="border-top: 1px solid #1abc9c;"></div>
+            </div>
+            <!-- end section seperator -->
+            <table class="table">
+                <thead class="thead-dark">
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">رقم فاتورة المشتروات</th>
+                    <th scope="col">التاريخ</th>
+                    <th scope="col">الكمية بالكرتونة</th>
+                    <th scope="col">الكمية بالوحدة</th>
+
+                    <th scope="col">عدد القطع ف الكرتونة</th>
+                    <th scope="col">عدد القطع الكلى</th>
+
+                    <th scope="col">سعر شراء الكرتونة</th>
+                    <th scope="col">سعر بعد الخصم</th>
+                    <th scope="col">التكلفة</th>
+                    <th scope="col">اسم التاجر</th>
+                    <th scope="col">تاريخ الانتاج</th>
+                    <th scope="col" class="text-danger">تاريخ الانتهاء</th>
+                    <th scope="col">صورة المنتج</th>
+
+                  </tr>
+                </thead>
+                <tbody>
+
+                  {%if item.0.quantity > 0 or item.0.quantity_packet > 0%}
+                  <tr>
+                    <th scope="row">{{forloop.counter}}</th>
+                    <td><a href="{%url 'content:trader_bill_details' item.0.trader_bill.id%}" target="_blank">اضغط لروية الفاتورة: {{item.0.trader_bill.id}}</a> </td>
+
+                    <td>{{item.0.date|date:'d-m-Y'}}</td>
+                    <td>{{item.0.quantity_packet}}</td>
+                    <td>{{item.0.quantity}}</td>
+
+                    <td>{{item.0.quantity_per_packet}}</td>
+                    <td>{{item.0.total_quantity_in_store}}</td>
+
+                    <td>{{item.0.packet_price}}</td>
+                    <td>{{item.0.packet_price_ad}}</td>
+                    <td>{{item.0.total_quantity_in_store_cost}}</td>
+
+                    <td><a href="{%url 'content:trader_page' item.0.trader.id%}" target="_blank">{{item.0.trader.name}}</a></td>
+                    <td>{{item.0.production_date|date:'d-m-Y'}}</td>
+                    <td class="text-danger">{{item.0.expiration_date|date:'d-m-Y'}}</td>
+
+                    {%if item.0.trader_bill.bill_file%}
+                      <td> <a href="{{item.0.trader_bill.bill_file.url}}" target="_blank"> اضغط لرؤية الفاتورة</a> </td>
+                    {%endif%}
+
+                  </tr>
+                  {%endif%}
+
+
+                </tbody>
+            </table>
+            {%endif%}
+
+
+
+
+            {%if item.1.first.trader_product.moved_to_point_quantity > 0%}
+            <!-- start section seperator -->
+            <div>
+              <div class="select-date text-center font-weight-bold p-1 mb-2" style="position: relative;
+              top: 60px;">
+                  <div class="bg-light p-2 rounded">
+                      تفاصيل الموجود بالنقاط
+                  </div>
+              </div>
+
+              <div style="border-top: 1px solid #1abc9a;"></div>
+            </div>
+            <!-- end section seperator -->
+            <table class="table">
+                <thead class="thead-dark">
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">اسم النقطة</th>
+                    <th scope="col">رقم فاتورة المشتروات</th>
+                    <th scope="col">التاريخ</th>
+                    <th scope="col">الكمية بالكرتونة</th>
+                    <th scope="col">الكمية بالوحدة</th>
+
+                    <th scope="col">عدد القطع ف الكرتونة</th>
+                    <th scope="col">عدد القطع الكلى</th>
+
+                    <th scope="col">سعر شراء الكرتونة</th>
+                    <th scope="col">سعر بعدالخصم</th>
+                    <th scope="col">التكلفة</th>
+
+                    <th scope="col">تاريخ الانتاج</th>
+                    <th scope="col" class="text-danger">تاريخ الانتهاء</th>
+                    <th scope="col">صورة المنتج</th>
+                    <th scope="col" class="text-primary">سعر البيع بالنقطة</th>
+
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for p in item.1 %}
+                  {%if p.quantity > 0 or p.quantity_packet > 0%}
+                  <tr>
+                    <th scope="row">{{forloop.counter}}</th>
+                    <td>{{p.Point.name}}</td>
+                    <td><a href="{%url 'content:trader_bill_details' p.trader_product.trader_bill.id%}" target="_blank">اضغط لروية الفاتورة: {{p.trader_product.trader_bill.id}}</a> </td>
+
+                    <td>{{p.date|date:'d-m-Y'}}</td>
+                    <td>{{p.quantity_packet}}</td>
+                    <td>{{p.quantity}}</td>
+
+                    <td>{{p.trader_product.quantity_per_packet}}</td>
+                    <td>{{p.total_quantity}}</td>
+
+                    <td>{{p.trader_product.packet_price}}</td>
+                    <td>{{p.trader_product.packet_price_ad}}</td>
+                    <td>{{p.current_quantity_cost_buy}}</td>
+
+                    <td>{{p.trader_product.production_date|date:'d-m-Y'}}</td>
+                    <td class="text-danger">{{p.trader_product.expiration_date|date:'d-m-Y'}}</td>
+
+                    {%if p.trader_product.trader_bill.bill_file%}
+                      <td> <a href="{{p.trader_product.trader_bill.bill_file.url}}" target="_blank"> اضغط لرؤية الفاتورة</a> </td>
+                    {%endif%}
+                    <td class="text-primary">{{p.unit_sell_price}}</td>
+
+
+                  </tr>
+                  {%endif%}
+                  {% endfor %}
+
+                </tbody>
+            </table>
+            {%endif%}
+
+
+            {%if item.2.first.point_product.trader_product.sold_to_any_customer > 0%}
+            <!-- start section seperator -->
+            <div>
+              <div class="select-date text-center font-weight-bold p-1 mb-2" style="position: relative;
+              top: 60px;">
+                  <div class="bg-light p-2 rounded">
+                      تفاصيل المباع للعملاء
+                  </div>
+              </div>
+
+              <div style="border-top: 1px solid #1abc9a;"></div>
+            </div>
+            <!-- end section seperator -->
+            <table class="table">
+                <thead class="thead-dark">
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">الصنف</th>
+                    <th scope="col">ك كرتونة</th>
+                    <th scope="col">ك قطعة</th>
+                    <th scope="col">عدد الكلى بالقطع</th>
+
+                    <th scope="col">سعر البيع</th>
+
+
+                    <th scope="col">الاجمالي</th>
+                    <th scope="col">الخصم الكلى</th>
+                    <th scope="col">المطلوب</th>
+                    <th scope="col" class="text-danger"> نسبة الخصم</th>
+                    <th scope="col">اسم النقطة</th>
+                    <th scope="col">اسم العميل</th>
+                    <th scope="col">رقم فاتورة المشتروات</th>
+
+
+
+                  </tr>
+                </thead>
+                <tbody>
+                  {%for pps in item.2%}
+                    <tr>
+                      <th scope="row">{{forloop.counter}}</th>
+
+                      <td>{{pps.point_product.trader_product.product.name}}</td>
+                      <td>{{pps.quantity_packet}}</td>
+                      <td>{{pps.quantity}}</td>
+                      <td>{{pps.total_quantity_sold}}</td>
+
+                      <td>{{pps.unit_sell_price}}</td>
+                      <td>{{pps.line_cost_sell}}</td>
+                      <td>{{pps.line_discount}}</td>
+                      <td>{{pps.line_cost_sell_ad}}</td>
+
+
+                      <th class="text-danger">{% widthratio pps.line_discount  pps.line_cost_sell  100 %}%</th>
+
+                      <td>{{pps.Point.name}}</td>
+                      <td><a href="{%url 'content:customer-page' pps.bill.customer.id%}" target="_blank"> {{pps.bill.customer.name}}</a> </td>
+                      <td><a href="{%url 'content:customer-bill-details' pps.bill.id%}" target="_blank"> {{pps.bill.id}}</a> </td>
+
+                    </tr>
+                    {%endfor%}
+
+
+                </tbody>
+
+
+            </table>
+
+            {%endif%}
+              <div style="border-top: 10px solid #2d0dd0;" class="mb-4"></div>
+
+
+        {%endfor%}
+
+
+      {%endif%}
+
 
 
 

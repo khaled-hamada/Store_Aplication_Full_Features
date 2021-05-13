@@ -167,7 +167,7 @@
       {%if p.quantity > 0 or p.quantity_packet > 0%}
       <tr>
         <th scope="row">{{forloop.counter}}</th>
-        <td><a href="{%url 'content:trader_bill_details' p.trader_bill.id%}" target="_blank">اضغط لروية الفاتورة: {{p.trader_product.trader_bill.id}}</a> </td>
+        <td><a href="{%url 'content:trader_bill_details' p.trader_bill.id%}" target="_blank">اضغط لروية الفاتورة: {{p.trader_bill.id}}</a> </td>
 
         <td>{{p.date|date:'d-m-Y'}}</td>
         <td>{{p.quantity_packet}}</td>

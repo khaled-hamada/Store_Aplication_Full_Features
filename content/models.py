@@ -520,6 +520,12 @@ class Trader_Product(models.Model):
         quantity_in_points = sum(p.total_quantity for p in pp )
         return  quantity_in_points
 
+    @property
+    def sold_to_any_customer(self):
+        pp =Point_Product_Sellings.objects.filter(point_product__trader_product = self.id, line_type = 0)
+
+        return len(pp) ## if >  0 already sold
+
 
     @property
     def total_quantity_in_store(self):
