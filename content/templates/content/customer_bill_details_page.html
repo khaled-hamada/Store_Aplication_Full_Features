@@ -445,6 +445,81 @@
             </table>
 
             {%endif%}
+
+
+
+
+            {%if item.3.count > 0 %}
+            <!-- start section seperator -->
+            <div>
+              <div class="select-date text-center font-weight-bold p-1 mb-1" style="position: relative;
+              top: 60px;">
+                  <div class="bg-light p-2 rounded">
+                      تفاصيل المرتجع للتاجر
+                  </div>
+              </div>
+
+              <div style="border-top: 1px solid #1abc9c;"></div>
+            </div>
+            <!-- end section seperator -->
+            <table class="table">
+                <thead class="thead-dark">
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">رقم فاتورة المشتروات</th>
+                    <th scope="col">التاريخ</th>
+                    <th scope="col">الكمية بالكرتونة</th>
+                    <th scope="col">الكمية بالوحدة</th>
+
+                    <th scope="col">عدد القطع ف الكرتونة</th>
+                    <th scope="col">عدد القطع الكلى</th>
+
+                    <th scope="col">سعر شراء الكرتونة</th>
+                    <th scope="col">سعر بعد الخصم</th>
+                    <th scope="col">التكلفة</th>
+                    <th scope="col">اسم التاجر</th>
+                    <!-- <th scope="col">تاريخ الانتاج</th>
+                    <th scope="col" class="text-danger">تاريخ الانتهاء</th> -->
+                    <th scope="col">صورة المنتج</th>
+
+                  </tr>
+                </thead>
+                <tbody>
+
+                  {%for line in item.3 %}
+
+                    {%if line.quantity > 0 or line.quantity_packet > 0%}
+                    <tr>
+                      <th scope="row">{{forloop.counter}}</th>
+                      <td><a href="{%url 'content:trader_bill_details' line.trader_bill.id%}" target="_blank">اضغط لروية الفاتورة: {{line.trader_bill.id}}</a> </td>
+
+                      <td>{{line.date|date:'d-m-Y'}}</td>
+                      <td>{{line.quantity_packet}}</td>
+                      <td>{{line.quantity}}</td>
+
+                      <td>{{line.quantity_per_packet}}</td>
+                      <td>{{line.total_quantity_in_store}}</td>
+
+                      <td>{{line.packet_price}}</td>
+                      <td>{{line.packet_price_ad}}</td>
+                      <td>{{line.total_quantity_in_store_cost}}</td>
+
+                      <td><a href="{%url 'content:trader_page' line.come_from.trader.id%}" target="_blank">{{line.come_from.trader.name}}</a></td>
+                      <!-- <td>{{line.production_date|date:'d-m-Y'}}</td>
+                      <td class="text-danger">{{line.expiration_date|date:'d-m-Y'}}</td> -->
+
+                      {%if line.trader_bill.bill_file%}
+                        <td> <a href="{{line.trader_bill.bill_file.url}}" target="_blank"> اضغط لرؤية الفاتورة</a> </td>
+                      {%endif%}
+
+                    </tr>
+                    {%endif%}
+                  {%endfor%}
+
+
+                </tbody>
+            </table>
+            {%endif%}
               <div style="border-top: 10px solid #2d0dd0;" class="mb-4"></div>
 
 
@@ -452,6 +527,7 @@
 
 
       {%endif%}
+
 
 
 

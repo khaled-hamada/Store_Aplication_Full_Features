@@ -489,7 +489,7 @@ class Trader_Product(models.Model):
     trader = models.ForeignKey(Trader, on_delete = models.SET_NULL, null = True)
     trader_bill = models.ForeignKey('Trader_Bill', on_delete = models.CASCADE, null = True)
     ## in case of restored only
-    come_from =  models.OneToOneField('Trader_Product', on_delete = models.CASCADE, null = True, blank = True)
+    come_from =  models.ForeignKey('Trader_Product', on_delete = models.CASCADE, null = True, blank = True)
 
     def __str__(self):
         if self.line_type == 0 :
