@@ -3,7 +3,8 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from .models import Sandwich, DaySandwich, Product, Safe_data, withdrawings,Current_manager,Trader, Trader_Product, Trader_Payment
 from .models import Point, Point_User, Point_Product, Point_User_Payment, Safe_Month,Point_Product_Sellings
-from .models import Sandwich_Type,Bread_Type,Katchab,Packet, Customer_Bill, Customer_Payment
+from .models import Sandwich_Type,Bread_Type,Katchab,Packet, Customer_Bill, Customer_Payment, Trader_Bill
+from .models import  Store_To_Point_Product
 
 from django.utils import timezone
 from django.db.models import Sum,Q
@@ -23,10 +24,10 @@ def daily_reports(request):
             total_tr_money =round(sum( t.money_amount for t in transactions),2)
 
         ## todaty traders bills
-        trader_bills = Trader_Product.objects.filter(date__date__gte = from_date , date__date__lte = to_date).order_by('-id')
+        trader_bills = Trader_Bill.objects.filter(date__date__gte = from_date , date__date__lte = to_date, bill_type = 0).order_by('-id')
         trader_all = 0
         if trader_bills != None:
-            trader_all = round(sum( t.total_cost_old for t in trader_bills), 2)
+            trader_all = round(sum( t.total_bill_cost_ar for t in trader_bills), 2)
         ## todaty traders payments
         trader_payments = Trader_Payment.objects.filter(date__date__gte = from_date , date__date__lte = to_date).order_by('-id')
         trader_payments_all = 0
@@ -35,10 +36,11 @@ def daily_reports(request):
 
 
         ## points bills out of store
-        points_bills = Point_Product.objects.filter(date__date__gte = from_date , date__date__lte = to_date).order_by('-id')
+        points_bills = Store_To_Point_Product.objects.filter(date__date__gte = from_date , date__date__lte = to_date, line_type__in = [0,2]).order_by('-id')
         points_all = 0
         if points_bills != None:
-            points_all =round(sum( t.money_quantity for t in points_bills if t.notes == ""),2)
+            ## if condition here inside the sum function to avoid accumulate products moved from point to point
+            points_all =round(sum( t.line_cost for t in points_bills if t.line_type == 0 ),2)
 
         ## points payments
         points_sellings = Customer_Bill.objects.filter(date__date__gte = from_date , date__date__lte = to_date, bill_type = 0).order_by('-id')
@@ -61,7 +63,7 @@ def daily_reports(request):
         paid_given_bill = Customer_Payment.objects.filter(date__date__gte = from_date , date__date__lte = to_date, payment_type = 0).order_by('-date')
         total_amount_given = round( sum(bill.amount for bill in paid_given_bill))
         restored_paid_bills = Customer_Payment.objects.filter(date__date__gte = from_date , date__date__lte = to_date, payment_type = 1).order_by('-date')
-        total_amount_restored = round( sum(bill.amount for bill in restored_paid_bills))
+        total_amount_restored = abs(round( sum(bill.amount for bill in restored_paid_bills)))
 
 
         context = {

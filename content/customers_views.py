@@ -162,9 +162,12 @@ def add_customer_dept(request,customer_id):
             ## m_safe
             m_safe.money +=amount
             m_safe.save()
-
+            if amount < 0:
+                payment_type = 1
+            else :
+                payment_type = 0
             Customer_Payment.objects.create(g_user = customer, t_user=manager, date= timezone.now(), amount = amount
-                            , previos_amount =customer.remaining_money  + amount, current_amount = customer.remaining_money )
+                            , previos_amount =customer.remaining_money  + amount, current_amount = customer.remaining_money , payment_type = payment_type )
 
 
             if customer.remaining_money == 0:

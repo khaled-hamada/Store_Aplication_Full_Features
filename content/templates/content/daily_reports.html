@@ -234,7 +234,7 @@
                   <td>{{bill.g_user.name}}</td>
                   <td>{{bill.amount}}</td>
                   <!-- <td>{{bill.discount}}</td> -->
-                  <td>{{bill.date}}</td>
+                  <td>{{bill.date|date:"d-m-Y"}}</td>
                 </tr>
                 {% endfor %}
 
@@ -285,7 +285,7 @@
                   <td>{{bill.g_user.name}}</td>
                   <td>{{bill.amount}}</td>
                   <!-- <td>{{bill.discount}}</td> -->
-                  <td>{{bill.date}}</td>
+                <td>{{bill.date|date:"d-m-Y"}}</td>
                 </tr>
                 {% endfor %}
 
@@ -447,7 +447,7 @@
                 {% for bill in points_bills %}
                 <tr>
                   <th scope="row">{{forloop.counter}}</th>
-                  <td><a href="{%url 'content:point_page' bill.Point.id%}">{{bill.Point.name}}</a></td>
+                  <td><a href="{%url 'content:point_page' bill.point.id%}">{{bill.point.name}}</a></td>
 
 
                   <td>{{bill.product.name}}</td>
