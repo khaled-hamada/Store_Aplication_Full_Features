@@ -117,27 +117,27 @@ def daily_transaction(request):
 
         ## old quantity
         ## get all p transactions
-        pps = Point_Product_Sellings.objects.filter(date__date__gte = from_date ,date__date__lte = to_date, taken_status = 1 , product=p , line_type = 0).exclude(Point__name__in =["stuff",'manager'])
+        pps = Point_Product_Sellings.objects.filter(date__date__gte = from_date ,date__date__lte = to_date, taken_status = 1 , point_product__trader_product__product = p , line_type = 0).exclude(Point__name__in =["stuff",'manager'])
 
         if len(pps) > 0 :
 
             tr.append(p.name)  ## item.0
 
 
-            total_quantity_sold = sum( (pp.total_quantity_old + pp.total_quantity_new - pp.restored_amount) for pp in pps)
+            total_quantity_sold = sum( pp.total_quantity_sold for pp in pps)
             tr.append(total_quantity_sold)  ## item.1
             # tr.append(p.unit_sell_price)  ## item.7
 
-            total_money_buy =  sum( (pp.money_quantity_buy - pp.restored_amount_cost_buy) for pp in pps)
+            total_money_buy =  sum( pp.line_cost_buy for pp in pps)
             total_money_buy = round(total_money_buy , 2)
 
-            total_money_sold =  sum( (pp.money_quantity_sell - pp.restored_amount_cost ) for pp in pps)
+            total_money_sold =  sum( pp.line_cost_sell  for pp in pps)
             total_money_sold = round(total_money_sold , 2)
 
-            total_discounts = sum( (b.total_discount - (b.restored_amount * b.discount_per_unit) ) for b in pps )
+            total_discounts = sum( b.line_discount for b in pps )
             total_discounts = round(total_discounts , 2)
 
-            total_required = sum(b.required_amount for b in pps )
+            total_required = sum(b.line_cost_sell_ad for b in pps )
             total_required = round(total_required , 2)
 
             tr.append(total_money_buy)  ## item.2
