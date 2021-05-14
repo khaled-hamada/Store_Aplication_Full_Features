@@ -89,15 +89,38 @@ def Treasury_receipt(request):
         'transactions':transactions,
         'safe':m_safe,
     }
-    return render(request, 'content/Treasury_receipt.html',context)
+    return render(request, 'content/Treasury_receipt.html',context = context)
 
 
 
 @login_required
 def monthly_receipt(request):
+    trader_dapts = sum(trader.remaining_money for trader in Trader.objects.all())
+    customer_dapts = sum(c.remaining_money for c in Customer.objects.all())
+    total_products_in_store = sum(p.total_cost for p in Product.objects.all())
+    total_products_in_points = sum(p.total_money_buy for p in Point.objects.all())
+    ## get withdrawings
+    start_date = Current_manager.objects.get(user = request.user).start_date
+    total_withdrawings = sum(w.money_amount for w in withdrawings.objects.filter(day__date__gte = start_date) )
+    safe_current_money = Safe_Month.objects.last().money
 
 
-    return render(request, 'content/monthly_receipt.html')
+    total_profit = (customer_dapts  + total_products_in_store + total_products_in_points \
+                    + total_withdrawings + safe_current_money) - trader_dapts
+
+    context = {
+        'trader_dapts':trader_dapts,
+        'customer_dapts':customer_dapts,
+
+        'total_products_in_store':total_products_in_store,
+        'total_products_in_points':total_products_in_points,
+
+        'total_withdrawings':total_withdrawings,
+        'safe_current_money':safe_current_money,
+        'total_profit':total_profit,
+
+    }
+    return render(request, 'content/monthly_receipt.html',context = context)
 
 
 @login_required
@@ -288,8 +311,8 @@ def change_password(request):
 @login_required
 def search_canteen(request):
     products = Product.objects.all()
-
-    data = []
+    from_date = to_date = product = None
+    product_in_store = product_in_points = customers_payments =customer_payments_acc = None
     if request.method == "POST":
         product = Product.objects.get(id = int(request.POST['product_id']))
         from_date = request.POST['from_date'] if request.POST['from_date'] != "" else Trader_Product.objects.filter(product = product).first().date.date()
@@ -300,21 +323,27 @@ def search_canteen(request):
         product_in_points = Point_Product.objects.filter(~Q(quantity = 0, quantity_packet = 0)).filter(trader_product__product = product).order_by('trader_product__expiration_date')
 
         #3. get customers payments
-        customers_payments = Point_Product_Sellings.objects.filter(point_product__trader_product__product = product , date__date__gte = from_date , date__date__lte = to_date)
+        customers_payments = Point_Product_Sellings.objects.filter(point_product__trader_product__product = product , date__date__gte = from_date , date__date__lte = to_date).order_by("-id")
 
         ## accumulate amount based on customers
         customer_payments_acc =  (customers_payments
-                                .values('bill__customer__name' as 'name')
-                                .annotate(dcount=  Sum(F('quantity') + (F('quantity_packet') *  F('point_product__trader_product__quantity_per_packet') ) ) )
-                                .order_by()
+                                .values('bill__customer__name')
+                                .annotate(total_quantity=  Sum(F('quantity') + (F('quantity_packet') *  F('point_product__trader_product__quantity_per_packet') ) ) )
+                                .order_by('-total_quantity')
                             )
         # dcount=Count(F('quantity') + (F('quantity_packet') *  F('point_product__trader_product__qunantity_per_packet ')))
         print(customer_payments_acc)
         # print(to_date)
     context = {
         'products':products,
+        'product_in_store':product_in_store,
+        'product_in_points':product_in_points,
+        'customers_payments':customers_payments,
+        'customer_payments_acc':customer_payments_acc,
 
 
-        'data':data,
+        'from_date':from_date,
+        'to_date':to_date,
+        'product':product,
     }
     return render(request, "content/search_canteen.html", context = context)

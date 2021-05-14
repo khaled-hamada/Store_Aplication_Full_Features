@@ -157,40 +157,40 @@ def daily_transaction(request):
             # total_required_all +=  total_required
 
     ## same for all sandwiches type
-    all_sand =  Sandwich.objects.all()
-    for s in all_sand :
-        tr = []
-        sand_sellings = DaySandwich.objects.filter(date__date__gte = from_date ,date__date__lte = to_date, sandwich=s)
-
-        ## if any
-        if len(sand_sellings) >0:
-            tr.append(str(s))
-            total_quantity_sold = sum( ss.number for ss in sand_sellings)
-            tr.append(total_quantity_sold)  ## item.1
-            # tr.append(p.unit_sell_price)  ## item.7
-
-            total_money_buy =  sum( (pp.total_cost) for pp in sand_sellings)
-            total_money_buy = round(total_money_buy , 2)
-
-            total_money_sold =  sum( (pp.total_return) for pp in sand_sellings)
-            total_money_sold = round(total_money_sold , 2)
-            total_discounts = 0
-            # total_discounts = round(total_discounts , 2)
-
-            total_required = total_money_sold
-            # total_required = round(total_required , 2)
-            tr.append(total_money_buy)  ## item.2
-            tr.append(total_money_sold)  ## item.3
-            tr.append(total_discounts)  ## item.4
-            tr.append(total_required)  ## item.5
-            profit = round( total_money_sold - total_money_buy , 2)
-
-            tr.append(profit) ## item.6
-
-            transactions.append(tr)
-
-            total_buy += total_money_buy
-            total_sell +=  total_money_sold
+    # all_sand =  Sandwich.objects.all()
+    # for s in all_sand :
+    #     tr = []
+    #     sand_sellings = DaySandwich.objects.filter(date__date__gte = from_date ,date__date__lte = to_date, sandwich=s)
+    #
+    #     ## if any
+    #     if len(sand_sellings) >0:
+    #         tr.append(str(s))
+    #         total_quantity_sold = sum( ss.number for ss in sand_sellings)
+    #         tr.append(total_quantity_sold)  ## item.1
+    #         # tr.append(p.unit_sell_price)  ## item.7
+    #
+    #         total_money_buy =  sum( (pp.total_cost) for pp in sand_sellings)
+    #         total_money_buy = round(total_money_buy , 2)
+    #
+    #         total_money_sold =  sum( (pp.total_return) for pp in sand_sellings)
+    #         total_money_sold = round(total_money_sold , 2)
+    #         total_discounts = 0
+    #         # total_discounts = round(total_discounts , 2)
+    #
+    #         total_required = total_money_sold
+    #         # total_required = round(total_required , 2)
+    #         tr.append(total_money_buy)  ## item.2
+    #         tr.append(total_money_sold)  ## item.3
+    #         tr.append(total_discounts)  ## item.4
+    #         tr.append(total_required)  ## item.5
+    #         profit = round( total_money_sold - total_money_buy , 2)
+    #
+    #         tr.append(profit) ## item.6
+    #
+    #         transactions.append(tr)
+    #
+    #         total_buy += total_money_buy
+    #         total_sell +=  total_money_sold
 
 
 

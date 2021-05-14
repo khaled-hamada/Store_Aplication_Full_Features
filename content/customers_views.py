@@ -561,10 +561,10 @@ def customer_bill_details_page(request):
 
                     single_item.append(Point_Product.objects.filter(trader_product = line))
                     ## 3. customer payments
-                    single_item.append(Point_Product_Sellings.objects.filter(point_product__trader_product = line, line_type = 0))
+                    single_item.append(Point_Product_Sellings.objects.filter(point_product__trader_product = line, line_type = 0).order_by("-id"))
                     print("number of sold lines %d" %len(single_item[2]))
                     ##4. restored to trader
-                    single_item.append(Trader_Product.objects.filter(come_from = line, line_type = 1))
+                    single_item.append(Trader_Product.objects.filter(come_from = line, line_type = 1).order_by("-id"))
                     data.append(single_item)
                     single_item = []
                     print("find items")
