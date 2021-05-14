@@ -9,7 +9,7 @@ from datetime import datetime,date
 # from django.db.models import Q
 from django.utils import timezone
 import decimal
-from django.db.models import Sum,Q
+from django.db.models import Sum,Q,Count,F
 
 
 
@@ -288,27 +288,32 @@ def change_password(request):
 @login_required
 def search_canteen(request):
     products = Product.objects.all()
-    # sandwich = Sandwich.objects.all()
-    store_product = tpps = all_product_sellings =  None
+
     data = []
     if request.method == "POST":
-        # print(request.POST)
-        ## store product
-        store_product = Product.objects.get(id = int(request.POST['product_id']))
-        ##point products
+        product = Product.objects.get(id = int(request.POST['product_id']))
+        from_date = request.POST['from_date'] if request.POST['from_date'] != "" else Trader_Product.objects.filter(product = product).first().date.date()
+        to_date = request.POST['to_date'] if request.POST['to_date'] != "" else timezone.now().date()
 
-        all_product_sellings = Point_Product_Sellings.objects.filter(product = store_product, line_type = 0, taken_status = 1)
-    if store_product != None :
-        data.append(store_product)
-    if tpps != None :
-        for tpp in tpps:
-            data.append(tpp )
-        print("# data %d" %(len(data)))
+        ## get product in store details like product page and also in points
+        product_in_store = Trader_Product.objects.filter(~Q(quantity = 0, quantity_packet = 0)).filter(product = product).order_by('expiration_date')
+        product_in_points = Point_Product.objects.filter(~Q(quantity = 0, quantity_packet = 0)).filter(trader_product__product = product).order_by('trader_product__expiration_date')
 
+        #3. get customers payments
+        customers_payments = Point_Product_Sellings.objects.filter(point_product__trader_product__product = product , date__date__gte = from_date , date__date__lte = to_date)
+
+        ## accumulate amount based on customers
+        customer_payments_acc =  (customers_payments
+                                .values('bill__customer__name' as 'name')
+                                .annotate(dcount=  Sum(F('quantity') + (F('quantity_packet') *  F('point_product__trader_product__quantity_per_packet') ) ) )
+                                .order_by()
+                            )
+        # dcount=Count(F('quantity') + (F('quantity_packet') *  F('point_product__trader_product__qunantity_per_packet ')))
+        print(customer_payments_acc)
+        # print(to_date)
     context = {
         'products':products,
-        'store_product':store_product,
-        'all_product_sellings':all_product_sellings,
+
 
         'data':data,
     }

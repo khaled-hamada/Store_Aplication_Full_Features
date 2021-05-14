@@ -22,10 +22,34 @@
           </select>
         </div>
       </div>
-      <div class=" ">
-        <button type="submit" class="btn btn-sm btn-hover font-weight-bold px-5 ">بحث</button>
-      </div>
-  </div>
+    </div>
+
+    <div class="input-group row ">
+
+        <!-- <div class="col-10"> -->
+          <div class="input-group-prepend">
+            <span class="input-group-text font-weight-bold rounded-0" id="inputGroup-sizing-sm"> من تاريخ </span>
+          </div>
+          <input type="date" name="from_date" class="form-control rounded-0" aria-label="Sizing example input"
+            aria-describedby="inputGroup-sizing-sm" >
+
+
+
+
+          <div class="input-group-prepend mr-2">
+            <span class="input-group-text font-weight-bold rounded-0" id="inputGroup-sizing-sm">الى تاريخ</span>
+          </div>
+          <input type="date" name="to_date" class="form-control rounded-0" aria-label="Sizing example input"
+            aria-describedby="inputGroup-sizing-sm" >
+      <!-- </div> -->
+
+        <div class=" ">
+          <button type="submit" class="btn btn-sm btn-hover font-weight-bold px-5 ">بحث</button>
+        </div>
+    </div>
+
+
+
 
 </form>
 {%for tpp in data%}
