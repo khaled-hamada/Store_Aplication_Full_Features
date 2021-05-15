@@ -324,6 +324,8 @@
                 <tr>
                   <th scope="col">#</th>
                   <th scope="col">اسم التاجر</th>
+                  <th scope="col">اسم المستلم</th>
+                  <!-- <th scope="col">اسم المستلم</th> -->
 
                   <th scope="col">المبلغ الكلى </th>
                   <th scope="col">ما تم دفعه</th>
@@ -338,13 +340,14 @@
                   <th scope="row">{{forloop.counter}}</th>
                   <td><a href="{%url 'content:trader_page' bill.trader.id%}">{{bill.trader.name}}</a></td>
 
-                  <td>{{bill.total_cost_old}}</td>
-                  <td>{{bill.give_cost}}</td>
-                  <td>{{bill.total_cost}}</td>
-                  {%if bill.bill_file %}
-                  <td><a target="_blank" href="{{ bill.bill_file.url }}" class="text-danger"> معاينة الفاتورة
+                  <td>{{bill.manager.user.first_name}}</td>
+                  <td>{{bill.total_bill_cost_ar}}</td>
+                  <td>{{bill.given_amount}}</td>
+                  <td>{{bill.remaining_amount}}</td>
+
+                  <td><a target="_blank" href="{% url 'content:trader_bill_details' bill.id%}" class="text-danger"> معاينة الفاتورة
                     </a></td>
-                  {%endif%}
+
                 </tr>
                 {% endfor %}
 
@@ -376,10 +379,11 @@
                 <tr>
                   <th scope="col">#</th>
                   <th scope="col">اسم التاجر</th>
+                  <th scope="col">اسم المسؤول</th>
+                  <th scope="col">المبلغ</th>
+                  <th scope="col">التاريخ</th>
 
-                  <th scope="col">تكلفة الفاتورة</th>
 
-                  <th scope="col">صورة الفاتورة</th>
 
 
                 </tr>
@@ -390,12 +394,14 @@
                   <th scope="row">{{forloop.counter}}</th>
                   <td><a href="{%url 'content:trader_page' bill.reciever.id%}">{{bill.reciever.name}}</a></td>
 
+                  <td>{{bill.sender.user.first_name}}</td>
                   <td>{{bill.amount}}</td>
+                  <td>{{bill.date}}</td>
 
-                  {%if bill.bill_file %}
+                  <!-- {%if bill.bill_file %}
                   <td><a target="_blank" href="{{ bill.bill_file.url }}" class="text-danger"> معاينة الفاتورة
                     </a></td>
-                  {%endif%}
+                  {%endif%} -->
                 </tr>
                 {% endfor %}
 
