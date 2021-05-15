@@ -108,6 +108,22 @@ def point_page(request, point_id):
 
 
 @login_required
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+def edit_selling_price(request, pp_id):
+
+    failed = success = 0
+
+    point_product = Point_Product.objects.get(id = pp_id)
+    if request.method == "POST":
+        new_selling_price = float(request.POST['selling_price'])
+        point_product.unit_sell_price = new_selling_price
+        point_product.save()
+
+    return redirect('content:point_page',point_product.Point.id)
+
+
+
+@login_required
 def point_total_product(request, tpp):
 
     return render(request, 'content/point_total_product.html')
@@ -342,7 +358,7 @@ def create_new_customer_point_bill(request):
             discount_per_unit = float(request.POST['discount_per_unit'])
         except :
             discount_per_unit = 0
-        
+
         Point_Product_Sellings.objects.create(point_product = point_product , Point= point,bill = current_bill,
                                                 quantity = quantity , quantity_packet = quantity_packet, unit_sell_price = unit_sell_price ,
                                                 discount_per_unit = discount_per_unit)
@@ -847,10 +863,12 @@ def create_new_point_to_point_bill(request):
 
         quantity = r
         quantity_packet += q
+        trader_product = point_product.trader_product
 
+        notes = "بضاعة منقولة من نقطة =>  " + str(point) + "  الى نقطة  => " + str(to_point)
         unit_sell_price = float(request.POST['selling_price'])
         Store_To_Point_Product.objects.create(trader_product = point_product.trader_product ,point = point,  to_point= to_point , unit_sell_price = unit_sell_price
-                                ,quantity = quantity , quantity_packet = quantity_packet, line_type = 2  )
+                                ,quantity = quantity , quantity_packet = quantity_packet, line_type = 2 , notes = notes  )
 
 
 
@@ -861,8 +879,8 @@ def create_new_point_to_point_bill(request):
 def delete_point_to_point_bill_line(request, line_id):
     line = Store_To_Point_Product.objects.get(id = line_id)
     ## restore amount to trader_product line
-    point_product = Point_Product.objects.get(trader_product = line.trader_product ,Point = line.point )
-    point_product.add_to_product(line.quantity, line.quantity_packet)
+    from_point_product = Point_Product.objects.get(trader_product = line.trader_product ,Point = line.point )
+    from_point_product.add_to_product(line.quantity, line.quantity_packet)
     line.delete()
 
     return redirect('content:point_to_point_product',point_product.Point.id)

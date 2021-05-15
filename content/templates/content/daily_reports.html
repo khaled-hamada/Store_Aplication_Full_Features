@@ -439,12 +439,8 @@
                   <th scope="col">#</th>
                   <th scope="col">اسم النقطة</th>
                   <th scope="col">اسم الصنف</th>
-                  <th scope="col">كمية قديم</th>
-                  <!-- <th scope="col">سعر ش ق</th> -->
-                  <th>التكلفة</th>
-                  <th scope="col">كمية جديد</th>
-                  <!-- <th scope="col">سعر ش ج</th> -->
-                  <th>التكلفة</th>
+                  <th scope="col">ك بالقطعة</th>
+
                   <th scope="col">ثمن الفاتورة</th>
                   <th scope="col">ملاحظات</th>
                 </tr>
@@ -453,21 +449,19 @@
                 {% for bill in points_bills %}
                 <tr>
                   <th scope="row">{{forloop.counter}}</th>
+                  {%if bill.line_type == 0 %}
                   <td><a href="{%url 'content:point_page' bill.point.id%}">{{bill.point.name}}</a></td>
+                  {%elif bill.line_type == 2%}
+                  <td><a href="{%url 'content:point_page' bill.to_point.id%}">{{bill.to_point.name}}</a></td>
+                  {%endif%}
+                  <td>{{bill.trader_product.product.name}}</td>
 
 
-                  <td>{{bill.product.name}}</td>
+                  <td>{{bill.total_quantity}}</td>
 
 
-                  <td>{{bill.total_q_old}}</td>
-                  <td>{{bill.total_q_old_price}}</td>
-                  <!-- <td>{{bill.product.last_unit_by_price}}</td> -->
 
-                  <td>{{bill.total_q_new}}</td>
-                  <td>{{bill.total_q_new_price}}</td>
-                  <!-- <td>{{bill.product.unit_buy_price}}</td> -->
-
-                  <td>{{bill.money_quantity}}</td>
+                  <td>{{bill.line_cost}}</td>
                   <td>{{bill.notes}}</td>
                 </tr>
                 {% endfor %}
@@ -501,7 +495,7 @@
                   <th scope="col">النقطة</th>
                   <th scope="col">العميل</th>
 
-                  <th scope="col">القمن قبل الخصم</th>
+                  <th scope="col">ثمن قبل الخصم</th>
                   <th scope="col">الخصم</th>
                   <th scope="col">ثمن بعد الخصم</th>
 

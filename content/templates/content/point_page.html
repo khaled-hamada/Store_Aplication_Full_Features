@@ -341,7 +341,59 @@
           <td>{{p.total_quantity}}</td>
           <td>{{p.unit_buy_price_ad}}</td>
           <td>{{p.current_quantity_cost_buy}}</td>
-          <td>{{p.unit_sell_price}}</td>
+          <td>{{p.unit_sell_price}}
+            <br>
+            <!-- Button trigger modal -->
+              <button type="button" class="btn btn-sm btn-primary no-print" data-toggle="modal" data-target="#exampleModal{{p.id}}">
+                تعديل
+              </button>
+
+                  <!-- Modal -->
+                  <div class="modal fade" id="exampleModal{{p.id}}" tabindex="{{p.id}}" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="exampleModalLabel"> تعديل سعر بيع   -  {{p.trader_product.product.name}} </h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                        <div class="modal-body">
+
+                          <form method="post" action="{%url 'content:edit_selling_price' p.id %}"  enctype="multipart/form-data" id="edit_form{{p.id}}" >
+                            {% csrf_token %}
+
+
+
+
+
+                            <div class="form-group row">
+
+                                  <label for="products" class="col-sm-5 font-weight-bold col-form-label">سعر بيع القطعة</label>
+
+                              <div class="col-sm-5">
+                                <div class="input-group mb-3">
+                                  <input type="number" min="0" step=".001" name="selling_price" value="{{p.unit_sell_price}}" class="form-control" form="edit_form{{p.id}}" required>
+                                </div>
+                              </div>
+                            </div>
+
+
+
+
+
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-dismiss="modal">إغلاق</button>
+                          <button type="submit" form="edit_form{{p.id}}" class="btn btn-primary">حفظ التعديلات</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Modal end  -->
+          </td>
 
           <td>{{p.trader_product.production_date|date:'d-m-Y'}}</td>
           <td>{{p.trader_product.expiration_date|date:'d-m-Y'}}</td>

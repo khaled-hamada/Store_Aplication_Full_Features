@@ -179,7 +179,7 @@ class Store_To_Point_Product(models.Model):
         line_type = models.IntegerField(default = 0)
         ## must be 1 for assertion
         given_status = models.IntegerField(default = 0)
-
+        notes = models.TextField(default="", null=True)
         # point_product = models.ForeignKey('Point_Product', on_delete = models.CASCADE, null = True)
         point = models.ForeignKey('Point', on_delete = models.CASCADE, null = True, related_name ='Store_To_Point_Product' , blank = True )
         ## in case of restored only
