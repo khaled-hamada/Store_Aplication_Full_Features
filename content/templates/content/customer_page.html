@@ -161,8 +161,8 @@
 
   <!-- Modal end  -->
   <!-- Modal -->
-  <div class="modal fade" id="add_customer_money" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+  <div class="modal  fade" id="add_customer_money" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="add_customer_money"> اضافة مبلغ نقدى تحت الحساب</h5>
@@ -171,6 +171,27 @@
           </button>
         </div>
         <div class="modal-body">
+          <h3>
+              <span>  ملاحظات </span>
+              <ol>
+                <li>عند
+                    <span class="text-primary"> تحصيل مبلغ من العميل </span>
+                   للخزنة تكتب الكمية بالموجب مثال  اضافة 250 جنيه  ->
+                   <br>
+                   المبلغ : 250
+                 </li>
+                 <br> <br>
+                <li>عند
+                    <span class="text-primary"> دفع مبلغ للعميل من الخزنة</span>
+                    <span class="text-danger"> اكتب المبلغ مسبوقا ب اشارة الطرح  - </span>
+                    مثال اعطاء العميل 300 جنيه
+                   <br>
+                   المبلغ : -300
+                 </li>
+
+              </ol>
+          </h3>
+
 
           <form method="post" action="{%url 'content:add_customer_dept' customer.id %}" id="add_customer_dept" >
             {% csrf_token %}
