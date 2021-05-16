@@ -37,14 +37,14 @@
 
     <div class="row">
       <div class="mx-2 ">
-          <a href="{%url 'content:customer-payment' customer.id%}">
+          <a href="{%url 'content:customer-payment' customer.id%}" target="_blank">
               <button class="btn btn-sm btn-hover font-weight-bold px-1">تحصيــــل فاتـــورة</button>
           </a>
           </div>
 
 
             <div class="">
-              <a href="{%url 'content:restore-customer-bill' customer.id  %}">
+              <a href="{%url 'content:restore-customer-bill' customer.id  %}" target="_blank">
                   <button class="btn btn-sm btn-danger font-weight-bold px-1 mx-2">استرجاع فاتورة</button>
               </a>
               </div>
@@ -56,26 +56,26 @@
 
 
             <div class="">
-              <a href="{%url 'content:customer_all_unpaid_bills' customer.id %}">
+              <a href="{%url 'content:customer_all_unpaid_bills' customer.id %}" target="_blank">
                   <button class="btn btn-sm  btn-info font-weight-bold px-1 mx-2">كشف ب فواتير العميل الغير مدفوعة</button>
               </a>
               </div>
 
             <div class="">
-              <a href="{%url 'content:customer_all_restored_bills' customer.id %}">
-                  <button class="btn btn-sm  btn-info font-weight-bold px-1 mx-2">كشف ب فواتير العميل الغير مدفوعة</button>
+              <a href="{%url 'content:customer_all_restored_bills' customer.id %}" target="_blank">
+                  <button class="btn btn-sm  btn-danger font-weight-bold px-1 mx-2">كشف ب فواتير العميل المسترجعة</button>
               </a>
               </div>
     </div>
 
     <div class="row mt-4">
       <div class="">
-        <a href="{%url 'content:customer_all_paid_bills' customer.id %}">
+        <a href="{%url 'content:customer_all_paid_bills' customer.id %}" target="_blank">
             <button class="btn btn-sm btn-primary font-weight-bold px-1 mx-2">كشف ب فواتير العميل المدفوعة</button>
         </a>
         </div>
       <div class="">
-        <a href="{%url 'content:customer_all_unpaid_bills' customer.id %}">
+        <a href="{%url 'content:customer_all_money_bills' customer.id %}" target="_blank">
             <button class="btn btn-sm  btn-primary font-weight-bold px-1 mx-2">كشف ب فواتير العميل النقدية</button>
         </a>
         </div>
@@ -213,156 +213,10 @@
 
 
 
-{% block content_4 %}
-<div class=" container bg-light mt-5 shadow-lg rounded px-5 pb-5 mb-5">
-<h2 style="padding-top: 10px;" class="text-right">فواتير العميل المسترجعة</h2>
-<table class="table">
-    <thead>
-      <tr>
-        <th scope="col">#</th>
-        <th scope="col">رقم الفاتورة / التفاصيل</th>
-        <th scope="col">اسم المسلم</th>
-        <th scope="col">المبلغ الكلى</th>
-        <th scope="col">الخصم</th>
-        <th scope="col">المطلوب</th>
-        <!-- <th scope="col" class="text-danger"> نسبة الخصم</th> -->
-
-        <th scope="col">ما تم دفعه</th>
-        <th scope="col">المتبقى</th>
-        <th scope="col">التاريخ</th>
-
-      </tr>
-    </thead>
-    <tbody>
-      {%if retunred_bills %}
-        {%for pill in retunred_bills%}
-        <tr>
-          <th scope="row">{{forloop.counter}}</th>
-          <td><a href="{%url 'content:customer-bill-details' pill.id%}">{{pill.id}} - اضغط لرؤية التفاصيل</a></td>
-          <td><a href="{%url 'content:manager' pill.manager.id%}">{{pill.manager.user.first_name}}</a></td>
-          <td>{{pill.total_bill_cost}}</td>
-          <td>{{pill.total_discount}}</td>
-          <td>{{pill.required_amount}}</td>
-          <!-- <th class="text-danger">{% widthratio pill.total_discount  pill.total_bill_cost_ar  100 %}%</th> -->
-
-          <td>{{pill.given_amount}}</td>
-          <td>{{pill.remaining_amount}}</td>
-          <td>{{pill.date}}</td>
-
-        </tr>
-      {%endfor%}
-      {%endif%}
-    </tbody>
-  </table>
-
-    </div>
-    {% endblock %}
-
-    {% block content_5 %}
-    <div class=" container bg-light mt-5 shadow-lg rounded px-5 pb-5 mb-5">
-    <h2 style="padding-top: 10px;" class="text-right  text-primary">فواتير العميل النقدية المدفوعة</h2>
-    <table class="table">
-        <thead>
-          <tr>
-            <th scope="col">#</th>
-            <!-- <th scope="col">رقم الفاتورة / التفاصيل</th> -->
-            <th scope="col">اسم المسلم</th>
-            <th scope="col">المستلم</th>
-
-            <th scope="col">المبلغ السابق</th>
-
-            <th scope="col">المبلغ المدفوع</th>
-            <th scope="col">الخصم</th>
-
-            <th scope="col">المبلغ الحالى</th>
-
-            <th scope="col">التاريخ</th>
-
-          </tr>
-        </thead>
-        <tbody>
-          {%if paid_given_bill %}
-            {%for pill in paid_given_bill%}
-            <tr>
-              <th scope="row">{{forloop.counter}}</th>
-              <!-- <td><a href="{%url 'content:customer-bill-details' pill.id%}">{{pill.id}} - اضغط لرؤية التفاصيل</a></td> -->
-              <td><a href="{%url 'content:manager' pill.t_user.id%}">{{pill.t_user.user.first_name}}</a></td>
-              <td>{{pill.g_user.name}}</td>
-
-                <td>{{pill.previos_amount}}</td>
-
-              <td>{{pill.amount}}</td>
-              <td>{{pill.discount}}</td>
-
-              <td>{{pill.current_amount}}</td>
-
-
-
-              <td>{{pill.date}}</td>
-
-            </tr>
-          {%endfor%}
-          {%endif%}
-        </tbody>
-      </table>
-
-        </div>
-    {% endblock %}
-
-
-
-
 
 
     {% block content_6 %}
-      <div class=" container bg-light mt-5 shadow-lg rounded px-5 pb-5 mb-5">
-      <h2 style="padding-top: 10px;" class="text-right text-danger">فواتير العميل النقدية المسترجعة</h2>
-      <table class="table">
-          <thead>
-            <tr>
-              <th scope="col">#</th>
-              <!-- <th scope="col">رقم الفاتورة / التفاصيل</th> -->
-              <th scope="col">اسم المسلم</th>
-              <th scope="col">المستلم</th>
 
-              <th scope="col">المبلغ السابق</th>
-
-              <th scope="col">المبلغ المدفوع</th>
-              <th scope="col">الخصم</th>
-
-              <th scope="col">المبلغ الحالى</th>
-
-              <th scope="col">التاريخ</th>
-
-            </tr>
-          </thead>
-          <tbody>
-            {%if restored_paid_bills %}
-              {%for pill in restored_paid_bills%}
-              <tr>
-                <th scope="row">{{forloop.counter}}</th>
-                <!-- <td><a href="{%url 'content:customer-bill-details' pill.id%}">{{pill.id}} - اضغط لرؤية التفاصيل</a></td> -->
-                <td><a href="{%url 'content:manager' pill.t_user.id%}">{{pill.t_user.user.first_name}}</a></td>
-                <td>{{pill.g_user.name}}</td>
-
-                <td>{{pill.previos_amount}}</td>
-
-                <td>{{pill.amount}}</td>
-                <td>{{pill.discount}}</td>
-
-                <td>{{pill.current_amount}}</td>
-
-
-
-                <td>{{pill.date}}</td>
-
-              </tr>
-            {%endfor%}
-            {%endif%}
-          </tbody>
-        </table>
-
-          </div>
 
 
     <script>

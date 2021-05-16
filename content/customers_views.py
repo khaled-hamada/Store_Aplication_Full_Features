@@ -160,6 +160,46 @@ def customer_all_restored_bills(request,customer_id):
     }
     return render(request, 'content/customer_all_restored_bills.html', context)
 
+
+
+@login_required
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+def customer_all_money_bills(request,customer_id):
+    from_date = to_date = product = paid_given_bill = totals =   None
+    customer = Customer.objects.get(id = customer_id)
+    if request.method == "POST":
+        from_date = request.POST['from_date'] if request.POST['from_date'] != "" else Customer_Bill.objects.filter(customer = customer).first().date.date()
+        to_date = request.POST['to_date'] if request.POST['to_date'] != "" else timezone.now().date()
+
+
+
+        paid_given_bill = Customer_Payment.objects.filter(g_user = customer,    date__date__gte = from_date , date__date__lte = to_date ).order_by('-date')
+
+        # total_bills_cost = round( sum( t.total_bill_cost for t in un_paid_bills), 1 ) ### 0
+        # lls_add_discount = round( sum( t.discount for t in un_paid_bills), 1 )     ### 3
+        # bills_total_discount = round( sum( t.total_discount for t in un_paid_bills), 1 )     ### 4
+        # #
+        # #
+        # bills_required_amount = round( sum( t.required_amount for t in un_paid_bills), 1 )  ### 5
+        # # bills_restored_amount_cost_ad = round( sum( t.restored_amount_cost_ad for t in un_paid_bills), 1 )  ### 6
+        # #
+        # bills_given_amount = round( sum( t.given_amount for t in un_paid_bills), 1 )     ### 7
+        # bills_remaining_amount = round( sum( t.remaining_amount for t in un_paid_bills), 1 )     ### 8
+        # #
+        # totals = [total_bills_cost, bills_total_discount, bills_required_amount,bills_given_amount,bills_remaining_amount   ]
+
+
+    context = {
+        'customer':customer,
+        'paid_given_bill':paid_given_bill,
+        # 'totals':totals,
+
+
+    }
+    return render(request, 'content/customer_all_money_bills.html', context)
+
+
+
 @login_required
 @user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
 def customer_payment(request,customer_id):

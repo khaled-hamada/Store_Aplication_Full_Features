@@ -77,6 +77,7 @@ urlpatterns = [
     path('customer_all_unpaid_bills/<int:customer_id>', customers_views.customer_all_unpaid_bills, name='customer_all_unpaid_bills'),
     path('customer_all_paid_bills/<int:customer_id>', customers_views.customer_all_paid_bills, name='customer_all_paid_bills'),
     path('customer_all_restored_bills/<int:customer_id>', customers_views.customer_all_restored_bills, name='customer_all_restored_bills'),
+    path('customer_all_money_bills/<int:customer_id>', customers_views.customer_all_money_bills, name='customer_all_money_bills'),
 
     ## coming from customer to point => restord
     path('confirm_restored_customer_bill/<int:bill_id>', customers_views.confirm_restored_customer_bill, name='confirm_restored_customer_bill'),
