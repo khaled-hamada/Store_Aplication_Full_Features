@@ -1,0 +1,215 @@
+{% extends './base.html' %}
+{% block content %}
+
+
+
+<div class="select-date text-center font-weight-bold p-3 mb-4  no-print">
+
+</div>
+
+<div class="no-print">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">التجار</li>
+      <li class="breadcrumb-item">{{trader.name}}</li>
+      <li class="breadcrumb-item">الفواتير المسترجعة</li>
+      <li class="breadcrumb-item">تفاصيل الفواتير : </li>
+    </ol>
+  </nav>
+</div>
+
+<form class="no-print border m-4"  method="post">
+
+  {%csrf_token%}
+    <div class="input-group row ">
+
+        <!-- <div class="col-10"> -->
+          <div class="input-group-prepend">
+            <span class="input-group-text font-weight-bold rounded-0" id="inputGroup-sizing-sm"> من تاريخ </span>
+          </div>
+          <input type="date" name="from_date" class="form-control rounded-0" aria-label="Sizing example input"
+            aria-describedby="inputGroup-sizing-sm" >
+
+
+
+
+          <div class="input-group-prepend mr-2">
+            <span class="input-group-text font-weight-bold rounded-0" id="inputGroup-sizing-sm">الى تاريخ</span>
+          </div>
+          <input type="date" name="to_date" class="form-control rounded-0" aria-label="Sizing example input"
+            aria-describedby="inputGroup-sizing-sm" >
+      <!-- </div> -->
+
+        <div class=" ">
+          <button type="submit" class="btn btn-sm btn-primary font-weight-bold px-5 ">بحث</button>
+        </div>
+    </div>
+
+
+</form>
+
+
+  {%if un_paid_bills %}
+        {%for current_bill in un_paid_bills%}
+        <!-- start seperator -->
+        <div style="border-top: 7px solid #1abc9c;" class="my-5"></div>
+        <!-- end seperator -->
+
+            <div class="row font-weight-bold justify-content-around mt-5">
+              <p>رقم الفاتورة : <span >{{current_bill.id}}</span></p>
+              <p>اسم المسؤول : <span class="font-weight-bold text-primary" >{{current_bill.manager.user.first_name}}</span></p>
+              <p>اسم التاجر : <span class="font-weight-bold text-primary" >{{current_bill.trader.name}}</span></p>
+              <p>تاريخ الفاتورة: <span >{{current_bill.date}}</span></p>
+              <p>مديونية التاجر الحالية : <span  class="text-danger">{{current_bill.trader.remaining_money}}</span></p>
+
+
+            </div>
+
+            <table class="table">
+                <thead class="thead-dark">
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">الصنف</th>
+                    <th scope="col">كمية كرتونة</th>
+                    <th scope="col">كمية قطعة</th>
+                    <th scope="col">سعر شراء الكرتونة</th>
+                    <th scope="col">الخصم للكرتونة</th>
+                    <th scope="col">الخصم الكلى</th>
+
+                    <th scope="col">الاجمالي</th>
+                    <th scope="col">المطلوب</th>
+                    <th scope="col" class="text-danger"> نسبة الخصم</th>
+
+                  </tr>
+                </thead>
+                <tbody>
+                {% for line in current_bill.all_lines %}
+                <tr>
+                  <th scope="row">{{forloop.counter}}</th>
+
+                  <td>{{line.come_from.product.name}}</td>
+                  <td>{{line.quantity_packet}}</td>
+                  <td>{{line.quantity}}</td>
+                  <td>{{line.packet_price}}</td>
+                  <td>{{line.come_from.discount_per_packet}}</td>
+                  <td>{{line.total_discount}}</td>
+                  <td>{{line.total_cost}}</td>
+                  <td>{{line.required_amount}}</td>
+
+                  <th class="text-danger">{% widthratio line.total_discount  line.total_cost  100 %}%</th>
+                  </tr>
+                  {%endfor%}
+                  </tbody>
+
+
+              </table>
+              <hr class="my-1">
+              <div class="container mt-0">
+                <div class='row text-center'>
+
+                <table class="table">
+                  <thead class="thead-dark">
+                    <tr>
+                      <th scope="col">تكلفة الفاتورة</th>
+                      <th scope="col">الخصم</th>
+                      <th scope="col">المطلوب</th>
+                      <th scope="col">ما تم دفعه</th>
+                      <th scope="col" class="text-primary">المتبقى</th>
+
+                      <th class="text-danger"> نسبة الخصم</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+
+                    <tr>
+                      <th scope="col">{{current_bill.total_bill_cost}}</th>
+                      <th scope="col">{{current_bill.total_discount}}</th>
+                      <th scope="col">{{current_bill.required_amount}}</th>
+                      <th scope="col">{{current_bill.given_amount}}</th>
+                      <th scope="col" class="text-primary">{{current_bill.remaining_amount}}</th>
+                      <th class="text-danger">{% widthratio current_bill.total_discount  current_bill.total_bill_cost_ar  100 %}%</th>
+
+                    </tr>
+                  </tbody>
+              </table>
+            </div>
+            </div>
+
+    {%endfor%}
+  {%endif%}
+{%if totals%}
+  <hr class="my-5">
+  <div class="container print ">
+    <h3 class="text-primary font-weight-bold text-right" >اجمالى الفواتير </h3>
+    <div class='row text-center'>
+
+    <table class="table">
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col">المبلغ الكلى </th>
+          <!-- <th scope="col">تكلفة المسترجع </th> -->
+
+
+          <!-- <th scope="col">الخصم</th> -->
+          <!-- <th scope="col">الخصم الاضافى</th> -->
+          <th scope="col">الخصم الكلى</th>
+
+          <th scope="col">المطلوب</th>
+          <!-- <th scope="col">ثمن المسترجع </th> -->
+          <th scope="col">ما تم دفعه </th>
+          <th scope="col">المتبقى</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <tr>
+
+
+          <th scope="col">{{totals.0}}</th>
+          <th scope="col" class="text-danger">{{totals.1}}</th>
+
+
+
+
+          <th scope="col">{{totals.2}}</th>
+          <th scope="col">{{totals.3}}</th>
+          <th scope="col">{{totals.4}}</th>
+
+
+
+        </tr>
+      </tbody>
+  </table>
+</div>
+</div>
+
+
+{%endif%}
+
+
+
+
+
+    <div class="row  font-weight-bold p-3 mb-4 justify-content-center no-print">
+      <a href="{%url 'content:trader_page' trader.id %}">
+          <button class="btn  btn-hover font-weight-bold px-5 mx-2">رجوع</button>
+      </a>
+
+        <button onclick="window.print();" class="btn col-4  btn-primary font-weight-bold px-5 mx-5">طباعــة</button>
+
+      </div>
+
+
+
+    <script>
+      const navLinks = document.querySelectorAll(".nav-item")
+      for (link of navLinks){
+          link.classList.remove('active-link')
+      }
+        navLinks[6].classList.add('active-link');
+
+    </script>
+
+{%endblock%}

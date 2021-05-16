@@ -58,6 +58,12 @@ urlpatterns = [
     path('give_payment/<int:trader_id>', trader_views.give_payment, name='give_payment'),
     path('add_trader/<int:status>', trader_views.add_trader, name='add_trader'),
 
+    path('trader_all_unpaid_bills/<int:trader_id>', trader_views.trader_all_unpaid_bills, name='trader_all_unpaid_bills'),
+    path('trader_all_paid_bills/<int:trader_id>', trader_views.trader_all_paid_bills, name='trader_all_paid_bills'),
+    path('trader_all_restored_bills/<int:trader_id>',trader_views.trader_all_restored_bills, name='trader_all_restored_bills'),
+    path('trader_all_money_bills/<int:trader_id>', trader_views.trader_all_money_bills, name='trader_all_money_bills'),
+
+
 ################################################################## customer views
 
     path('customers-page/', customers_views.customers_page, name='customers-page'),

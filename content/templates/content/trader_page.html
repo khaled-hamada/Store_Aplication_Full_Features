@@ -41,39 +41,77 @@
 </div>
   {%if user.groups.first.name == "managers"%}
 <div class="row  font-weight-bold p-3 mb-4 justify-content-center">
-  <div class="mx-2 ">
-      <a href="{%url 'content:give_payment' trader_pdata.id%}">
-          <button class="btn btn-hover font-weight-bold px-5">دفــع فاتـــورة</button>
-      </a>
-      </div>
 
-        <div class="mx-2 ">
-            <a class="btn btn-hover font-weight-bold px-5" href="{%url 'content:update_product' trader_pdata.id%}">اضافة فاتورة</a>
-        </div>
+          <div class="row">
+            <div class="mx-2 ">
+                <a href="{%url 'content:give_payment' trader_pdata.id%}">
+                    <button class="btn btn-sm btn-hover font-weight-bold px-1">دفــع فاتـــورة</button>
+                </a>
+                </div>
 
-        <div class="">
-          <a href="{%url 'content:restore_trader_product_store' trader_pdata.id  %}">
-              <button class="btn y btn-danger font-weight-bold px-5 mx-2">استرجاع فاتورة</button>
-          </a>
+                  <div class="mx-2 ">
+                      <a class="btn btn-hover btn-sm font-weight-bold px-1" href="{%url 'content:update_product' trader_pdata.id%}">اضافة فاتورة</a>
+                  </div>
+
+                  <div class="">
+                    <a href="{%url 'content:restore_trader_product_store' trader_pdata.id  %}">
+                        <button class="btn btn-sm  btn-danger font-weight-bold px-1 mx-2">استرجاع فاتورة</button>
+                    </a>
+                    </div>
+
+
+
+                      <div class="">
+                        <a href="{%url 'content:add_money_dept' trader_pdata.id  %}">
+                            <button class="btn btn-sm  btn-warning font-weight-bold px-1 mx-2">اضافة سلفــة نقديـــة</button>
+                        </a>
+                      </div>
+
+                      <div class="">
+                        <a href="{%url 'content:trader_all_unpaid_bills' trader_pdata.id %}" target="_blank">
+                            <button class="btn btn-sm  btn-info font-weight-bold px-1 mx-2">كشف ب فواتير التاجر الغير مدفوعة</button>
+                        </a>
+                        </div>
           </div>
-
+          <div class="row m-3">
 
 
             <div class="">
-              <a href="{%url 'content:add_money_dept' trader_pdata.id  %}">
-                  <button class="btn y btn-warning font-weight-bold px-5 mx-2">اضافة سلفــة نقديـــة</button>
+              <a href="{%url 'content:trader_all_restored_bills' trader_pdata.id %}" target="_blank">
+                  <button class="btn btn-sm  btn-danger font-weight-bold px-1 mx-2">كشف ب فواتير التاجر المسترجعة</button>
               </a>
-            </div>
-            <!-- Button trigger modal -->
-              <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
-                تعديل بيانات التاجر
-              </button>
+              </div>
 
 
-        <div class="">
-          <a href="{%url 'content:Debts'  %}">
-              <button class="btn y btn-hover font-weight-bold px-5 mx-2">رجوع</button>
-          </a>
+              <div class="">
+                <a href="{%url 'content:trader_all_paid_bills' trader_pdata.id %}" target="_blank">
+                    <button class="btn btn-sm btn-primary font-weight-bold px-1 mx-2">كشف ب فواتير العميل المدفوعة</button>
+                </a>
+              </div>
+
+
+              <div class="">
+                <a href="{%url 'content:trader_all_money_bills' trader_pdata.id %}" target="_blank">
+                    <button class="btn btn-sm  btn-primary font-weight-bold px-1 mx-2">كشف ب فواتير التاجر النقدية</button>
+                </a>
+                </div>
+
+                <div class="">
+                  <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-sm btn-primary  px-1 mx-5" data-toggle="modal" data-target="#exampleModal">
+                      تعديل بيانات التاجر
+                    </button>
+                </div>
+
+
+                  <div class="">
+                    <a href="{%url 'content:Debts'  %}">
+                        <button class="btn btn-sm  btn-hover font-weight-bold px-1 mx-2">رجوع</button>
+                    </a>
+                    </div>
+          </div>
+          <div class="row">
+
           </div>
 
   </div>
@@ -140,169 +178,6 @@
     </div>
 
     <!-- Modal end  -->
-{% endblock %}
-{% block content_2 %}
-<div class=" container bg-light mt-5 shadow-lg rounded px-5 pb-5 mb-5">
-
-
-<h2 style="padding-top: 10px;" class="text-right">فواتيــر التاجــر -- المدفوعة</h2>
-
-<table class="table">
-    <thead >
-      <tr>
-        <th scope="col">#</th>
-        <th scope="col">التاريخ</th>
-        <th scope="col">اسم المسلم</th>
-        <th scope="col">المبلغ السابق</th>
-        <th scope="col">المبلغ المدفوع</th>
-        <th scope="col">الخصم</th>
-        <th scope="col">المبل الحالى </th>
-
-        <th scope="col">ملاحظات</th>
-      </tr>
-    </thead>
-    <tbody>
-      {%if trader_pills %}
-        {%for pill in trader_pills%}
-        {%if pill.sender %}
-        <tr>
-          <th scope="row">{{forloop.counter}}</th>
-          <td>{{pill.date}}</td>
-
-          <td><a href="{%url 'content:manager' pill.sender.id%}">{{pill.sender.user.first_name}}</a></td>
-          <td>{{pill.previos_amount|floatformat}}</td>
-          <td>{{pill.amount}}</td>
-          <td>{{pill.discount}}</td>
-          <td>{{pill.current_amount}}</td>
-          <td>{{pill.notes}}</td>
-
-        </tr>
-        {%endif%}
-        {%endfor%}
-    {%endif%}
-    </tbody>
-  </table>
-
-
-  </div>
-{% endblock %}
-{% block content_3 %}
-<div class=" container bg-light mt-5 shadow-lg rounded px-5 pb-5 mb-5">
-<h2 style="padding-top: 10px;" class="text-right">معامــلات التاجــر - بضائع واردة للمخزن</h2>
-
-<table class="table">
-    <thead>
-      <tr>
-        <th scope="col">#</th>
-
-        <th scope="col">رقم فاتورة المشتروات</th>
-        <th scope="col">التاريخ</th>
-        <th scope="col">التكلفة الكلية</th>
-        <th scope="col">الخصم الكلى</th>
-        <th scope="col">المبلغ المدفوع</th>
-        <th scope="col">المبلغ المتبقى</th>
-
-        <th scope="col">النسبة المئوية</th>
-
-        <th scope="col"> اسم المسؤول</th>
-        <th scope="col">الحالة</th>
-        <th scope="col">صورة الفانورة</th>
-      </tr>
-    </thead>
-    <tbody>
-      {%if trader_transactions %}
-        {%for transaction in trader_transactions%}
-        {%if transaction.manager %}
-        <tr>
-          <th scope="row">{{forloop.counter}}</th>
-          <td><a href="{%url 'content:trader_bill_details' transaction.id%}" target="_blank">اضغط لروية الفاتورة: {{transaction.id}}</a> </td>
-          <td>{{transaction.date|date:'d-m-Y'}}</td>
-
-          <td>{{transaction.total_bill_cost}}</td>
-          <td>{{transaction.total_discount}}</td>
-          <td>{{transaction.given_amount}}</td>
-          <td>{{transaction.remaining_amount}}</td>
-          <th class="text-danger">{% widthratio transaction.total_discount  transaction.total_bill_cost  100 %}%</th>
-          <!-- <td>{{transaction.manager.user.first_name}}</td> -->
-          <td><a href="{%url 'content:manager' transaction.manager.id%}">{{transaction.manager.user.first_name}}</a></td>
-          {%if transaction.paid_status == 1%}
-              <td class="text-primary">تم الدفــع</td>
-          {%else%}
-              <td class="text-danger">لم يتم الدفع</td>
-          {%endif%}
-          {%if transaction.bill_file %}
-          <td><a target="_blank" href="{{ transaction.bill_file.url }}" class="text-danger"> معاينة الفاتورة
-          </a></td>
-          {%endif%}
-        </tr>
-        {%endif%}
-        {%endfor%}
-      {%endif%}
-    </tbody>
-  </table>
-
-    </div>
-{% endblock %}
-
-
-{% block content_4 %}
-<div class=" container bg-light mt-5 shadow-lg rounded px-5 pb-5 mb-5">
-<h2 style="padding-top: 10px;" class="text-right">فواتير التاجر المسترجعة</h2>
-
-
-<table class="table">
-    <thead>
-      <tr>
-        <th scope="col">#</th>
-
-        <th scope="col">رقم فاتورة </th>
-        <th scope="col">التاريخ</th>
-        <th scope="col">التكلفة الكلية</th>
-        <th scope="col">الخصم الكلى</th>
-        <th scope="col">المبلغ المدفوع</th>
-        <th scope="col">المبلغ المتبقى</th>
-
-        <th scope="col">النسبة المئوية</th>
-
-        <th scope="col"> اسم المسؤول</th>
-        <th scope="col">الحالة  </th>
-        <th scope="col">صورة الفانورة</th>
-      </tr>
-    </thead>
-    <tbody>
-      {%if trader_restores %}
-        {%for transaction in trader_restores%}
-        {%if transaction.manager %}
-        <tr>
-          <th scope="row">{{forloop.counter}}</th>
-          <td><a href="{%url 'content:trader_bill_details' transaction.id%}" target="_blank">اضغط لروية الفاتورة: {{transaction.id}}</a> </td>
-          <td>{{transaction.date|date:'d-m-Y'}}</td>
-
-          <td>{{transaction.total_bill_cost}}</td>
-          <td>{{transaction.total_discount}}</td>
-          <td>{{transaction.given_amount}}</td>
-          <td>{{transaction.remaining_amount}}</td>
-          <th class="text-danger">{% widthratio transaction.total_discount  transaction.total_bill_cost  100 %}%</th>
-          <!-- <td>{{transaction.manager.user.first_name}}</td> -->
-          <td><a href="{%url 'content:manager' transaction.manager.id%}">{{transaction.manager.user.first_name}}</a></td>
-          {%if transaction.paid_status == 1%}
-              <td class="text-primary">تم الدفــع</td>
-          {%else%}
-              <td class="text-danger">لم يتم الدفع</td>
-          {%endif%}
-          {%if transaction.bill_file %}
-          <td><a target="_blank" href="{{ transaction.bill_file.url }}" class="text-danger"> معاينة الفاتورة
-          </a></td>
-          {%endif%}
-        </tr>
-        {%endif%}
-        {%endfor%}
-      {%endif%}
-    </tbody>
-  </table>
-
-
-    </div>
 
     <script>
       const navLinks = document.querySelectorAll(".nav-item")

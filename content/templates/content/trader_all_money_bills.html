@@ -1,0 +1,167 @@
+{% extends './base.html' %}
+{% block content %}
+
+
+
+<div class="select-date text-center font-weight-bold p-3 mb-4  no-print">
+
+</div>
+
+<div class="no-print">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">التجار</li>
+      <li class="breadcrumb-item">{{trader.name}}</li>
+      <li class="breadcrumb-item">الفواتير المدفوعة</li>
+      <li class="breadcrumb-item">تفاصيل الفواتير : </li>
+    </ol>
+  </nav>
+</div>
+
+<form class="no-print border m-4"  method="post">
+
+  {%csrf_token%}
+    <div class="input-group row ">
+
+        <!-- <div class="col-10"> -->
+          <div class="input-group-prepend">
+            <span class="input-group-text font-weight-bold rounded-0" id="inputGroup-sizing-sm"> من تاريخ </span>
+          </div>
+          <input type="date" name="from_date" class="form-control rounded-0" aria-label="Sizing example input"
+            aria-describedby="inputGroup-sizing-sm" >
+
+
+
+
+          <div class="input-group-prepend mr-2">
+            <span class="input-group-text font-weight-bold rounded-0" id="inputGroup-sizing-sm">الى تاريخ</span>
+          </div>
+          <input type="date" name="to_date" class="form-control rounded-0" aria-label="Sizing example input"
+            aria-describedby="inputGroup-sizing-sm" >
+      <!-- </div> -->
+
+        <div class=" ">
+          <button type="submit" class="btn btn-sm btn-primary font-weight-bold px-5 ">بحث</button>
+        </div>
+    </div>
+
+
+</form>
+
+
+  {%if trader_pills %}
+
+  <h2 style="padding-top: 10px;" class="text-right">فواتيــر التاجــر -- المدفوعة</h2>
+
+  <table class="table">
+      <thead >
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">التاريخ</th>
+          <th scope="col">اسم المسلم</th>
+          <th scope="col">المبلغ السابق</th>
+          <th scope="col">المبلغ المدفوع</th>
+          <th scope="col">الخصم</th>
+          <th scope="col">المبلغ الحالى </th>
+
+          <th scope="col">ملاحظات</th>
+        </tr>
+      </thead>
+      <tbody>
+
+          {%for pill in trader_pills%}
+          {%if pill.sender %}
+          <tr>
+            <th scope="row">{{forloop.counter}}</th>
+            <td>{{pill.date}}</td>
+
+            <td><a href="{%url 'content:manager' pill.sender.id%}">{{pill.sender.user.first_name}}</a></td>
+            <td>{{pill.previos_amount|floatformat}}</td>
+            <td>{{pill.amount}}</td>
+            <td>{{pill.discount}}</td>
+            <td>{{pill.current_amount}}</td>
+            <td>{{pill.notes}}</td>
+
+          </tr>
+          {%endif%}
+          {%endfor%}
+
+      </tbody>
+    </table>
+
+
+  
+
+  {%endif%}
+{%if un_paid_bills%}
+  <hr class="my-5">
+  <div class="container print ">
+    <h3 class="text-primary font-weight-bold text-right" >اجمالى الفواتير </h3>
+    <div class='row text-center'>
+
+    <table class="table">
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col">المبلغ الكلى </th>
+          <!-- <th scope="col">تكلفة المسترجع </th> -->
+
+
+          <!-- <th scope="col">الخصم</th> -->
+          <!-- <th scope="col">الخصم الاضافى</th> -->
+          <th scope="col">الخصم الكلى</th>
+
+          <th scope="col">المطلوب</th>
+          <!-- <th scope="col">ثمن المسترجع </th> -->
+          <th scope="col">ما تم دفعه </th>
+          <th scope="col">المتبقى</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <tr>
+
+
+          <th scope="col">{{totals.0}}</th>
+          <th scope="col" class="text-danger">{{totals.1}}</th>
+
+
+
+
+          <th scope="col">{{totals.2}}</th>
+          <th scope="col">{{totals.3}}</th>
+          <th scope="col">{{totals.4}}</th>
+
+
+
+        </tr>
+      </tbody>
+  </table>
+
+{%endif%}
+
+
+
+
+
+    <div class="row  font-weight-bold p-3 mb-4 justify-content-center no-print">
+      <a href="{%url 'content:trader_page' trader.id %}">
+          <button class="btn  btn-hover font-weight-bold px-5 mx-2">رجوع</button>
+      </a>
+
+        <button onclick="window.print();" class="btn col-4  btn-primary font-weight-bold px-5 mx-5">طباعــة</button>
+
+      </div>
+
+
+
+    <script>
+      const navLinks = document.querySelectorAll(".nav-item")
+      for (link of navLinks){
+          link.classList.remove('active-link')
+      }
+        navLinks[6].classList.add('active-link');
+
+    </script>
+
+{%endblock%}

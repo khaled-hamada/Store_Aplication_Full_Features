@@ -69,6 +69,157 @@ def trader_page(request, trader_id):
 
 
 
+@login_required
+def trader_all_unpaid_bills(request, trader_id):
+    trader = Trader.objects.get(id = trader_id)
+    from_date = to_date = product = un_paid_bills = totals =   None
+
+    if request.method == "POST":
+        try :
+            from_date = request.POST['from_date'] if request.POST['from_date'] != "" else Trader_Bill.objects.filter(trader = trader).first().date.date()
+        except:
+            from_date = timezone.now().date()
+
+        to_date = request.POST['to_date'] if request.POST['to_date'] != "" else timezone.now().date()
+
+        un_paid_bills = Trader_Bill.objects.filter(trader = trader, bill_type = 0, given_status = 1 , paid_status = 0,
+                                        date__date__gte = from_date , date__date__lte = to_date ).order_by('-date')
+        total_bills_cost = round( sum( t.total_bill_cost for t in un_paid_bills), 1 ) ### 0
+        lls_add_discount = round( sum( t.discount for t in un_paid_bills), 1 )     ### 3
+        bills_total_discount = round( sum( t.total_discount for t in un_paid_bills), 1 )     ### 4
+        #
+        #
+        bills_required_amount = round( sum( t.required_amount for t in un_paid_bills), 1 )  ### 5
+        # bills_restored_amount_cost_ad = round( sum( t.restored_amount_cost_ad for t in un_paid_bills), 1 )  ### 6
+        #
+        bills_given_amount = round( sum( t.given_amount for t in un_paid_bills), 1 )     ### 7
+        bills_remaining_amount = round( sum( t.remaining_amount for t in un_paid_bills), 1 )     ### 8
+        #
+        totals = [trader.total_money + bills_total_discount , bills_total_discount, trader.total_money ,trader.given_money ,trader.remaining_money   ]
+
+    context = {
+        'trader':trader,
+        'un_paid_bills':un_paid_bills,
+        'totals':totals,
+
+    }
+    return render(request, 'content/trader_all_unpaid_bills.html', context)
+
+
+@login_required
+def trader_all_paid_bills(request, trader_id):
+    trader = Trader.objects.get(id = trader_id)
+    from_date = to_date = product = paid_bills = totals =   None
+
+    if request.method == "POST":
+        try :
+            from_date = request.POST['from_date'] if request.POST['from_date'] != "" else Trader_Bill.objects.filter(trader = trader).first().date.date()
+        except:
+            from_date = timezone.now().date()
+
+        to_date = request.POST['to_date'] if request.POST['to_date'] != "" else timezone.now().date()
+
+        paid_bills = Trader_Bill.objects.filter(trader = trader, bill_type = 0, given_status = 1 , paid_status = 1,
+                                        date__date__gte = from_date , date__date__lte = to_date ).order_by('-date')
+        if len(paid_bills) > 0:
+            total_bills_cost = round( sum( t.total_bill_cost for t in paid_bills), 1 ) ### 0
+            lls_add_discount = round( sum( t.discount for t in paid_bills), 1 )     ### 3
+            bills_total_discount = round( sum( t.total_discount for t in paid_bills), 1 )     ### 4
+            #
+            #
+            bills_required_amount = round( sum( t.required_amount for t in paid_bills), 1 )  ### 5
+            # bills_restored_amount_cost_ad = round( sum( t.restored_amount_cost_ad for t in un_paid_bills), 1 )  ### 6
+            #
+            bills_given_amount = round( sum( t.given_amount for t in paid_bills), 1 )     ### 7
+            bills_remaining_amount = round( sum( t.remaining_amount for t in paid_bills), 1 )     ### 8
+            #
+            totals = [trader.total_money + bills_total_discount , bills_total_discount, trader.total_money ,trader.given_money ,trader.remaining_money   ]
+
+    context = {
+        'trader':trader,
+        'paid_bills':paid_bills,
+        'totals':totals,
+
+    }
+    return render(request, 'content/trader_all_paid_bills.html', context)
+
+
+
+@login_required
+def trader_all_restored_bills(request, trader_id):
+    trader = Trader.objects.get(id = trader_id)
+    from_date = to_date = product = un_paid_bills = totals =   None
+
+    if request.method == "POST":
+        try :
+            from_date = request.POST['from_date'] if request.POST['from_date'] != "" else Trader_Bill.objects.filter(trader = trader).first().date.date()
+        except:
+            from_date = timezone.now().date()
+
+        to_date = request.POST['to_date'] if request.POST['to_date'] != "" else timezone.now().date()
+
+        un_paid_bills = Trader_Bill.objects.filter(trader = trader, bill_type = 1, given_status = 1 ,
+                                        date__date__gte = from_date , date__date__lte = to_date ).order_by('-date')
+        total_bills_cost = round( sum( t.total_bill_cost for t in un_paid_bills), 1 ) ### 0
+        lls_add_discount = round( sum( t.discount for t in un_paid_bills), 1 )     ### 3
+        bills_total_discount = round( sum( t.total_discount for t in un_paid_bills), 1 )     ### 4
+        #
+        #
+        bills_required_amount = round( sum( t.required_amount for t in un_paid_bills), 1 )  ### 5
+        # bills_restored_amount_cost_ad = round( sum( t.restored_amount_cost_ad for t in un_paid_bills), 1 )  ### 6
+        #
+        bills_given_amount = round( sum( t.given_amount for t in un_paid_bills), 1 )     ### 7
+        bills_remaining_amount = round( sum( t.remaining_amount for t in un_paid_bills), 1 )     ### 8
+        #
+        totals = [trader.total_money + bills_total_discount , bills_total_discount, trader.total_money ,trader.given_money ,trader.remaining_money   ]
+
+    context = {
+        'trader':trader,
+        'un_paid_bills':un_paid_bills,
+        # 'totals':totals,
+
+    }
+    return render(request, 'content/trader_all_restored_bills.html', context)
+
+
+@login_required
+def trader_all_money_bills(request, trader_id):
+    trader = Trader.objects.get(id = trader_id)
+    from_date = to_date = product = trader_pills = totals =   None
+
+    if request.method == "POST":
+        try :
+            from_date = request.POST['from_date'] if request.POST['from_date'] != "" else Trader_Payment.objects.filter(reciever = trader).first().date.date()
+        except :
+            from_date = timezone.now().date()
+        to_date = request.POST['to_date'] if request.POST['to_date'] != "" else timezone.now().date()
+
+        trader_pills = Trader_Payment.objects.filter(reciever = trader,
+                                        date__date__gte = from_date , date__date__lte = to_date ).order_by('-date')
+        # total_bills_cost = round( sum( t.total_bill_cost for t in un_paid_bills), 1 ) ### 0
+        # lls_add_discount = round( sum( t.discount for t in un_paid_bills), 1 )     ### 3
+        # bills_total_discount = round( sum( t.total_discount for t in un_paid_bills), 1 )     ### 4
+        # #
+        # #
+        # bills_required_amount = round( sum( t.required_amount for t in un_paid_bills), 1 )  ### 5
+        # # bills_restored_amount_cost_ad = round( sum( t.restored_amount_cost_ad for t in un_paid_bills), 1 )  ### 6
+        # #
+        # bills_given_amount = round( sum( t.given_amount for t in un_paid_bills), 1 )     ### 7
+        # bills_remaining_amount = round( sum( t.remaining_amount for t in un_paid_bills), 1 )     ### 8
+        # #
+        # totals = [trader.total_money + bills_total_discount , bills_total_discount, trader.total_money ,trader.given_money ,trader.remaining_money   ]
+
+    context = {
+        'trader':trader,
+        'trader_pills':trader_pills,
+        # 'totals':totals,
+
+    }
+    return render(request, 'content/trader_all_money_bills.html', context)
+
+
+
+
 
 
 @login_required
