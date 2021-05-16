@@ -7,6 +7,7 @@ from .models import Customer, Customer_Bill, Customer_Payment, Store_To_Point_Pr
 
 from django.utils import timezone
 from django.db.models import Sum,Q, F
+from itertools import chain
 
 
 @login_required
@@ -41,15 +42,40 @@ def add_new_point(request):
 
 @login_required
 def point_page(request, point_id):
-    from_date = to_date =  timezone.now().date()
-    if request.method == "POST":
-        from_date = request.POST['from_date']
-        to_date = request.POST['to_date']
-    date = timezone.now().date()
-    point = Point.objects.get(id = point_id)
-    today_date = timezone.now().date()
 
-    bills = Customer_Bill.objects.filter(point_product_sellings__Point = point,given_status = 1 , date__date = today_date , bill_type = 0).distinct()
+    point = Point.objects.get(id = point_id)
+
+    all_products = Point_Product.objects.filter(Point = point).order_by("trader_product__product__name")
+    all_products_count =len( all_products )
+
+    context = {
+        'point':point,
+        'all_products_count':all_products_count,
+
+    }
+    return render(request, 'content/point_page.html',context)
+
+
+
+
+
+@login_required
+def all_point_payments(request, point_id):
+    point = Point.objects.get(id = point_id)
+    from_date = to_date =timezone.now().date()
+    bills = totals =   None
+    total_bills_cost = total_bills_given = total_bills_remaining = 0
+    if request.method == "POST":
+        try :
+            from_date = request.POST['from_date'] if request.POST['from_date'] != "" else Customer_Bill.objects.filter(point_product_sellings__Point = point).first().date.date()
+        except:
+            from_date = timezone.now().date()
+
+        to_date = request.POST['to_date'] if request.POST['to_date'] != "" else timezone.now().date()
+
+
+
+    bills = Customer_Bill.objects.filter(point_product_sellings__Point = point,given_status = 1  , bill_type = 0   , date__date__gte = from_date , date__date__lte = to_date ).order_by('-date').distinct()
     total_bills = 0.0
     if bills != None:
         total_bills_cost =  round( sum((bill.required_amount)  for bill in bills) , 1)
@@ -57,54 +83,109 @@ def point_page(request, point_id):
         total_bills_remaining =  round( sum((bill.remaining_amount)  for bill in bills) , 1)
 
 
-    # restored_bills = Point_Product_Sellings.objects.filter(Point = point,taken_status = 1 , date__date = today_date , line_type = 1)
-    # restored_total_bills = 0.0
-    # if restored_bills != None:
-    #     restored_total_bills_sell =  round( sum((bill.restored_amount_cost_ad)  for bill in bills) , 1)
-    #     restored_total_bills_buy =  round( sum((bill.restored_amount_cost_buy)  for bill in bills) , 1)
+    context = {
 
-    ## withdrawing goods on this day
-    today_point_products = Store_To_Point_Product.objects.filter(date__date__gte = from_date,date__date__lte = to_date, point = point, line_type = 0).order_by('-date')
-    today_dept = 0
-    if today_point_products != None:
-        today_dept = round(sum(tpp.line_cost  for tpp in today_point_products) , 1)
+        'bills':bills,
+        'point':point,
+        'total_bills_selling_cost':total_bills_cost,
+        'total_bills_selling_given':total_bills_given,
+        'total_bills_selling_remain':total_bills_remaining,
+
+    }
+    return render(request, 'content/all_point_payments.html',context)
+
+
+@login_required
+def all_point_restored_bills(request, point_id):
+    point = Point.objects.get(id = point_id)
+    from_date = to_date =timezone.now().date()
+    bills = totals =   None
+    total_bills_cost = total_bills_given = total_bills_remaining = 0
+    if request.method == "POST":
+        try :
+            from_date = request.POST['from_date'] if request.POST['from_date'] != "" else Customer_Bill.objects.filter(point_product_sellings__Point = point).first().date.date()
+        except:
+            from_date = timezone.now().date()
+
+        to_date = request.POST['to_date'] if request.POST['to_date'] != "" else timezone.now().date()
+
+
+
+    bills = Customer_Bill.objects.filter(point_product_sellings__Point = point,given_status = 1  , bill_type =1   , date__date__gte = from_date , date__date__lte = to_date ).order_by('-date').distinct()
+    total_bills = 0.0
+    if bills != None:
+        total_bills_cost =  round( sum((bill.required_amount)  for bill in bills) , 1)
+        total_bills_given =  round( sum((bill.given_amount)  for bill in bills) , 1)
+        total_bills_remaining =  round( sum((bill.remaining_amount)  for bill in bills) , 1)
+
+
+    context = {
+
+        'bills':bills,
+        'point':point,
+        'total_bills_selling_cost':total_bills_cost,
+        'total_bills_selling_given':total_bills_given,
+        'total_bills_selling_remain':total_bills_remaining,
+
+    }
+    return render(request, 'content/all_point_restored_bills.html',context)
+
+
+@login_required
+def all_point_products(request, point_id):
+    point = Point.objects.get(id = point_id)
 
 
     all_products = Point_Product.objects.filter(Point = point).order_by("trader_product__product__name")
     all_products_count =len( all_products )
     total_dept = 0
-    if all_products != None:
+    if all_products_count > 0:
         total_dept = round(sum(p.current_quantity_cost_buy for p in all_products) , 1)
 
-    # ## current_manager date
-    # today_date =  timezone.now().date()
-    # user = Current_manager.objects.filter(user = request.user).first()
-    # all_bills = Point_User_Payment.objects.filter(g_user = point,date__date__gte = user.start_date ,date__date__lte = user.end_date).order_by('-date')
-    # bills_amount = 0
-    # if all_bills != None:
-    #     bills_amount  = round(sum(p.amount for p in all_bills) , 1)
+
     context = {
+        'point':point,
+        'all_products':all_products,
+        'total_dept':total_dept,
+    }
+    return render(request, 'content/all_point_products.html',context)
 
-        'bills':bills,
-        # 'restored_bills':restored_bills,
 
-        'total_bills_selling_cost':total_bills_cost,
-        'total_bills_selling_given':total_bills_given,
-        'total_bills_selling_remain':total_bills_remaining,
-        # 'restored_total_bills_sell':restored_total_bills_sell,
-        # 'restored_total_bills_buy':restored_total_bills_buy,
+@login_required
+def all_point_moved_products(request, point_id):
+    point = Point.objects.get(id = point_id)
+    from_date = to_date =timezone.now().date()
+    today_point_products = totals =   None
 
+    if request.method == "POST":
+        try :
+            from_date = request.POST['from_date'] if request.POST['from_date'] != "" else Customer_Bill.objects.filter(point_product_sellings__Point = point).first().date.date()
+        except:
+            from_date = timezone.now().date()
+
+        to_date = request.POST['to_date'] if request.POST['to_date'] != "" else timezone.now().date()
+
+
+
+
+    today_point_products_1 = Store_To_Point_Product.objects.filter(date__date__gte = from_date,date__date__lte = to_date, point = point).order_by('-date')
+    today_point_products_2 = Store_To_Point_Product.objects.filter(date__date__gte = from_date,date__date__lte = to_date, to_point = point).order_by('-date')
+    today_point_products_3 = list(chain(today_point_products_1, today_point_products_2))
+
+    today_point_products = sorted(
+            today_point_products_3,
+            key=lambda instance: instance.date, reverse=True)
+    today_dept = 0
+    if today_point_products != None:
+        today_dept = round(sum(tpp.line_cost  for tpp in today_point_products ) , 1)
+
+    context = {
         'point':point,
         'today_point_products':today_point_products,
         'today_dept':today_dept,
-        'all_products':all_products,
-        'all_products_count':all_products_count,
-        'total_dept':total_dept,
-        # 'all_bills':all_bills,
-        # 'bills_amount':bills_amount,
 
     }
-    return render(request, 'content/point_page.html',context)
+    return render(request, 'content/all_point_moved_products.html',context)
 
 
 @login_required

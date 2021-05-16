@@ -89,7 +89,12 @@ def customer_all_paid_bills(request,customer_id):
     from_date = to_date = product = un_paid_bills = totals =   None
     customer = Customer.objects.get(id = customer_id)
     if request.method == "POST":
-        from_date = request.POST['from_date'] if request.POST['from_date'] != "" else Customer_Bill.objects.filter(customer = customer).first().date.date()
+        try :
+            from_date = request.POST['from_date'] if request.POST['from_date'] != "" else Customer_Bill.objects.filter(customer = customer).first().date.date()
+
+        except:
+            from_date = timezone.now().date()
+
         to_date = request.POST['to_date'] if request.POST['to_date'] != "" else timezone.now().date()
 
 
@@ -129,7 +134,12 @@ def customer_all_restored_bills(request,customer_id):
     from_date = to_date = product = un_paid_bills = totals =   None
     customer = Customer.objects.get(id = customer_id)
     if request.method == "POST":
-        from_date = request.POST['from_date'] if request.POST['from_date'] != "" else Customer_Bill.objects.filter(customer = customer).first().date.date()
+        try :
+            from_date = request.POST['from_date'] if request.POST['from_date'] != "" else Customer_Bill.objects.filter(customer = customer).first().date.date()
+        except:
+            from_date = timezone.now().date()
+
+
         to_date = request.POST['to_date'] if request.POST['to_date'] != "" else timezone.now().date()
 
 
@@ -168,7 +178,11 @@ def customer_all_money_bills(request,customer_id):
     from_date = to_date = product = paid_given_bill = totals =   None
     customer = Customer.objects.get(id = customer_id)
     if request.method == "POST":
-        from_date = request.POST['from_date'] if request.POST['from_date'] != "" else Customer_Bill.objects.filter(customer = customer).first().date.date()
+        try :
+            from_date = request.POST['from_date'] if request.POST['from_date'] != "" else Customer_Bill.objects.filter(customer = customer).first().date.date()
+        except:
+            from_date = timezone.now().date()
+
         to_date = request.POST['to_date'] if request.POST['to_date'] != "" else timezone.now().date()
 
 

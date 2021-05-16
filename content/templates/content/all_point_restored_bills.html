@@ -1,0 +1,135 @@
+{% extends './base.html' %}
+{% block content %}
+
+
+
+<div class="select-date text-center font-weight-bold p-3 mb-4  no-print">
+
+</div>
+
+<div class="no-print">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">النقاط</li>
+      <li class="breadcrumb-item">{{point.name}}</li>
+      <li class="breadcrumb-item">الفواتير المسترجعة للنقطة</li>
+      <li class="breadcrumb-item">تفاصيل الفواتير : </li>
+    </ol>
+  </nav>
+</div>
+
+<form class="no-print border m-4"  method="post">
+
+  {%csrf_token%}
+    <div class="input-group row ">
+
+        <!-- <div class="col-10"> -->
+          <div class="input-group-prepend">
+            <span class="input-group-text font-weight-bold rounded-0" id="inputGroup-sizing-sm"> من تاريخ </span>
+          </div>
+          <input type="date" name="from_date" class="form-control rounded-0" aria-label="Sizing example input"
+            aria-describedby="inputGroup-sizing-sm" >
+
+
+
+
+          <div class="input-group-prepend mr-2">
+            <span class="input-group-text font-weight-bold rounded-0" id="inputGroup-sizing-sm">الى تاريخ</span>
+          </div>
+          <input type="date" name="to_date" class="form-control rounded-0" aria-label="Sizing example input"
+            aria-describedby="inputGroup-sizing-sm" >
+      <!-- </div> -->
+
+        <div class=" ">
+          <button type="submit" class="btn btn-sm btn-primary font-weight-bold px-5 ">بحث</button>
+        </div>
+    </div>
+
+
+</form>
+
+  <p>مبيعات النقطة عن يوم : <span class="today-date"></span></p>
+  <!-- </div> -->
+  <table class="table">
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">رقم الفاتورة / التفاصيل</th>
+          <th>المسؤول</th>
+          <th> العميل</th>
+          <th scope="col">تكلفة الفاتورة</th>
+          <th scope="col">الخصم</th>
+          <th class="text-danger"> نسبة الخصم</th>
+          <th scope="col">المطلوب</th>
+          <th scope="col">المدفوع</th>
+          <th scope="col">المتبقى</th>
+
+          <th> التاريخ</th>
+
+
+        </tr>
+      </thead>
+      <tbody>
+        {% for bill in bills %}
+        <tr>
+          <th scope="row">{{forloop.counter}}</th>
+
+          <td><a href="{%url 'content:customer-bill-details' bill.id%}" target="_blank">{{bill.id}} - اضغط لرؤية التفاصيل</a></td>
+          <td><a href="{%url 'content:manager' bill.manager.id%}" target="_blank">{{bill.manager.user.first_name}}</a></td>
+          <td><a href="{%url 'content:customer-page' bill.customer.id%}" target="_blank" >{{bill.customer.name}}</a></td>
+
+          <td>{{bill.total_bill_cost}}</td>
+          <td>{{bill.total_discount}}</td>
+          <th class="text-danger">{% widthratio bill.total_discount  bill.total_bill_cost  100 %}%</th>
+
+          <th scope="col">{{bill.required_amount}}</th>
+          <td>{{bill.given_amount}}</td>
+          <td>{{bill.remaining_amount}}</td>
+          <td>{{bill.date|date:"d-m-Y"}}</td>
+
+
+
+        </tr>
+        {% endfor %}
+
+      </tbody>
+  </table>
+  <hr class="my-5">
+  <div class="container mt-5">
+    <div class='row text-center'>
+      <div class="no-print col-2 bg-dark text-light font-weight-bolder p-3">الاجمالى</div>
+      <div class="no-print col-1 font-weight-bolder  p-3">{{total_bills_selling_cost}}</div>
+
+      <div class="no-print col-2 bg-dark text-light font-weight-bolder p-3">ما تم تحصيله</div>
+      <div class="no-print col-1 font-weight-bolder  p-3">{{total_bills_selling_given}}</div>
+      <div class="no-print col-2 bg-dark text-light font-weight-bolder p-3">المتبقى</div>
+      <div class="no-print col-1 font-weight-bolder  p-3">{{total_bills_selling_remain}}</div>
+
+
+
+    </div>
+
+  </div>
+
+
+    <div class="row  font-weight-bold p-3 mb-4 justify-content-center no-print">
+      <a href="{%url 'content:point_page' point.id %}">
+          <button class="btn  btn-hover font-weight-bold px-5 mx-2">رجوع</button>
+      </a>
+
+        <button onclick="window.print();" class="btn col-4  btn-primary font-weight-bold px-5 mx-5">طباعــة</button>
+
+      </div>
+
+
+
+    <script>
+      const navLinks = document.querySelectorAll(".nav-item")
+      for (link of navLinks){
+          link.classList.remove('active-link')
+      }
+        navLinks[7].classList.add('active-link');
+
+    </script>
+
+{%endblock%}

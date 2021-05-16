@@ -96,6 +96,13 @@ urlpatterns = [
     path('points/', points_views.points, name='points'),
     path('add_new_point/', points_views.add_new_point, name='add_new_point'),
     path('point_page/<int:point_id>', points_views.point_page, name='point_page'),
+
+    ## for inqueries
+    path('all_point_payments/<int:point_id>', points_views.all_point_payments, name='all_point_payments'),
+    path('all_point_products/<int:point_id>', points_views.all_point_products, name='all_point_products'),
+    path('all_point_moved_products/<int:point_id>', points_views.all_point_moved_products, name='all_point_moved_products'),
+    path('all_point_restored_bills/<int:point_id>', points_views.all_point_restored_bills, name='all_point_restored_bills'),
+
     path('edit_selling_price/<int:pp_id>', points_views.edit_selling_price, name='edit_selling_price'),
 
     path('point_trader_page/<int:point_trader_id>', points_views.point_trader_page, name='point_trader_page'),

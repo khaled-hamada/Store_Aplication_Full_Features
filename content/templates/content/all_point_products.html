@@ -1,0 +1,180 @@
+{% extends './base.html' %}
+{% block content %}
+
+
+
+<div class="select-date text-center font-weight-bold p-3 mb-4  no-print">
+
+</div>
+
+<div class="no-print">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">النقاط</li>
+      <li class="breadcrumb-item">{{point.name}}</li>
+      <li class="breadcrumb-item">كل البضائع الموجودة بالنقطة</li>
+
+    </ol>
+  </nav>
+</div>
+
+
+<!-- start section seperator -->
+<div>
+  <div class="select-date text-center font-weight-bold p-3 mb-4" style="position: relative;
+  top: 60px;">
+      <div class="bg-light p-2 rounded">
+        البضائع الموجودة بالنقطة حتى الآن
+      </div>
+
+
+  </div>
+
+  <div style="border-top: 7px solid #1abc9c;"></div>
+</div>
+<!-- end section seperator -->
+<div class="mt-5">
+  {%if user.groups.first.name == "managers"%}
+    <a href="{%url 'content:restore_point_product_store' point.id%}">
+      <button class="btn btn-danger font-weight-bold px-5">استرجاع بضاعة للمخزن</button>
+    </a>
+    <a href="{%url 'content:point_to_point_product' point.id%}">
+      <button class="btn btn-warning font-weight-bold px-5">نقل بضاعة من نقطة لاخرى</button>
+    </a>
+
+  {%endif%}
+</div>
+<table class="table">
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">الصنف</th>
+        <th scope="col">ع. كرتونة</th>
+        <th scope="col">ع. قطعة</th>
+        <th scope="col">كمية كلية بالقطعة</th>
+        <th scope="col">سعر شراء القطعة</th>
+        <th scope="col">سعر الشراء الكلى</th>
+        <th scope="col">سعر بيع القطعة</th>
+
+        <th scope="col">ت. انتاج</th>
+        <th scope="col">ت. انتهاء</th>
+        <th scope="col">صورة المنتج</th>
+        <th scope="col">رقم فاتورة المشتروات</th>
+
+
+
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in all_products %}
+        {%if p.total_quantity == 0%}
+          <tr class="text-danger font-weight-bold">
+        {%else%}
+          <tr>
+        {%endif%}
+          <th scope="row">{{forloop.counter}}</th>
+
+          <td>{{p.trader_product.product.name}}</td>
+          <td>{{p.quantity_packet}}</td>
+          <td>{{p.quantity}}</td>
+          <td>{{p.total_quantity}}</td>
+          <td>{{p.unit_buy_price_ad}}</td>
+          <td>{{p.current_quantity_cost_buy}}</td>
+          <td>{{p.unit_sell_price}}
+            <br>
+            <!-- Button trigger modal -->
+              <button type="button" class="btn btn-sm btn-primary no-print" data-toggle="modal" data-target="#exampleModal{{p.id}}">
+                تعديل
+              </button>
+
+                  <!-- Modal -->
+                  <div class="modal fade" id="exampleModal{{p.id}}" tabindex="{{p.id}}" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="exampleModalLabel"> تعديل سعر بيع   -  {{p.trader_product.product.name}} </h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                        <div class="modal-body">
+
+                          <form method="post" action="{%url 'content:edit_selling_price' p.id %}"  enctype="multipart/form-data" id="edit_form{{p.id}}" >
+                            {% csrf_token %}
+
+
+
+
+
+                            <div class="form-group row">
+
+                                  <label for="products" class="col-sm-5 font-weight-bold col-form-label">سعر بيع القطعة</label>
+
+                              <div class="col-sm-5">
+                                <div class="input-group mb-3">
+                                  <input type="number" min="0" step=".001" name="selling_price" value="{{p.unit_sell_price}}" class="form-control" form="edit_form{{p.id}}" required>
+                                </div>
+                              </div>
+                            </div>
+
+
+
+
+
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-dismiss="modal">إغلاق</button>
+                          <button type="submit" form="edit_form{{p.id}}" class="btn btn-primary">حفظ التعديلات</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Modal end  -->
+          </td>
+
+          <td>{{p.trader_product.production_date|date:'d-m-Y'}}</td>
+          <td>{{p.trader_product.expiration_date|date:'d-m-Y'}}</td>
+          {% if p.trader_product.trader_bill.bill_file %}
+            <td> <a href="{{p.trader_product.trader_bill.bill_file.url}}" target="_blank"> اضغط لرؤية الفاتورة</a> </td>
+          {%endif%}
+          <td><a href="{%url 'content:trader_bill_details' p.trader_product.trader_bill.id%}" target="_blank">{{p.trader_product.trader_bill.id}} - {{p.trader_product.trader.name}}</a> </td>
+
+
+        </tr>
+      {% endfor %}
+
+    </tbody>
+</table>
+<hr class="my-5">
+<div class="container mt-5">
+  <div class='row text-center'>
+    <div class="col-4 bg-dark text-light font-weight-bolder p-3">الاجمالي</div>
+    <div class="col-8 font-weight-bolder  p-3">{{total_dept}}</div>
+  </div>
+
+</div>
+
+
+    <div class="row  font-weight-bold p-3 mb-4 justify-content-center no-print">
+      <a href="{%url 'content:point_page' point.id %}">
+          <button class="btn  btn-hover font-weight-bold px-5 mx-2">رجوع</button>
+      </a>
+
+        <button onclick="window.print();" class="btn col-4  btn-primary font-weight-bold px-5 mx-5">طباعــة</button>
+
+      </div>
+
+
+
+    <script>
+      const navLinks = document.querySelectorAll(".nav-item")
+      for (link of navLinks){
+          link.classList.remove('active-link')
+      }
+        navLinks[7].classList.add('active-link');
+
+    </script>
+
+{%endblock%}

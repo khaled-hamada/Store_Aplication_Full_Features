@@ -1,0 +1,142 @@
+{% extends './base.html' %}
+{% block content %}
+
+
+
+<div class="select-date text-center font-weight-bold p-3 mb-4  no-print">
+
+</div>
+
+<div class="no-print">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">النقاط</li>
+      <li class="breadcrumb-item">{{point.name}}</li>
+      <li class="breadcrumb-item">البضائع المنقولة للنقطة من المخزن والنقاط الاخرى</li>
+      <li class="breadcrumb-item">تفاصيل الفواتير : </li>
+    </ol>
+  </nav>
+</div>
+
+<form class="no-print border m-4"  method="post">
+
+  {%csrf_token%}
+    <div class="input-group row ">
+
+        <!-- <div class="col-10"> -->
+          <div class="input-group-prepend">
+            <span class="input-group-text font-weight-bold rounded-0" id="inputGroup-sizing-sm"> من تاريخ </span>
+          </div>
+          <input type="date" name="from_date" class="form-control rounded-0" aria-label="Sizing example input"
+            aria-describedby="inputGroup-sizing-sm" >
+
+
+
+
+          <div class="input-group-prepend mr-2">
+            <span class="input-group-text font-weight-bold rounded-0" id="inputGroup-sizing-sm">الى تاريخ</span>
+          </div>
+          <input type="date" name="to_date" class="form-control rounded-0" aria-label="Sizing example input"
+            aria-describedby="inputGroup-sizing-sm" >
+      <!-- </div> -->
+
+        <div class=" ">
+          <button type="submit" class="btn btn-sm btn-primary font-weight-bold px-5 ">بحث</button>
+        </div>
+    </div>
+
+
+</form>
+
+<!-- start section seperator -->
+<div>
+  <div class="select-date text-center font-weight-bold p-3 mb-4" style="position: relative;
+  top: 60px;">
+      <div class="bg-light p-2 rounded">
+        <p>البضائع المسحوبة عن يوم : <span class="today-date"></span></p>
+      </div>
+  </div>
+
+  <div style="border-top: 7px solid #1abc9c;"></div>
+
+
+</div>
+<!-- end section seperator -->
+<!-- end seperator -->
+<table class="table">
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">الصنف</th>
+        <th scope="col">ع. كرتونة</th>
+        <th scope="col">ع. قطعة</th>
+        <th scope="col">ع. كلى قطعة</th>
+        <th scope="col">سعر شراء قطعة</th>
+
+
+        <th scope="col">الاجمالي</th>
+        <th scope="col">سعر بيع القطعة</th>
+
+        <th scope="col">فاتورة المشتروات</th>
+
+        <th scope="col">التاريخ</th>
+        <th scope="col">ملاحظات</th>
+
+
+      </tr>
+    </thead>
+    <tbody>
+      {% for bill in today_point_products %}
+      <tr>
+        <th scope="row">{{forloop.counter}}</th>
+
+        <td>{{bill.trader_product.product.name}}</td>
+        <td>{{bill.quantity_packet}}</td>
+        <td>{{bill.quantity}}</td>
+
+        <td>{{bill.total_quantity}}</td>
+        <td>{{bill.trader_product.unit_buy_price_ad}}</td>
+        <td>{{bill.line_cost}}</td>
+        <td>{{bill.unit_sell_price}}</td>
+
+
+        <td><a href="{%url 'content:trader_bill_details' bill.trader_product.trader_bill.id%}" target="_blank">اضغط لروية الفاتورة: {{bill.trader_product.trader_bill.id}} -- {{bill.trader_product.trader_bill.trader.name}} </a> </td>
+        <td>{{bill.date}}</td>
+        <td>{{bill.notes}}</td>
+
+      </tr>
+      {% endfor %}
+
+    </tbody>
+</table>
+<hr class="my-5">
+<div class="container mt-5">
+  <div class='row text-center'>
+    <div class="col-4 bg-dark text-light font-weight-bolder p-3">الاجمالي</div>
+    <div class="col-8 font-weight-bolder  p-3">{{today_dept}}</div>
+  </div>
+
+</div>
+
+
+    <div class="row  font-weight-bold p-3 mb-4 justify-content-center no-print">
+      <a href="{%url 'content:point_page' point.id %}">
+          <button class="btn  btn-hover font-weight-bold px-5 mx-2">رجوع</button>
+      </a>
+
+        <button onclick="window.print();" class="btn col-4  btn-primary font-weight-bold px-5 mx-5">طباعــة</button>
+
+      </div>
+
+
+
+    <script>
+      const navLinks = document.querySelectorAll(".nav-item")
+      for (link of navLinks){
+          link.classList.remove('active-link')
+      }
+        navLinks[7].classList.add('active-link');
+
+    </script>
+
+{%endblock%}
