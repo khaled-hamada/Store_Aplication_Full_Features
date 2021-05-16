@@ -61,8 +61,8 @@
           <th scope="col">الخصم</th>
           <th class="text-danger"> نسبة الخصم</th>
           <th scope="col">المطلوب</th>
-          <th scope="col">المدفوع</th>
-          <th scope="col">المتبقى</th>
+          <!-- <th scope="col">المدفوع</th>
+          <th scope="col">المتبقى</th> -->
 
           <th> التاريخ</th>
 
@@ -83,8 +83,8 @@
           <th class="text-danger">{% widthratio bill.total_discount  bill.total_bill_cost  100 %}%</th>
 
           <th scope="col">{{bill.required_amount}}</th>
-          <td>{{bill.given_amount}}</td>
-          <td>{{bill.remaining_amount}}</td>
+          <!-- <td>{{bill.given_amount}}</td>
+          <td>{{bill.remaining_amount}}</td> -->
           <td>{{bill.date|date:"d-m-Y"}}</td>
 
 
@@ -100,10 +100,10 @@
       <div class="no-print col-2 bg-dark text-light font-weight-bolder p-3">الاجمالى</div>
       <div class="no-print col-1 font-weight-bolder  p-3">{{total_bills_selling_cost}}</div>
 
-      <div class="no-print col-2 bg-dark text-light font-weight-bolder p-3">ما تم تحصيله</div>
+      <!-- <div class="no-print col-2 bg-dark text-light font-weight-bolder p-3">ما تم تحصيله</div>
       <div class="no-print col-1 font-weight-bolder  p-3">{{total_bills_selling_given}}</div>
       <div class="no-print col-2 bg-dark text-light font-weight-bolder p-3">المتبقى</div>
-      <div class="no-print col-1 font-weight-bolder  p-3">{{total_bills_selling_remain}}</div>
+      <div class="no-print col-1 font-weight-bolder  p-3">{{total_bills_selling_remain}}</div> -->
 
 
 

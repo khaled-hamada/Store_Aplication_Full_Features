@@ -168,8 +168,8 @@ def all_point_moved_products(request, point_id):
 
 
 
-    today_point_products_1 = Store_To_Point_Product.objects.filter(date__date__gte = from_date,date__date__lte = to_date, point = point).order_by('-date')
-    today_point_products_2 = Store_To_Point_Product.objects.filter(date__date__gte = from_date,date__date__lte = to_date, to_point = point).order_by('-date')
+    today_point_products_1 = Store_To_Point_Product.objects.filter(date__date__gte = from_date,date__date__lte = to_date, point = point , line_type = 0).order_by('-date')
+    today_point_products_2 = Store_To_Point_Product.objects.filter(date__date__gte = from_date,date__date__lte = to_date, to_point = point, line_type = 2).order_by('-date')
     today_point_products_3 = list(chain(today_point_products_1, today_point_products_2))
 
     today_point_products = sorted(
