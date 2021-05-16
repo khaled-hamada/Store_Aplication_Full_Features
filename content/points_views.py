@@ -542,6 +542,7 @@ def confirm_customer_point_bill(request, bill_id):
         add_payment(request, customer,given_money_amount , discount , point, paid_from_pre_amount)
 
         current_bill.given_status = 1
+        current_bill.date = timezone.now()
         current_bill.save()
         ## update lines to be given
         current_bill.all_lines.update(taken_status = 1)
