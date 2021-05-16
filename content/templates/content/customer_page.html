@@ -34,46 +34,68 @@
 </div>
   {%if user.groups.first.name == "managers"%}
 <div class="row  font-weight-bold p-3 mb-4 justify-content-center">
-  <div class="mx-2 ">
-      <a href="{%url 'content:customer-payment' customer.id%}">
-          <button class="btn btn-hover font-weight-bold px-5">تحصيــــل فاتـــورة</button>
-      </a>
-      </div>
 
-
-        <div class="">
-          <a href="{%url 'content:restore-customer-bill' customer.id  %}">
-              <button class="btn  btn-danger font-weight-bold px-5 mx-2">استرجاع فاتورة</button>
+    <div class="row">
+      <div class="mx-2 ">
+          <a href="{%url 'content:customer-payment' customer.id%}">
+              <button class="btn btn-sm btn-hover font-weight-bold px-1">تحصيــــل فاتـــورة</button>
           </a>
           </div>
 
 
+            <div class="">
+              <a href="{%url 'content:restore-customer-bill' customer.id  %}">
+                  <button class="btn btn-sm btn-danger font-weight-bold px-1 mx-2">استرجاع فاتورة</button>
+              </a>
+              </div>
 
 
 
 
 
-        <div class="">
-          <a href="{%url 'content:customer_all_unpaid_bills' customer.id %}">
-              <button class="btn  btn-info font-weight-bold px-5 mx-2">كشف ب فواتير العميل الغير مدفوعة</button>
-          </a>
-          </div>
-          <!-- Button trigger modal -->
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
-              تعديل بيانات العميل
-            </button>
-
-          <!-- Button trigger modal -->
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add_customer_money">
-              اضافة مبلغ نقدى
-            </button>
 
 
-        <div class="">
-          <a href="{%url 'content:customers-page'  %}">
-              <button class="btn y btn-hover font-weight-bold px-5 mx-2">رجوع</button>
-          </a>
-          </div>
+            <div class="">
+              <a href="{%url 'content:customer_all_unpaid_bills' customer.id %}">
+                  <button class="btn btn-sm  btn-info font-weight-bold px-1 mx-2">كشف ب فواتير العميل الغير مدفوعة</button>
+              </a>
+              </div>
+
+            <div class="">
+              <a href="{%url 'content:customer_all_restored_bills' customer.id %}">
+                  <button class="btn btn-sm  btn-info font-weight-bold px-1 mx-2">كشف ب فواتير العميل الغير مدفوعة</button>
+              </a>
+              </div>
+    </div>
+
+    <div class="row mt-4">
+      <div class="">
+        <a href="{%url 'content:customer_all_paid_bills' customer.id %}">
+            <button class="btn btn-sm btn-primary font-weight-bold px-1 mx-2">كشف ب فواتير العميل المدفوعة</button>
+        </a>
+        </div>
+      <div class="">
+        <a href="{%url 'content:customer_all_unpaid_bills' customer.id %}">
+            <button class="btn btn-sm  btn-primary font-weight-bold px-1 mx-2">كشف ب فواتير العميل النقدية</button>
+        </a>
+        </div>
+        <!-- Button trigger modal -->
+          <button type="button" class="btn  btn-sm btn-primary px-1 mx-2" data-toggle="modal" data-target="#exampleModal">
+            تعديل بيانات العميل
+          </button>
+
+        <!-- Button trigger modal -->
+          <button type="button" class="btn btn-sm btn-primary px-1 mx-2" data-toggle="modal" data-target="#add_customer_money">
+            اضافة مبلغ نقدى
+          </button>
+
+
+      <div class="">
+        <a href="{%url 'content:customers-page'  %}">
+            <button class="btn  btn-sm btn-hover font-weight-bold px-1 mx-2">رجوع</button>
+        </a>
+        </div>
+    </div>
 
   </div>
   {%endif%}
@@ -189,102 +211,6 @@
 
 {% endblock %}
 
-
-{% block content_2 %}
-<div class=" container bg-light mt-5 shadow-lg rounded px-5 pb-5 mb-5">
-
-
-<h2 style="padding-top: 10px;" class="text-right">فواتيــر العميل الغير مدفوعة</h2>
-
-<table class="table">
-    <thead >
-      <tr>
-        <th scope="col">#</th>
-        <th scope="col">رقم الفاتورة / التفاصيل</th>
-        <th scope="col">اسم المسلم</th>
-        <th scope="col">المبلغ الكلى</th>
-        <th scope="col">الخصم</th>
-        <th scope="col">المطلوب</th>
-
-        <th scope="col" class="text-danger"> نسبة الخصم</th>
-
-        <th scope="col">ما تم دفعه</th>
-        <th scope="col">المتبقى</th>
-        <th scope="col">التاريخ</th>
-
-      </tr>
-    </thead>
-    <tbody>
-      {%if un_paid_bills %}
-        {%for pill in un_paid_bills%}
-        <tr>
-          <th scope="row">{{forloop.counter}}</th>
-
-          <td><a href="{%url 'content:customer-bill-details' pill.id%}">{{pill.id}} - اضغط لرؤية التفاصيل</a></td>
-          <td><a href="{%url 'content:manager' pill.manager.id%}">{{pill.manager.user.first_name}}</a></td>
-          <td>{{pill.total_bill_cost}}</td>
-          <td>{{pill.total_discount}}</td>
-          <td>{{pill.required_amount}}</td>
-          <th class="text-danger">{% widthratio pill.total_discount  pill.total_bill_cost_ar  100 %}%</th>
-
-          <td>{{pill.given_amount}}</td>
-          <td>{{pill.remaining_amount}}</td>
-          <td>{{pill.date}}</td>
-
-        </tr>
-        {%endfor%}
-    {%endif%}
-    </tbody>
-  </table>
-
-
-  </div>
-{% endblock %}
-{% block content_3 %}
-<div class=" container bg-light mt-5 shadow-lg rounded px-5 pb-5 mb-5">
-<h2 style="padding-top: 10px;" class="text-right">فواتيــر العميل المدفوعة</h2>
-
-<table class="table">
-    <thead>
-      <tr>
-        <th scope="col">#</th>
-        <th scope="col">رقم الفاتورة / التفاصيل</th>
-        <th scope="col">اسم المسلم</th>
-        <th scope="col">المبلغ الكلى</th>
-        <th scope="col">الخصم</th>
-        <th scope="col">المطلوب</th>
-        <th scope="col" class="text-danger"> نسبة الخصم</th>
-
-        <th scope="col">ما تم دفعه</th>
-        <th scope="col">المتبقى</th>
-        <th scope="col">التاريخ</th>
-
-      </tr>
-    </thead>
-    <tbody>
-      {%if paid_bills %}
-        {%for pill in paid_bills%}
-        <tr>
-          <th scope="row">{{forloop.counter}}</th>
-          <td><a href="{%url 'content:customer-bill-details' pill.id%}">{{pill.id}} - اضغط لرؤية التفاصيل</a></td>
-          <td><a href="{%url 'content:manager' pill.manager.id%}">{{pill.manager.user.first_name}}</a></td>
-          <td>{{pill.total_bill_cost}}</td>
-          <td>{{pill.total_discount}}</td>
-          <td>{{pill.required_amount}}</td>
-          <th class="text-danger">{% widthratio pill.total_discount  pill.total_bill_cost_ar  100 %}%</th>
-
-          <td>{{pill.given_amount}}</td>
-          <td>{{pill.remaining_amount}}</td>
-          <td>{{pill.date}}</td>
-
-        </tr>
-      {%endfor%}
-      {%endif%}
-    </tbody>
-  </table>
-
-    </div>
-{% endblock %}
 
 
 {% block content_4 %}

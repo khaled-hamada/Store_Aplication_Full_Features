@@ -61,10 +61,7 @@ def customer_all_unpaid_bills(request,customer_id):
     un_paid_bills = Customer_Bill.objects.filter(customer = customer ,paid_status = 0 , given_status = 1 , bill_type = 0).order_by('date')
 
     total_bills_cost = round( sum( t.total_bill_cost for t in un_paid_bills), 1 ) ### 0
-    # bills_restored_amount_cost = round( sum( t.restored_amount_cost for t in un_paid_bills), 1 )  ### 1
-    #
-    # bills_main_discount = round( sum( t.main_discount for t in un_paid_bills), 1 )  ### 2
-    # bills_add_discount = round( sum( t.discount for t in un_paid_bills), 1 )     ### 3
+    lls_add_discount = round( sum( t.discount for t in un_paid_bills), 1 )     ### 3
     bills_total_discount = round( sum( t.total_discount for t in un_paid_bills), 1 )     ### 4
     #
     #
@@ -75,10 +72,7 @@ def customer_all_unpaid_bills(request,customer_id):
     bills_remaining_amount = round( sum( t.remaining_amount for t in un_paid_bills), 1 )     ### 8
     #
     totals = [total_bills_cost, bills_total_discount, bills_required_amount,bills_given_amount,bills_remaining_amount   ]
-    #
-    # totals.append(bills_restored_amount_cost_ad)
-    # totals.append(bills_given_amount)
-    # totals.append(bills_remaining_amount)
+
 
     context = {
         'customer':customer,
@@ -88,6 +82,83 @@ def customer_all_unpaid_bills(request,customer_id):
 
     }
     return render(request, 'content/customer_all_unpaid_bills.html', context)
+
+@login_required
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+def customer_all_paid_bills(request,customer_id):
+    from_date = to_date = product = un_paid_bills = totals =   None
+    customer = Customer.objects.get(id = customer_id)
+    if request.method == "POST":
+        from_date = request.POST['from_date'] if request.POST['from_date'] != "" else Customer_Bill.objects.filter(customer = customer).first().date.date()
+        to_date = request.POST['to_date'] if request.POST['to_date'] != "" else timezone.now().date()
+
+
+
+        un_paid_bills = Customer_Bill.objects.filter(customer = customer ,paid_status = 1 , given_status = 1 , bill_type = 0 ,
+                                    date__date__gte = from_date , date__date__lte = to_date ).order_by('-date')
+
+        total_bills_cost = round( sum( t.total_bill_cost for t in un_paid_bills), 1 ) ### 0
+        lls_add_discount = round( sum( t.discount for t in un_paid_bills), 1 )     ### 3
+        bills_total_discount = round( sum( t.total_discount for t in un_paid_bills), 1 )     ### 4
+        #
+        #
+        bills_required_amount = round( sum( t.required_amount for t in un_paid_bills), 1 )  ### 5
+        # bills_restored_amount_cost_ad = round( sum( t.restored_amount_cost_ad for t in un_paid_bills), 1 )  ### 6
+        #
+        bills_given_amount = round( sum( t.given_amount for t in un_paid_bills), 1 )     ### 7
+        bills_remaining_amount = round( sum( t.remaining_amount for t in un_paid_bills), 1 )     ### 8
+        #
+        totals = [total_bills_cost, bills_total_discount, bills_required_amount,bills_given_amount,bills_remaining_amount   ]
+
+
+    context = {
+        'customer':customer,
+        'un_paid_bills':un_paid_bills,
+        'totals':totals,
+
+
+    }
+    return render(request, 'content/customer_all_paid_bills.html', context)
+
+
+
+
+@login_required
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+def customer_all_restored_bills(request,customer_id):
+    from_date = to_date = product = un_paid_bills = totals =   None
+    customer = Customer.objects.get(id = customer_id)
+    if request.method == "POST":
+        from_date = request.POST['from_date'] if request.POST['from_date'] != "" else Customer_Bill.objects.filter(customer = customer).first().date.date()
+        to_date = request.POST['to_date'] if request.POST['to_date'] != "" else timezone.now().date()
+
+
+
+        un_paid_bills = Customer_Bill.objects.filter(customer = customer ,paid_status = 1 , given_status = 1 , bill_type = 1,
+                                    date__date__gte = from_date , date__date__lte = to_date ).order_by('-date')
+
+        total_bills_cost = round( sum( t.total_bill_cost for t in un_paid_bills), 1 ) ### 0
+        lls_add_discount = round( sum( t.discount for t in un_paid_bills), 1 )     ### 3
+        bills_total_discount = round( sum( t.total_discount for t in un_paid_bills), 1 )     ### 4
+        #
+        #
+        bills_required_amount = round( sum( t.required_amount for t in un_paid_bills), 1 )  ### 5
+        # bills_restored_amount_cost_ad = round( sum( t.restored_amount_cost_ad for t in un_paid_bills), 1 )  ### 6
+        #
+        bills_given_amount = round( sum( t.given_amount for t in un_paid_bills), 1 )     ### 7
+        bills_remaining_amount = round( sum( t.remaining_amount for t in un_paid_bills), 1 )     ### 8
+        #
+        totals = [total_bills_cost, bills_total_discount, bills_required_amount,bills_given_amount,bills_remaining_amount   ]
+
+
+    context = {
+        'customer':customer,
+        'un_paid_bills':un_paid_bills,
+        'totals':totals,
+
+
+    }
+    return render(request, 'content/customer_all_restored_bills.html', context)
 
 @login_required
 @user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
