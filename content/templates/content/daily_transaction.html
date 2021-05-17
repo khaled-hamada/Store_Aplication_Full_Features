@@ -88,15 +88,15 @@
                 </thead>
                 <tbody>
                     <tr>
-                      <th scope="col">{{totals.0}}</th>
-                      <th scope="col">{{totals.1}}</th>
-                      <th scope="col">{{totals.3}}</th>
-                      <th scope="col" class="text-danger font-weight-bold">{{totals.5}}</th>
-                      <th scope="col" class="text-danger font-weight-bold">{{totals.6}}</th>
+                      <th scope="col">{{totals.0|floatformat}}</th>
+                      <th scope="col">{{totals.1|floatformat}}</th>
+                      <th scope="col">{{totals.3|floatformat}}</th>
+                      <th scope="col" class="text-danger font-weight-bold">{{totals.5|floatformat}}</th>
+                      <th scope="col" class="text-danger font-weight-bold">{{totals.6|floatformat}}</th>
                       <th class="text-danger">{% widthratio  totals.6   totals.1   100 %}%</th>
 
-                      <th scope="col">{{totals.4}}</th>
-                      <th scope="col">{{totals.2}}</th>
+                      <th scope="col">{{totals.4|floatformat}}</th>
+                      <th scope="col">{{totals.2|floatformat}}</th>
                     </tr>
                 </tbody>
             </table>

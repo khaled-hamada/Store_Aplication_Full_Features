@@ -50,7 +50,7 @@ def daily_reports(request):
             points_sellings_bd = round(sum( (t.total_bill_cost ) for t in points_sellings) , 2)
             points_sellings_ad = round(sum( t.required_amount for t in points_sellings) , 2)
             total_discounts = round(sum( t.total_discount for t in points_sellings) , 2)
-            customers_depts = round(sum( t.remaining_amount for t in points_sellings) , 2)
+            customers_depts = round(sum( t.remaining_amount for t in points_sellings if t.paid_status == 0) , 2)
             net_payments = points_sellings_ad - customers_depts
 
         ## safe data

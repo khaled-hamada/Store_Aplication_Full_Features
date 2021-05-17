@@ -521,6 +521,7 @@ def delete_restored_customer_bill_line(request, line_id):
 def confirm_restored_customer_bill(request, bill_id):
     add_to_customer_flag = amount = 0
     notes = ""
+    manager = Current_manager.objects.get(user = request.user)
     customer_bill = Customer_Bill.objects.get(id = bill_id)
     customer_bill.given_status = 1
     customer_bill.paid_status = 1
@@ -540,7 +541,10 @@ def confirm_restored_customer_bill(request, bill_id):
         customer.save()
         notes += " فاتورة مسترجعة من العميل "
         amount =customer_bill.required_amount
-        add_to_customer_flag = 1
+
+        Customer_Payment.objects.create(g_user = customer, t_user=manager, date= timezone.now(), amount = -amount
+                        , previos_amount =customer.remaining_money + amount, current_amount = customer.remaining_money , payment_type = 1, notes = notes)
+
     ## if it not a paid bill but the remaining amount is less than or equal 0 <= 0
     else :
         if customer_main_bill.remaining_amount <= 0 :
@@ -548,14 +552,17 @@ def confirm_restored_customer_bill(request, bill_id):
             customer_main_bill.paid_status = 1
             customer_main_bill.save()
             customer.save()
-            notes += " فاتورة مسترجعة من العميل "
-            amount = abs(customer_main_bill.remaining_amount)
-            add_to_customer_flag = 1
 
-    if add_to_customer_flag == 1:
-        manager = Current_manager.objects.get(user = request.user)
-        Customer_Payment.objects.create(g_user = customer, t_user=manager, date= timezone.now(), amount = amount
-                        , previos_amount =customer.remaining_money - amount, current_amount = customer.remaining_money , payment_type = 1, notes = notes)
+
+        notes += " فاتورة مسترجعة من العميل "
+        amount = abs(customer_bill.required_amount)
+
+        Customer_Payment.objects.create(g_user = customer, t_user=manager, date= timezone.now(), amount = -amount
+                        , previos_amount =customer.remaining_money + amount, current_amount = customer.remaining_money , payment_type = 1, notes = notes)
+
+
+
+
 
 
     return redirect('content:restore-customer-bill', customer.id)
