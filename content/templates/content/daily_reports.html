@@ -508,15 +508,15 @@
                 <tr>
                   <th scope="row">{{forloop.counter}}</th>
                   {%if bill.point%}
-                    <td><a href="{%url 'content:point_page' bill.point.id%}">{{bill.point.name}}</a> </td>
+                    <td><a href="{%url 'content:point_page' bill.point.id%}" target="_blank">{{bill.point.name}}</a> </td>
                   {%else%}
                     <td> </td>
                   {%endif%}
-                  <td><a href="{%url 'content:customer-page' bill.customer.id%}">{{bill.customer.name}}</a>
+                  <td><a href="{%url 'content:customer-page' bill.customer.id%}" target="_blank">{{bill.customer.name}}</a>
                   </td>
 
 
-                  <td>{{bill.total_bill_cost_ar}}</td>
+                  <td>{{bill.total_bill_cost}}</td>
                   <td>{{bill.total_discount}}</td>
                   <td>{{bill.required_amount}}</td>
 

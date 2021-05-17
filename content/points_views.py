@@ -479,6 +479,8 @@ def edit_customer_point_bill_line(request, line_id):
     if temp_diff <= point_product.total_quantity :
         line.quantity =new_quantity
         line.quantity_packet =new_quantity_packet
+        line.unit_sell_price = float(request.POST['selling_price'])
+        line.discount_per_unit = float(request.POST['discount_per_unit'])
         line.save()
 
         ## edit origanl come from line

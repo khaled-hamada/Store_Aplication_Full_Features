@@ -291,12 +291,20 @@ def add_customer_dept(request,customer_id):
                 payment_type = 1
             else :
                 payment_type = 0
+
             Customer_Payment.objects.create(g_user = customer, t_user=manager, date= timezone.now(), amount = amount
                             , previos_amount =customer.remaining_money  + amount, current_amount = customer.remaining_money , payment_type = payment_type )
 
-
+            ## add customer amount to bills
+            un_paid_bills = customer.customer_unpaid_bill
+            if len(un_paid_bills) > 0 and customer.pre_amount > 0 :
+                temp_amount =  customer.pre_amount
+                remaining_amount = add_amount_to_bills_from_customer(un_paid_bills, temp_amount )
+                customer.pre_amount = remaining_amount
+                customer.save()
             if customer.remaining_money == 0:
                 customer.customer_unpaid_bill.update(paid_status = 1)
+
     # print("get to add customer dept")
     return redirect('content:customer-page', customer_id)
 
@@ -335,6 +343,11 @@ def add_amount_to_bills_from_customer(un_paid_bills, amount ):
         if bill.remaining_amount <= .1:
             bill.paid_status = 1
             bill.save()
+
+
+
+    ## remaing amount
+    return amount
 
 
 
@@ -506,7 +519,8 @@ def delete_restored_customer_bill_line(request, line_id):
 @login_required
 @user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
 def confirm_restored_customer_bill(request, bill_id):
-
+    add_to_customer_flag = amount = 0
+    notes = ""
     customer_bill = Customer_Bill.objects.get(id = bill_id)
     customer_bill.given_status = 1
     customer_bill.paid_status = 1
@@ -522,8 +536,11 @@ def confirm_restored_customer_bill(request, bill_id):
     customer_main_bill =  customer_bill.all_lines.last().come_from.bill
     if customer_main_bill.paid_status == 1:
         customer.pre_amount += customer_bill.required_amount
-        customer.save()
 
+        customer.save()
+        notes += " فاتورة مسترجعة من العميل "
+        amount =customer_bill.required_amount
+        add_to_customer_flag = 1
     ## if it not a paid bill but the remaining amount is less than or equal 0 <= 0
     else :
         if customer_main_bill.remaining_amount <= 0 :
@@ -531,6 +548,14 @@ def confirm_restored_customer_bill(request, bill_id):
             customer_main_bill.paid_status = 1
             customer_main_bill.save()
             customer.save()
+            notes += " فاتورة مسترجعة من العميل "
+            amount = abs(customer_main_bill.remaining_amount)
+            add_to_customer_flag = 1
+
+    if add_to_customer_flag == 1:
+        manager = Current_manager.objects.get(user = request.user)
+        Customer_Payment.objects.create(g_user = customer, t_user=manager, date= timezone.now(), amount = amount
+                        , previos_amount =customer.remaining_money - amount, current_amount = customer.remaining_money , payment_type = 1, notes = notes)
 
 
     return redirect('content:restore-customer-bill', customer.id)

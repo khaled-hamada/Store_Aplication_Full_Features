@@ -47,7 +47,7 @@ def daily_reports(request):
         ## totals
         points_sellings_bd = points_sellings_ad = total_discounts = customers_depts =net_payments= 0
         if len(points_sellings) > 0 :
-            points_sellings_bd = round(sum( (t.total_bill_cost_ar ) for t in points_sellings) , 2)
+            points_sellings_bd = round(sum( (t.total_bill_cost ) for t in points_sellings) , 2)
             points_sellings_ad = round(sum( t.required_amount for t in points_sellings) , 2)
             total_discounts = round(sum( t.total_discount for t in points_sellings) , 2)
             customers_depts = round(sum( t.remaining_amount for t in points_sellings) , 2)

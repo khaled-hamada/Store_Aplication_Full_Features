@@ -941,6 +941,7 @@ class Customer_Payment(models.Model):
     ## 0 from customer to company
     ## 1 opposite to 0
     payment_type  =  models.IntegerField(default = 0)
+    notes = models.TextField(default="")
 
     def __str__(self):
         try :
