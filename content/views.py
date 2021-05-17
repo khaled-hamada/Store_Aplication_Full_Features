@@ -14,28 +14,32 @@ from django.db.models import Sum,Q,Count,F
 
 
 # Create your views here.
-
+## computer mac address
+from getmac import get_mac_address as gma
+Computer_Mac_Address = '5c:b9:01:43:f1:28'
 def home(request):
     failed = 0
 
     if request.method == 'POST':
-
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(request, username=username, password=password)
-        if user is not None :
-            current_manager = Current_manager.objects.filter(user = user).first()
-            if current_manager != None  and current_manager.active_status == 1:
-                request.session.set_expiry(0)
-                failed =0
-                login(request, user)
-                print('username: ' + request.user.username + ' has log in to system at ' + str(datetime.now()))
-                # return redirect("content:receipt_net")
-                return redirect("content:store")
-            else :
-                failed =1
+        if Computer_Mac_Address == gma():
+                username = request.POST['username']
+                password = request.POST['password']
+                user = authenticate(request, username=username, password=password)
+                if user is not None :
+                    current_manager = Current_manager.objects.filter(user = user).first()
+                    if current_manager != None  and current_manager.active_status == 1:
+                        request.session.set_expiry(0)
+                        failed =0
+                        login(request, user)
+                        print('username: ' + request.user.username + ' has log in to system at ' + str(datetime.now()))
+                        # return redirect("content:receipt_net")
+                        return redirect("content:store")
+                    else :
+                        failed =1
+                else:
+                    failed =1
         else:
-            failed =1
+            failed = 1
     context = {'failed' : failed}
     return render(request, 'content/login.html', context = context)
     return render(request, 'content/login.html')
