@@ -224,7 +224,7 @@ def trader_all_money_bills(request, trader_id):
 
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0 and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def trader_bill_details(request, bill_id):
     bill = Trader_Bill.objects.get(id = bill_id)
 
@@ -237,7 +237,7 @@ def trader_bill_details(request, bill_id):
 
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def add_trader(request, status):
     success = failed = 0
 
@@ -285,7 +285,7 @@ def add_trader(request, status):
     return render(request, 'content/add_trader.html', context)
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def give_payment(request,trader_id):
     success = failed =total_safe =trader_remainings=  0
     trader = Trader.objects.get(id = trader_id)
@@ -406,7 +406,7 @@ def add_amount_to_bills_from_trader(bills,  amount):
             break
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def restore_trader_product_store(request , trader_id):
     trader = Trader.objects.get(id = trader_id)
     manager = Current_manager.objects.get(user = request.user)
@@ -444,7 +444,7 @@ def restore_trader_product_store(request , trader_id):
 
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0 and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def restore_trader_bill_line(request, line_id):
     manager = Current_manager.objects.get(user = request.user)
     line = Trader_Product.objects.get(id = line_id)
@@ -484,7 +484,7 @@ def restore_trader_bill_line(request, line_id):
     return redirect("content:restore_trader_product_store", trader.id)
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0 and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def delete_restored_trader_bill_line(request, line_id):
     line = Trader_Product.objects.get(id = line_id)
     trader = line.come_from.trader
@@ -499,7 +499,7 @@ def delete_restored_trader_bill_line(request, line_id):
     return redirect('content:restore_trader_product_store', trader.id)
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def edit_restored_trader_bill_line(request, line_id):
     # print(request.POST) ## this is a restored line
     line = Trader_Product.objects.get(id = line_id)
@@ -533,7 +533,7 @@ def edit_restored_trader_bill_line(request, line_id):
 
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def confirm_restore_trader_bill(request, bill_id):
 
 
@@ -570,7 +570,7 @@ def confirm_restore_trader_bill(request, bill_id):
 
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def add_money_dept(request,trader_id):
     failed = success = 0
     trader = Trader.objects.get(id = trader_id)

@@ -11,7 +11,7 @@ from getmac import get_mac_address as gma
 Computer_Mac_Address = '5C:b9:01:43:f1:28'
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def add_sandwich_components(request,type_id):
     success = failed =0
     ## i have 4 components
@@ -120,7 +120,7 @@ def check_validation_com(request, type, npq, pp, qpp):
 
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def add_new_sandwitch(request):
     success = failed = 0
     sands= Sandwich_Type.objects.all()
@@ -180,7 +180,7 @@ def sandwitch(request):
 
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def add_sandwitch(request):
     sands = Sandwich.objects.all()
     success = failed = 0
@@ -263,7 +263,7 @@ def add_sandwitch(request):
 
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def add_sandwich_component_names(request):
     success = failed =0
     ## i have 4 components

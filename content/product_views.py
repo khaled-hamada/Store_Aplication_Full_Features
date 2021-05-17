@@ -57,7 +57,7 @@ def product_page(request, product_id):
 
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def update_product(request, trader_id):
     failed = success = 0
     trader = Trader.objects.get( id = trader_id)
@@ -127,7 +127,7 @@ def update_product(request, trader_id):
 
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def delete_trader_bill_line(request, line_id):
     line = Trader_Product.objects.get(id = line_id)
     trader = line.trader
@@ -140,7 +140,7 @@ def delete_trader_bill_line(request, line_id):
     return redirect('content:update_product', trader.id)
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def edit_trader_bill_line(request, line_id):
     # print(request.POST)
     line = Trader_Product.objects.get(id = line_id)
@@ -171,7 +171,7 @@ def edit_trader_bill_line(request, line_id):
     return redirect('content:update_product', trader.id)
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def confirm_add_trader_bill(request, bill_id):
 
 
@@ -236,7 +236,7 @@ def make_sure_a_correct_product(p):
 
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def new_product_type(request):
     traders = Trader.objects.all()
 
@@ -287,14 +287,14 @@ def new_product_type(request):
 
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def add_new_mu(request):
     Measurement_Unit.objects.create(name = request.POST['unit_name'])
     return redirect('content:new_product_type')
 
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def delete_mu(request):
     Measurement_Unit.objects.get(id = int(request.POST['mu_id'])).delete()
     return redirect('content:new_product_type')
@@ -303,7 +303,7 @@ def delete_mu(request):
 
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='NoOne').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='NoOne').count() != 0  and  Computer_Mac_Address.lower() == gma().lower() , login_url='content:denied_page')
 def reduce_product_amount_store(request, product_id):
     product = Product.objects.get(id =product_id )
     if request.method == "POST":

@@ -191,7 +191,7 @@ def all_point_moved_products(request, point_id):
 
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def edit_selling_price(request, pp_id):
 
     failed = success = 0
@@ -218,7 +218,7 @@ def point_trader_page(request, point_trader_id):
     return render(request, 'content/point_trader_page.html')
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def add_new_point_bill(request):
 
     failed = success = 0
@@ -288,7 +288,7 @@ def create_new_point_bill(request):
     return redirect("content:add_new_point_bill")
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def delete_point_bill_line(request, line_id):
     line = Store_To_Point_Product.objects.get(id = line_id)
     ## restore amount to trader_product line
@@ -298,7 +298,7 @@ def delete_point_bill_line(request, line_id):
     return redirect('content:add_new_point_bill')
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0 and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def edit_point_bill_line(request, line_id):
     # print(request.POST) ## this is a restored line
     line = Store_To_Point_Product.objects.get(id = line_id)
@@ -331,7 +331,7 @@ def edit_point_bill_line(request, line_id):
 
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def confirm_add_point_bill(request, bill_id):
     ##  get current lines
     current_lines = Store_To_Point_Product.objects.filter(line_type = 0 , given_status = 0)
@@ -362,7 +362,7 @@ def confirm_add_point_bill(request, bill_id):
 
 ## update point payments
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def add_new_point_sellings(request, point_id):
     failed = success = 0
     point = Point.objects.get(id = point_id)
@@ -452,7 +452,7 @@ def create_new_customer_point_bill(request):
 
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def delete_customer_point_bill_line(request, line_id):
     line = Point_Product_Sellings.objects.get(id = line_id)
     ## restore amount to trader_product line
@@ -463,7 +463,7 @@ def delete_customer_point_bill_line(request, line_id):
     return redirect('content:add_new_point_sellings',point_product.Point.id)
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def edit_customer_point_bill_line(request, line_id):
     # print(request.POST) ## this is a restored line
     line = Point_Product_Sellings.objects.get(id = line_id)
@@ -499,7 +499,7 @@ def edit_customer_point_bill_line(request, line_id):
 
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def confirm_customer_point_bill(request, bill_id):
     ## 1. if discount > 0 remove it from bills
     print(request.POST)
@@ -643,7 +643,7 @@ def add_payment(request, customer, amount , discount, point, paid_from_pre_amoun
 
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def add_new_point_payments(request,point_id):
     failed = success = 0
     point = Point.objects.get(id = point_id)
@@ -720,7 +720,7 @@ def add_new_point_seller(request):
 
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def restore_point_bill_sell(request, bill_id):
     bill = Point_Product_Sellings.objects.get(id =bill_id )
     point = bill.Point
@@ -744,7 +744,7 @@ def restore_point_bill_sell(request, bill_id):
 
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def restore_point_product_store(request , point_id):
     point = Point.objects.get(id = point_id)
     success = failed = old_quantity = new_quantity =  0
@@ -821,7 +821,7 @@ def create_new_restored_point_bill(request):
 
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def delete_restored_point_bill_line(request, line_id):
     line = Store_To_Point_Product.objects.get(id = line_id)
     ## restore amount to trader_product line
@@ -832,7 +832,7 @@ def delete_restored_point_bill_line(request, line_id):
     return redirect('content:restore_point_product_store',point_product.Point.id)
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def edit_restored_point_bill_line(request, line_id):
     # print(request.POST) ## this is a restored line
     line = Store_To_Point_Product.objects.get(id = line_id)
@@ -865,7 +865,7 @@ def edit_restored_point_bill_line(request, line_id):
 
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def confirm_restored_point_bill(request, point_id):
     ##  get current lines
     current_lines = Store_To_Point_Product.objects.filter(line_type = 1 , given_status = 0, point = point_id)
@@ -884,7 +884,7 @@ def confirm_restored_point_bill(request, point_id):
 
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def point_to_point_product(request , point_id):
     point = Point.objects.get(id = point_id)
     success = failed = old_quantity = new_quantity =  0
@@ -961,7 +961,7 @@ def create_new_point_to_point_bill(request):
     return redirect("content:point_to_point_product", point.id)
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def delete_point_to_point_bill_line(request, line_id):
     line = Store_To_Point_Product.objects.get(id = line_id)
     ## restore amount to trader_product line
@@ -972,7 +972,7 @@ def delete_point_to_point_bill_line(request, line_id):
     return redirect('content:point_to_point_product',point_product.Point.id)
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def edit_point_to_point_bill_line(request, line_id):
     # print(request.POST) ## this is a restored line
     line = Store_To_Point_Product.objects.get(id = line_id)
@@ -1007,7 +1007,7 @@ def edit_point_to_point_bill_line(request, line_id):
 
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def confirm_point_to_point_bill(request, point_id):
     ##  get current lines
     current_lines = Store_To_Point_Product.objects.filter(line_type = 2 , given_status = 0, point = point_id)

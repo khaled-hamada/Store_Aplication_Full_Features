@@ -56,7 +56,7 @@ def customer_page(request,customer_id):
     return render(request, 'content/customer_page.html', context)
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def customer_all_unpaid_bills(request,customer_id):
     customer = Customer.objects.get(id = customer_id)
 
@@ -86,7 +86,7 @@ def customer_all_unpaid_bills(request,customer_id):
     return render(request, 'content/customer_all_unpaid_bills.html', context)
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def customer_all_paid_bills(request,customer_id):
     from_date = to_date = product = un_paid_bills = totals =   None
     customer = Customer.objects.get(id = customer_id)
@@ -131,7 +131,7 @@ def customer_all_paid_bills(request,customer_id):
 
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def customer_all_restored_bills(request,customer_id):
     from_date = to_date = product = un_paid_bills = totals =   None
     customer = Customer.objects.get(id = customer_id)
@@ -175,7 +175,7 @@ def customer_all_restored_bills(request,customer_id):
 
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def customer_all_money_bills(request,customer_id):
     from_date = to_date = product = paid_given_bill = totals =   None
     customer = Customer.objects.get(id = customer_id)
@@ -217,7 +217,7 @@ def customer_all_money_bills(request,customer_id):
 
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def customer_payment(request,customer_id):
     customer = Customer.objects.get(id = customer_id)
     un_paid_bills = customer.customer_unpaid_bill
@@ -272,7 +272,7 @@ def customer_payment(request,customer_id):
 
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def add_customer_dept(request,customer_id):
     customer = Customer.objects.get(id = customer_id)
     manager = Current_manager.objects.get(user = request.user)
@@ -368,7 +368,7 @@ def customer_bill_details(request, bill_id):
 
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def restore_customer_bill(request, customer_id):
     customer = Customer.objects.get(id = customer_id)
     customer_bill = None
@@ -396,7 +396,7 @@ def restore_customer_bill(request, customer_id):
     return render(request, 'content/restore_customer_bill.html', context)
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def restore_customer_bill_line(request, line_id):
     bill_line = Point_Product_Sellings.objects.get(id = line_id)
     customer_bill = Customer_Bill.objects.get(id = bill_line.bill.id)
@@ -460,7 +460,7 @@ def create_new_restore_line(amount, bill_line,  restored_bill):
 
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def edit_restored_customer_bill_line(request, line_id):
     ## restored bill line
     bill_line = Point_Product_Sellings.objects.get(id = line_id)
@@ -497,7 +497,7 @@ def edit_restored_customer_bill_line(request, line_id):
 
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def delete_restored_customer_bill_line(request, line_id):
     ## restored bill line
     bill_line = Point_Product_Sellings.objects.get(id = line_id)
@@ -519,7 +519,7 @@ def delete_restored_customer_bill_line(request, line_id):
 
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def confirm_restored_customer_bill(request, bill_id):
     add_to_customer_flag = amount = 0
     notes = ""
@@ -591,7 +591,7 @@ def restore_product_to_points(customer_bill):
 
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def customer_give_payment(request, customer_id):
     customer = Customer.objects.get(id = customer_id)
     failed = success = 0
