@@ -9,7 +9,8 @@ from .models import  Store_To_Point_Product
 from django.utils import timezone
 from django.db.models import Sum,Q
 
-
+from getmac import get_mac_address as gma
+Computer_Mac_Address = '5C:b9:01:43:f1:28'
 
 @login_required
 def daily_reports(request):

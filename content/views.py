@@ -16,12 +16,13 @@ from django.db.models import Sum,Q,Count,F
 # Create your views here.
 ## computer mac address
 from getmac import get_mac_address as gma
-Computer_Mac_Address = '5c:b9:01:43:f1:28'
+Computer_Mac_Address = '5C:b9:01:43:f1:28'
+# Computer_Mac_Address = '5c:b9:01:43:f1:27'
 def home(request):
     failed = 0
 
     if request.method == 'POST':
-        if Computer_Mac_Address == gma():
+        if Computer_Mac_Address.lower() == gma().lower():
                 username = request.POST['username']
                 password = request.POST['password']
                 user = authenticate(request, username=username, password=password)
@@ -145,7 +146,7 @@ def withdrawings_all(request):
 
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0 and  Computer_Mac_Address.lower() == gma().lower() , login_url='content:denied_page')
 def treasury_transactions(request):
     success = failed =0
 
@@ -196,7 +197,7 @@ def treasury_transactions(request):
 
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0 and Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def withdrawings_transactions(request):
     success = failed =0
 
@@ -238,7 +239,7 @@ def withdrawings_transactions(request):
 
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')
+@user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')
 def delete_single_withdrawing(request):
     success = failed = 0
     cur_m = Current_manager.objects.get(user = request.user)

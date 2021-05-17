@@ -9,6 +9,8 @@ from django.utils import timezone
 from django.db.models import Sum,Q, F
 from itertools import chain
 
+from getmac import get_mac_address as gma
+Computer_Mac_Address = '5C:b9:01:43:f1:28'
 
 @login_required
 def points(request):

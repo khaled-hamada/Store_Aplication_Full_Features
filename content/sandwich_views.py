@@ -7,7 +7,8 @@ from .models import Sandwich_Type,Bread_Type,Katchab,Packet
 
 from django.utils import timezone
 from django.db.models import Sum,Q
-
+from getmac import get_mac_address as gma
+Computer_Mac_Address = '5C:b9:01:43:f1:28'
 
 @login_required
 @user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0, login_url='content:denied_page')

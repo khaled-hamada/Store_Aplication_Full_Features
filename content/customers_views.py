@@ -5,6 +5,8 @@ from django.contrib.auth.models import User
 from .models import  Customer, Customer_Bill,Current_manager,Customer_Payment, Safe_data, Safe_Month,  Point_Product_Sellings
 from .models import  Point, Trader_Bill, Trader_Product , Point_Product
 from django.utils import timezone
+from getmac import get_mac_address as gma
+Computer_Mac_Address = '5C:b9:01:43:f1:28'
 
 @login_required
 def customers_page(request):
