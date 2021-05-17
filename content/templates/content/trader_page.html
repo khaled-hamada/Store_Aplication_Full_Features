@@ -28,6 +28,11 @@
     </div>
     <div class="info font-weight-bold text-danger">
        - <span> مديونية التاجــر : </span> <span>{{trader_pdata.remaining_money}}</span>
+       {% if trader_pdata.remaining_money > 0 %}
+          <span class="text-primary"> مديونية مستحقة للتاجر </span>
+        {%else%}
+         <span class="text-danger"> مديونية على التاجر لحساب الشركة</span>
+       {%  endif %}
     </div>
 
     <div class="info">

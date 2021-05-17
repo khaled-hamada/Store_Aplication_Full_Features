@@ -453,7 +453,7 @@ class Trader_Payment(models.Model):
     discount = models.FloatField(default = 0.0)
     previos_amount = models.FloatField(default = 0.0)
     current_amount = models.FloatField(default = 0.0)
-    ## 0 for coming , 1 for restored products
+    ## 0 for coming , 1 for restored products or dept
     payment_type = models.IntegerField(default = 0)
     def __str__(self):
         return self.sender.user.first_name +  "  --  trader name :-> " + self.reciever.name + " -- date -> " + str(self.date) + " -- money: " + str(self.amount)

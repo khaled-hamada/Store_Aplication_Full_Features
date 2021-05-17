@@ -39,7 +39,7 @@
           <tr>
             <th scope="row">{{forloop.counter}}</th>
 
-            <td>{{bill.id}}</td>
+            <td><a href="{%url 'content:trader_bill_details' bill.id %}" target="_blank">{{bill.id}} - التفاصيل</a> </td>
             <td>{{bill.total_bill_cost}}</td>
             <td>{{bill.total_discount}}</td>
             <td>{{bill.required_amount}}</td>

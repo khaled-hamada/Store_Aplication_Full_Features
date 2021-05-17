@@ -219,6 +219,14 @@
 {%endif%}
 
     {%if bill and bill_type == 1%}
+          <div class=" text-center ">
+            {%if bill.bill_type == 0%}
+            <p>نوع القاتورة : <span class="font-weight-bold text-primary" >فاتورة مشتروات</span></p>
+            {%else%}
+            <p>نوع القاتورة : <span class="font-weight-bold text-danger" >فاتورة مرتجع</span></p>
+
+            {%endif%}
+          </div>
         {%for item in data %}
             <div>
               <nav aria-label="breadcrumb">
@@ -270,6 +278,7 @@
                   {%if item.0.quantity > 0 or item.0.quantity_packet > 0%}
                   <tr>
                     <th scope="row">{{forloop.counter}}</th>
+
                     <td><a href="{%url 'content:trader_bill_details' item.0.trader_bill.id%}" target="_blank">اضغط لروية الفاتورة: {{item.0.trader_bill.id}}</a> </td>
 
                     <td>{{item.0.date|date:'d-m-Y'}}</td>
@@ -283,7 +292,12 @@
                     <td>{{item.0.packet_price_ad}}</td>
                     <td>{{item.0.total_quantity_in_store_cost}}</td>
 
-                    <td><a href="{%url 'content:trader_page' item.0.trader.id%}" target="_blank">{{item.0.trader.name}}</a></td>
+                    {%if bill.bill_type == 0%}
+                      <td><a href="{%url 'content:trader_page' item.0.trader.id%}" target="_blank">{{item.0.trader.name}}</a></td>
+                    {%else%}
+                      <td></td>
+                    {%endif%}
+
                     <td>{{item.0.production_date|date:'d-m-Y'}}</td>
                     <td class="text-danger">{{item.0.expiration_date|date:'d-m-Y'}}</td>
 

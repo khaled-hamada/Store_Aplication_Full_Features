@@ -207,7 +207,9 @@ def confirm_add_trader_bill(request, bill_id):
         ##4. create new treasure entry
         if given_money_amount > 0:
             Safe_data.objects.create(day = timezone.now(), money_amount = -given_money_amount, given_person = manager, notes=notes, safe_line_status = 3 )
-
+            ## update save_month
+            m_safe.money -= given_money_amount
+            m_safe.save()
 
     return redirect('content:update_product', bill.trader.id)
 
@@ -243,9 +245,10 @@ def new_product_type(request):
 
 
         descreption = request.POST['descreption']
-
-        product_image = request.FILES['product_image'] if request.POST['product_image'] != "" else None
-
+        try :
+            product_image = request.FILES['product_image']
+        except :
+            product_image = None
         ## create and save new product
         trader = Trader.objects.filter(id = int(request.POST['trader_id'])).first()
 

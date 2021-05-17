@@ -22,7 +22,13 @@
         <p>اسم التاجر : <span class="font-weight-bold text-primary" >{{current_bill.trader.name}}</span></p>
         <p>تاريخ الفاتورة: <span >{{current_bill.date}}</span></p>
         <p>مديونية التاجر الحالية : <span  class="text-danger">{{current_bill.trader.remaining_money}}</span></p>
+        <br>
+        {%if bill.bill_type == 0%}
+        <p>نوع القاتورة : <span class="font-weight-bold text-primary" >فاتورة مشتروات</span></p>
+        {%else%}
+        <p>نوع القاتورة : <span class="font-weight-bold text-danger" >فاتورة مرتجع</span></p>
 
+        {%endif%}
 
       </div>
       <input type="number" name="bill_id"  form="form_sell_{{current_bill.id}}" value="{{current_bill.id}}"  style="display:None;">

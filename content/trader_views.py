@@ -544,7 +544,10 @@ def confirm_restore_trader_bill(request, bill_id):
     manager = Current_manager.objects.get(user = request.user)
     if (given_money_amount + discount) == bill.required_amount : #and m_safe.money >= given_money_amount:
         ##1. update bill
-        bill.bill_file = request.FILES['bill_file'] if request.POST['bill_file'] != "" else None
+        try :
+            bill.bill_file = request.FILES['bill_file']
+        except  :
+            bill.bill_file  = None
         bill.given_amount += given_money_amount
         bill.discount += discount
         bill.notes = request.POST['notes']
@@ -589,6 +592,11 @@ def add_money_dept(request,trader_id):
         notes += " وارد من التاجر : " + trader.name
         Safe_data.objects.create(day = timezone.now(), money_amount = amount ,given_person =cur_m ,
                 notes = notes, safe_line_status =6)
+
+        previos_amount = trader.remaining_money - amount
+        Trader_Payment.objects.create(date = timezone.now(), amount = amount, reciever = trader , sender= cur_m, notes=notes
+                                     , previos_amount = previos_amount , current_amount = trader.remaining_money , payment_type = 1   )
+
         success = 1
 
 

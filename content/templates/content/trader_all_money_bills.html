@@ -71,7 +71,12 @@
 
           {%for pill in trader_pills%}
           {%if pill.sender %}
-          <tr>
+            {%if pill.payment_type == 1%}
+              <tr class="text-primary">
+            {%else%}
+              <tr>
+            {%endif%}
+
             <th scope="row">{{forloop.counter}}</th>
             <td>{{pill.date}}</td>
 
@@ -90,7 +95,7 @@
     </table>
 
 
-  
+
 
   {%endif%}
 {%if un_paid_bills%}
