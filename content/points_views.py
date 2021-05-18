@@ -47,7 +47,7 @@ def point_page(request, point_id):
 
     point = Point.objects.get(id = point_id)
 
-    all_products = Point_Product.objects.filter(Point = point).order_by("trader_product__product__name")
+    all_products = Point_Product.objects.filter(~Q(quantity = 0, quantity_packet = 0) ,Point = point).order_by("trader_product__product__name")
     all_products_count =len( all_products )
 
     context = {
@@ -138,7 +138,7 @@ def all_point_products(request, point_id):
     point = Point.objects.get(id = point_id)
 
 
-    all_products = Point_Product.objects.filter(Point = point).order_by("trader_product__product__name")
+    all_products = Point_Product.objects.filter(~Q(quantity = 0, quantity_packet = 0), Point = point).order_by("trader_product__product__name")
     all_products_count =len( all_products )
     total_dept = 0
     if all_products_count > 0:
