@@ -156,6 +156,62 @@
 
 </div>
 
+<div style="border-top: 7px solid #0a0879;" class="mt-3"></div>
+
+<!-- start section seperator -->
+<div>
+  <div class="select-date text-center font-weight-bold p-3 mb-4 " style="position: relative;
+  top: 60px;">
+    <div class="bg-light p-2 rounded ">
+      البضائع المنتهية -- النواقص
+    </div>
+
+
+  </div>
+
+  
+</div>
+<!-- end section seperator -->
+<br class="my-3">
+<table class="table">
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">الصنف - صفحة الصنف</th>
+      <th scope="col">اسم المورد - صفحة المورد</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in all_finished_products %}
+   
+    
+    <tr style="border-bottom: 2px solid #141311;">
+     
+      <th scope="row">{{forloop.counter}}</th>
+
+      <td> <a class="text-danger" href="{% url 'content:product_page' item.0.trader_product.product.id %}" target="_blank">
+          {{item.0.trader_product.product.name}} </a> </td>
+
+      <td> 
+        <ol>
+          {%for trader in item.1%}
+            <li>
+              <a class="text-danger" href="{% url 'content:trader_page' trader.id %}" target="_blank">
+                {{trader.name}} </a>
+            </li>
+          {%endfor%}
+
+        </ol>
+      </td>
+
+      
+
+    </tr>
+    {% endfor %}
+
+  </tbody>
+</table>
+
 
     <div class="row  font-weight-bold p-3 mb-4 justify-content-center no-print">
       <a href="{%url 'content:point_page' point.id %}">

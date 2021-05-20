@@ -38,7 +38,7 @@
     <thead class="thead-dark">
         <tr>
             <th scope="col">#</th>
-            <th scope="col">الصنف</th>
+            <th scope="col">الصنف - صفحة الصنف</th>
             <th scope="col">اسم المورد - صفحة المورد</th>
         </tr>
     </thead>
@@ -51,8 +51,10 @@
             {%endif%}
             <th scope="row">{{forloop.counter}}</th>
 
-            <td>{{p.trader_product.product.name}}</td>
+            
             <td> <a href="{% url 'content:trader_page' p.trader_product.trader.id %}" target="_blank"> {{p.trader_product.trader.name}} </a> </td>
+            
+            <td> <a href="{% url 'content:product_page' p.trader_product.product.id %}" target="_blank"> {{p.trader_product.product.name}} </a> </td>
             
                
         </tr>

@@ -144,11 +144,28 @@ def all_point_products(request, point_id):
     if all_products_count > 0:
         total_dept = round(sum(p.current_quantity_cost_buy for p in all_products) , 1)
 
-
+    data = []   
+    s_item=[] 
+    all_finished_products = Point_Product.objects.filter(Q(quantity = 0, quantity_packet = 0), Point = point).distinct().order_by("trader_product__product__name")
+    for pp in all_finished_products :
+        product_sellers = Trader_Product.objects.filter(
+            product=pp.trader_product.product).values_list('trader').distinct()
+        
+        product_sellers_names = set()
+        for tp in product_sellers:
+            product_sellers_names.add(Trader.objects.get(id = tp[0]))
+        
+        s_item.append(pp)
+        s_item.append(product_sellers_names)
+        data.append(s_item)
+        s_item=[]
+    
+    # print(data[0][1])
     context = {
         'point':point,
         'all_products':all_products,
         'total_dept':total_dept,
+        'all_finished_products': data,
     }
     return render(request, 'content/all_point_products.html',context)
 @login_required
