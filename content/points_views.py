@@ -151,6 +151,19 @@ def all_point_products(request, point_id):
         'total_dept':total_dept,
     }
     return render(request, 'content/all_point_products.html',context)
+@login_required
+def all_point_finished_products(request, point_id):
+    point = Point.objects.get(id = point_id)
+
+
+    all_products = Point_Product.objects.filter(Q(quantity = 0, quantity_packet = 0), Point = point).distinct().order_by("trader_product__product__name")
+    
+    context = {
+        'point':point,
+        'all_products':all_products,
+       
+    }
+    return render(request, 'content/all_point_finished_products.html', context)
 
 
 @login_required
@@ -969,7 +982,7 @@ def delete_point_to_point_bill_line(request, line_id):
     from_point_product.add_to_product(line.quantity, line.quantity_packet)
     line.delete()
 
-    return redirect('content:point_to_point_product',point_product.Point.id)
+    return redirect('content:point_to_point_product', from_point_product.Point.id)
 
 @login_required
 @user_passes_test(lambda u: u.groups.filter(name='managers').count() != 0  and  Computer_Mac_Address.lower() == gma().lower(), login_url='content:denied_page')

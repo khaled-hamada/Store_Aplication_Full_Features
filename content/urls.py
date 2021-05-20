@@ -100,6 +100,7 @@ urlpatterns = [
     ## for inqueries
     path('all_point_payments/<int:point_id>', points_views.all_point_payments, name='all_point_payments'),
     path('all_point_products/<int:point_id>', points_views.all_point_products, name='all_point_products'),
+    path('all_point_finished_products/<int:point_id>', points_views.all_point_finished_products, name='all_point_finished_products'),
     path('all_point_moved_products/<int:point_id>', points_views.all_point_moved_products, name='all_point_moved_products'),
     path('all_point_restored_bills/<int:point_id>', points_views.all_point_restored_bills, name='all_point_restored_bills'),
 
