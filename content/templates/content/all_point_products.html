@@ -20,8 +20,8 @@
 
 
 <!-- start section seperator -->
-<div>
-  <div class="select-date text-center font-weight-bold p-3 mb-4" style="position: relative;
+<div class="">
+  <div class="select-date text-center font-weight-bold p-3 mb-4 " style="position: relative;
   top: 60px;">
       <div class="bg-light p-2 rounded">
         البضائع الموجودة بالنقطة حتى الآن
@@ -33,7 +33,7 @@
   <div style="border-top: 7px solid #1abc9c;"></div>
 </div>
 <!-- end section seperator -->
-<div class="mt-5">
+<div class="mt-5 no-print">
   {%if user.groups.first.name == "managers"%}
     <a href="{%url 'content:restore_point_product_store' point.id%}">
       <button class="btn btn-danger font-weight-bold px-5">استرجاع بضاعة للمخزن</button>
@@ -196,7 +196,7 @@
         <ol>
           {%for trader in item.1%}
             <li>
-              <a class="text-danger" href="{% url 'content:trader_page' trader.id %}" target="_blank">
+              <a class="text-primary" href="{% url 'content:trader_page' trader.id %}" target="_blank">
                 {{trader.name}} </a>
             </li>
           {%endfor%}

@@ -452,8 +452,14 @@ def create_new_customer_point_bill(request):
 
 
     ## 3. check amount
-    quantity = int(request.POST['quantity'])
-    quantity_packet = int(request.POST['quantity_packet'])
+    try :
+        quantity = int(request.POST['quantity'])
+    except :
+        quantity = 0
+    try :
+        quantity_packet = int(request.POST['quantity_packet'])
+    except :
+        quantity_packet = 0
     total_q = quantity + (quantity_packet * point_product.quantity_per_packet)
 
     ## create new point product selling line

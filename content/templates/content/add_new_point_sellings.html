@@ -98,7 +98,7 @@
                   <label for="products" class="col-sm-2 font-weight-bold col-form-label" >الكمية بالكرتونة </label>
                   <div class="col-sm-10">
                     <div class="input-group mb-3">
-                      <input type="number" name="quantity_packet" min ="0"  max ="{{bill.quantity_packet}}"  class="form-control" placeholder="اكتب  (0)  صفــر اذا كانت الكمية المسحوبة بعدد القطع فقط" required>
+                      <input type="number" name="quantity_packet" min ="0"  max ="{{bill.quantity_packet}}"  class="form-control" placeholder="اكتب  (0)  صفــر اذا كانت الكمية المسحوبة بعدد القطع فقط" >
                       <input type="text" class="text-primary" value="الموجود بالمخزن {{bill.quantity_packet}} كرتونة" class="form-control" readonly>
                       <input type="text" class="text-light font-weight-bold bg-primary" value="عدد القطع ف الكرتونة : {{bill.quantity_per_packet}} " class="form-control" readonly>
                       <input type="text" class=" font-weight-bold bg-default" value="سعر الكرتونة : {{bill.trader_product.packet_price}}" class="form-control" readonly>
@@ -110,7 +110,7 @@
                   <label for="products" class="col-sm-2 font-weight-bold col-form-label" >الكمية بالواحدة / بالقطعة </label>
                   <div class="col-sm-10">
                     <div class="input-group mb-3">
-                      <input type="number" name="quantity" min ="0"   max ="{{bill.total_quantity}}"  class="form-control" placeholder="اكتب (0)  صفــر اذا كانت الكمية المسحوبة بعدد الكراتين فقط" required>
+                      <input type="number" name="quantity" min ="0"   max ="{{bill.total_quantity}}"  class="form-control" placeholder="اكتب (0)  صفــر اذا كانت الكمية المسحوبة بعدد الكراتين فقط" >
                       <input type="text" class="text-primary" value="الموجود بالمخزن {{bill.quantity}} قطعة" class="form-control" readonly>
                       <input type="text" class=" font-weight-bold bg-default" value="سعر القطعة : {{bill.unit_buy_price}}" class="form-control" readonly>
                       <input type="text" class=" font-weight-bold bg-primary" value="سعر القطعة بعد الخصم : {{bill.unit_buy_price_ad}}" class="form-control" readonly>
